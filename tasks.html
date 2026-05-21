@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Công Việc — Thư Ký AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0f1117; --bg2: #1a1b2e; --bg3: #232440;
+    --card: #1e1f35; --border: rgba(255,255,255,0.08);
+    --text: #e8e8f0; --text2: #9898b0; --text3: #6a6a82;
+    --blue: #6c8cff; --purple: #a78bfa; --green: #34d399;
+    --red: #f87171; --yellow: #fbbf24; --orange: #fb923c;
+    --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(108,140,255,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 20%, rgba(167,139,250,0.04) 0%, transparent 50%);
+    z-index:0; pointer-events:none; }
+
+/* ===== HEADER ===== */
+.page-header {
+    position:relative; z-index:1; padding:20px 36px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8);
+}
+.page-header-left h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.page-header-left h1 .hicon { font-size:22px; }
+.page-header-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+.header-actions { display:flex; gap:6px; }
+.header-btn {
+    padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg3);
+    color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition:all .2s;
+}
+.header-btn:hover { border-color:var(--blue); color:var(--text); }
+.header-btn.primary { background:var(--blue); color:#fff; border-color:var(--blue); }
+.header-btn.primary:hover { background:#5a7aee; }
+
+/* ===== CONTAINER ===== */
+.container { position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:16px 36px 24px; }
+
+/* ===== ADD TASK FORM ===== */
+.add-form {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 20px; margin-bottom:14px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;
+}
+.add-form .form-title { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; margin-bottom:0; white-space:nowrap; }
+.form-group { display:flex; flex-direction:column; gap:3px; }
+.form-group label { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+.form-input {
+    background:var(--bg3); border:1px solid var(--border); border-radius:8px; color:var(--text);
+    padding:7px 12px; font-size:12px; font-family:inherit; min-width:180px;
+}
+.form-input:focus { outline:none; border-color:var(--blue); }
+.form-input::placeholder { color:var(--text3); }
+select.form-input { appearance:none; padding-right:28px; cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236c8cff'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 10px center; }
+.btn-create {
+    padding:7px 20px; border-radius:8px; border:none; background:var(--blue); color:#fff;
+    font-size:12px; font-weight:700; font-family:inherit; cursor:pointer; transition:all .2s;
+}
+.btn-create:hover { background:#5a7aee; transform:translateY(-1px); }
+
+/* ===== FILTER TABS ===== */
+.filter-tabs { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.filter-tab {
+    padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:transparent;
+    color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
+}
+.filter-tab:hover { border-color:var(--blue); color:var(--text); }
+.filter-tab.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+
+/* ===== KANBAN BOARD ===== */
+.kanban { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+.kanban-col {
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:14px; min-height:300px; display:flex; flex-direction:column;
+}
+.col-header {
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
+    padding-bottom:10px; border-bottom:2px solid var(--border);
+}
+.col-title { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; display:flex; align-items:center; gap:6px; }
+.col-title .col-icon { font-size:14px; }
+.col-count {
+    font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; min-width:24px; text-align:center;
+}
+/* Column colors */
+.kanban-col.col-todo .col-header { border-bottom-color:var(--orange); }
+.kanban-col.col-todo .col-title { color:var(--orange); }
+.kanban-col.col-todo .col-count { background:rgba(251,146,60,0.15); color:var(--orange); }
+
+.kanban-col.col-doing .col-header { border-bottom-color:var(--yellow); }
+.kanban-col.col-doing .col-title { color:var(--yellow); }
+.kanban-col.col-doing .col-count { background:rgba(251,191,36,0.15); color:var(--yellow); }
+
+.kanban-col.col-done .col-header { border-bottom-color:var(--green); }
+.kanban-col.col-done .col-title { color:var(--green); }
+.kanban-col.col-done .col-count { background:rgba(52,211,153,0.15); color:var(--green); }
+
+/* ===== TASK CARDS ===== */
+.col-cards { display:flex; flex-direction:column; gap:10px; flex:1; overflow-y:auto; max-height:calc(100vh - 320px); }
+
+.task-card {
+    background:var(--bg2); border:1px solid var(--border); border-radius:10px;
+    padding:14px; transition:all .2s; animation:fadeIn .3s ease;
+}
+.task-card:hover { border-color:rgba(108,140,255,0.2); }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+.task-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; line-height:1.4; }
+.task-desc { font-size:11px; color:var(--text3); line-height:1.5; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.task-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+.task-tags { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+
+/* Priority badge */
+.priority-badge {
+    font-size:10px; font-weight:700; padding:2px 7px; border-radius:5px; white-space:nowrap;
+}
+.priority-badge.p1 { background:rgba(248,113,113,0.15); color:var(--red); }
+.priority-badge.p2 { background:rgba(251,146,60,0.15); color:var(--orange); }
+.priority-badge.p3 { background:rgba(52,211,153,0.15); color:var(--green); }
+
+/* Deadline */
+.task-deadline { font-size:10px; color:var(--text3); display:flex; align-items:center; gap:3px; }
+.task-deadline.overdue { color:var(--red); font-weight:600; }
+
+/* ============================================ */
+/* ===== NÚT CHỨC NĂNG — ICON + TEXT LABEL ==== */
+/* ============================================ */
+.task-actions {
+    display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;
+}
+.task-btn {
+    display:flex; align-items:center; gap:5px;
+    padding:5px 12px; border-radius:7px;
+    border:1px solid var(--border);
+    font-size:10px; font-weight:600; font-family:'Inter',sans-serif;
+    cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.task-btn .btn-icon { font-size:12px; line-height:1; }
+
+/* ▶ Bắt đầu */
+.task-btn.btn-start {
+    background:rgba(108,140,255,0.1); color:var(--blue); border-color:rgba(108,140,255,0.25);
+}
+.task-btn.btn-start:hover {
+    background:rgba(108,140,255,0.25); border-color:var(--blue);
+    transform:translateY(-1px); box-shadow:0 3px 10px rgba(108,140,255,0.15);
+}
+
+/* ✅ Hoàn thành */
+.task-btn.btn-done {
+    background:rgba(52,211,153,0.1); color:var(--green); border-color:rgba(52,211,153,0.25);
+}
+.task-btn.btn-done:hover {
+    background:rgba(52,211,153,0.25); border-color:var(--green);
+    transform:translateY(-1px); box-shadow:0 3px 10px rgba(52,211,153,0.15);
+}
+
+/* 🔄 Làm lại */
+.task-btn.btn-redo {
+    background:rgba(167,139,250,0.1); color:var(--purple); border-color:rgba(167,139,250,0.25);
+}
+.task-btn.btn-redo:hover {
+    background:rgba(167,139,250,0.25); border-color:var(--purple);
+    transform:translateY(-1px); box-shadow:0 3px 10px rgba(167,139,250,0.15);
+}
+
+/* 🗑️ Xóa */
+.task-btn.btn-delete {
+    background:rgba(248,113,113,0.08); color:var(--red); border-color:rgba(248,113,113,0.2);
+}
+.task-btn.btn-delete:hover {
+    background:rgba(248,113,113,0.2); border-color:var(--red);
+    transform:translateY(-1px); box-shadow:0 3px 10px rgba(248,113,113,0.15);
+}
+
+/* Empty */
+.empty-col { text-align:center; padding:30px 10px; color:var(--text3); font-size:12px; }
+.empty-col .empty-icon { font-size:28px; margin-bottom:6px; }
+
+/* Toast */
+.toast {
+    position:fixed; bottom:30px; right:30px;
+    background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:12px 20px; font-size:12px; font-weight:600; color:var(--text);
+    display:flex; align-items:center; gap:8px;
+    box-shadow:0 8px 32px rgba(0,0,0,.5); z-index:1000;
+    animation:toastIn .3s ease; transition:opacity .3s;
+}
+.toast.t-green { border-color:rgba(52,211,153,0.3); }
+.toast.t-blue { border-color:rgba(108,140,255,0.3); }
+.toast.t-red { border-color:rgba(248,113,113,0.3); }
+@keyframes toastIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+/* Responsive */
+@media (max-width:1000px) {
+    .kanban { grid-template-columns:1fr; }
+    .container { padding:16px; }
+    .page-header { padding:16px; flex-wrap:wrap; gap:10px; }
+    .add-form { flex-direction:column; align-items:stretch; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header">
+    <div class="page-header-left">
+        <h1><span class="hicon">📋</span> Công Việc</h1>
+        <div class="page-header-sub">Thư Ký AI — Quản lý task</div>
+    </div>
+    <div class="header-actions">
+        <button class="header-btn" onclick="exportExcel()">📥 Excel</button>
+        <button class="header-btn">← Dashboard</button>
+        <button class="header-btn">📬 Tele</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- ADD TASK FORM -->
+    <div class="add-form">
+        <div class="form-title">➕ Thêm task mới</div>
+        <div class="form-group">
+            <label>Tiêu đề</label>
+            <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+        </div>
+        <div class="form-group">
+            <label>Deadline</label>
+            <input class="form-input" type="datetime-local" id="new-deadline">
+        </div>
+        <div class="form-group">
+            <label>Ưu tiên</label>
+            <select class="form-input" id="new-priority" style="min-width:90px;">
+                <option value="3">🟢 P3</option>
+                <option value="2">🟠 P2</option>
+                <option value="1">🔴 P1</option>
+            </select>
+        </div>
+        <button class="btn-create" onclick="createTask()">Tạo</button>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
+        <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
+        <button class="filter-tab" onclick="setFilter('overdue',this)">Quá hạn</button>
+        <button class="filter-tab" onclick="setFilter('high',this)">Ưu tiên cao</button>
+    </div>
+
+    <!-- KANBAN BOARD -->
+    <div class="kanban">
+        <div class="kanban-col col-todo">
+            <div class="col-header">
+                <span class="col-title"><span class="col-icon">🟧</span> CHƯA LÀM</span>
+                <span class="col-count" id="count-todo">0</span>
+            </div>
+            <div class="col-cards" id="cards-todo"></div>
+        </div>
+        <div class="kanban-col col-doing">
+            <div class="col-header">
+                <span class="col-title"><span class="col-icon">🟨</span> ĐANG LÀM</span>
+                <span class="col-count" id="count-doing">0</span>
+            </div>
+            <div class="col-cards" id="cards-doing"></div>
+        </div>
+        <div class="kanban-col col-done">
+            <div class="col-header">
+                <span class="col-title"><span class="col-icon">🟩</span> HOÀN THÀNH</span>
+                <span class="col-count" id="count-done">0</span>
+            </div>
+            <div class="col-cards" id="cards-done"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== TASK DATA =====
+let tasks = [
+    { id:1, title:'list giao việc', desc:'thiết kế list giao việc để kiểm soát tiến độ cv', priority:2, status:'todo', deadline:'2026-05-09T00:00' },
+    { id:2, title:'bổ sung chức năng cho Trợ lý AI', desc:'1. Xuất file excel các task đã - đang - chuẩn bị làm 2. Các tn đã đọc thì bên Tele đánh dấu đã đọc Hiển lịch sử các tn đã load về để xem lại 3....', priority:1, status:'doing', deadline:'2026-05-05T10:00' },
+    { id:3, title:'book lịch họp với GSM RSM XDBT TF về NSO', desc:'Trao đổi các bất cập của NSO: - Đặc điểm kho giao, giới hạn giờ giao - Không có chỗ để Rổ Tote - Phương án thu hồi Rổ', priority:2, status:'doing', deadline:'2026-05-04T10:00' },
+    { id:4, title:'bổ sung báo cáo auto liên quan Rổ Tote', desc:'Tự động tổng hợp báo cáo tồn kho rổ tote hàng ngày', priority:2, status:'doing', deadline:'2026-05-06T09:00' },
+    { id:5, title:'SOP UD', desc:'Chỉnh SOP trên link gg', priority:1, status:'done', deadline:'2026-05-05T10:00' },
+    { id:6, title:'thảo luận với SCF book xe lạnh cho cúp điện', desc:'Nếu book trong vòng 60p, 120p, 180p, 240p có xe đến siêu thị, thì nvt cần thu phí cố định bao nhiêu', priority:1, status:'done', deadline:'2026-05-05T13:30' },
+    { id:7, title:'kết nối VPN', desc:'Thiết lập kết nối VPN cho hệ thống nội bộ', priority:1, status:'done', deadline:'2026-05-05T14:00' },
+    { id:8, title:'kiểm tra tồn kho rổ ABA đông mát', desc:'Kiểm tra số lượng rổ ABA tại các siêu thị khu vực Q7', priority:2, status:'doing', deadline:'2026-05-07T08:00' },
+    { id:9, title:'cập nhật danh sách ST mới mở', desc:'Bổ sung thông tin các siêu thị mới khai trương vào hệ thống', priority:3, status:'doing', deadline:'2026-05-08T10:00' },
+    { id:10, title:'lập kế hoạch thu hồi rổ tháng 5', desc:'Xây dựng plan thu hồi rổ cho các ST tồn > 200', priority:1, status:'done', deadline:'2026-05-03T09:00' },
+    { id:11, title:'training nhân viên mới quy trình XNT', desc:'Đào tạo 2 nhân viên mới về quy trình xuất nhập tồn', priority:3, status:'done', deadline:'2026-05-02T14:00' },
+    { id:12, title:'review báo cáo OTD tuần 18', desc:'Kiểm tra tỉ lệ giao hàng đúng hạn tuần 18', priority:2, status:'done', deadline:'2026-05-04T16:00' },
+    { id:13, title:'setup dashboard tồn kho mới', desc:'Cài đặt dashboard theo format mới cho team vận hành', priority:1, status:'done', deadline:'2026-05-01T10:00' },
+    { id:14, title:'đối soát chi phí vận chuyển T4', desc:'Đối soát hóa đơn vận chuyển với đối tác logistics tháng 4', priority:2, status:'done', deadline:'2026-05-03T15:00' },
+    { id:15, title:'cập nhật bảng giá cước vận chuyển', desc:'Cập nhật bảng giá cước mới từ 01/05/2026', priority:3, status:'done', deadline:'2026-05-01T08:00' },
+    { id:16, title:'họp review KPI vận tải Q1', desc:'Họp với team để review KPI vận tải quý 1/2026', priority:1, status:'done', deadline:'2026-04-30T09:00' },
+    { id:17, title:'fix lỗi tính toán tồn kho Seedlog', desc:'Sửa lỗi công thức tính tồn kho loại Seedlog tote xanh', priority:2, status:'done', deadline:'2026-05-02T11:00' },
+    { id:18, title:'gửi báo cáo tuần cho Manager', desc:'Tổng hợp và gửi báo cáo tiến độ thu hồi rổ tuần này', priority:2, status:'done', deadline:'2026-05-04T17:00' },
+    { id:19, title:'kiểm tra xe đông lạnh #DL-07', desc:'Kiểm tra tình trạng xe đông lạnh số 07 trước chuyến giao', priority:3, status:'done', deadline:'2026-05-03T07:00' },
+    { id:20, title:'chuẩn bị tài liệu họp NSO', desc:'Soạn slide và dữ liệu cho buổi họp NSO cuối tuần', priority:2, status:'done', deadline:'2026-05-05T09:00' },
+    { id:21, title:'update map siêu thị trên dashboard', desc:'Cập nhật tọa độ và thông tin ST mới lên bản đồ', priority:3, status:'done', deadline:'2026-05-04T11:00' },
+];
+
+let nextId = 22;
+let currentFilter = 'all';
+
+// ===== FORMAT DATE =====
+function fmtDate(d) {
+    if (!d) return '';
+    const dt = new Date(d);
+    const dd = String(dt.getDate()).padStart(2,'0');
+    const mm = String(dt.getMonth()+1).padStart(2,'0');
+    const hh = String(dt.getHours()).padStart(2,'0');
+    const mi = String(dt.getMinutes()).padStart(2,'0');
+    return `${dd}-${mm} ${hh}:${mi}`;
+}
+function isOverdue(d) {
+    if (!d) return false;
+    return new Date(d) < new Date();
+}
+function isToday(d) {
+    if (!d) return false;
+    const dt = new Date(d), now = new Date();
+    return dt.toDateString() === now.toDateString();
+}
+
+// ===== RENDER CARD =====
+function renderCard(t) {
+    const pCls = t.priority===1?'p1':t.priority===2?'p2':'p3';
+    const pLabel = t.priority===1?'P1':t.priority===2?'P2':'P3';
+    const overdue = t.status !== 'done' && isOverdue(t.deadline);
+    const dlCls = overdue ? 'overdue' : '';
+
+    // ===== NÚT HÀNH ĐỘNG VỚI ICON + TEXT =====
+    let btns = '';
+    if (t.status === 'todo') {
+        btns = `
+            <button class="task-btn btn-start" onclick="moveTask(${t.id},'doing')" title="Chuyển sang Đang làm">
+                <span class="btn-icon">▶</span> Bắt đầu
+            </button>
+            <button class="task-btn btn-done" onclick="moveTask(${t.id},'done')" title="Đánh dấu hoàn thành">
+                <span class="btn-icon">✅</span> Hoàn thành
+            </button>
+            <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
+                <span class="btn-icon">🗑️</span> Xóa
+            </button>`;
+    } else if (t.status === 'doing') {
+        btns = `
+            <button class="task-btn btn-done" onclick="moveTask(${t.id},'done')" title="Đánh dấu hoàn thành">
+                <span class="btn-icon">✅</span> Hoàn thành
+            </button>
+            <button class="task-btn btn-redo" onclick="moveTask(${t.id},'todo')" title="Chuyển về Chưa làm">
+                <span class="btn-icon">🔄</span> Quay lại
+            </button>
+            <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
+                <span class="btn-icon">🗑️</span> Xóa
+            </button>`;
+    } else {
+        btns = `
+            <button class="task-btn btn-redo" onclick="moveTask(${t.id},'doing')" title="Mở lại công việc">
+                <span class="btn-icon">🔄</span> Làm lại
+            </button>
+            <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
+                <span class="btn-icon">🗑️</span> Xóa
+            </button>`;
+    }
+
+    return `
+    <div class="task-card" data-id="${t.id}">
+        <div class="task-title">${t.title}</div>
+        ${t.desc ? `<div class="task-desc">${t.desc}</div>` : ''}
+        <div class="task-footer">
+            <div class="task-tags">
+                <span class="priority-badge ${pCls}">${pLabel}</span>
+                ${t.deadline ? `<span class="task-deadline ${dlCls}">📅 ${fmtDate(t.deadline)}</span>` : ''}
+            </div>
+        </div>
+        <div class="task-actions">
+            ${btns}
+        </div>
+    </div>`;
+}
+
+// ===== RENDER BOARD =====
+function renderBoard() {
+    let filtered = [...tasks];
+
+    // Apply filter
+    if (currentFilter === 'today') {
+        filtered = filtered.filter(t => isToday(t.deadline));
+    } else if (currentFilter === 'overdue') {
+        filtered = filtered.filter(t => t.status !== 'done' && isOverdue(t.deadline));
+    } else if (currentFilter === 'high') {
+        filtered = filtered.filter(t => t.priority === 1);
+    }
+
+    const todo = filtered.filter(t => t.status === 'todo');
+    const doing = filtered.filter(t => t.status === 'doing');
+    const done = filtered.filter(t => t.status === 'done');
+
+    // Sort by priority (P1 first)
+    const sortP = (a,b) => a.priority - b.priority;
+    todo.sort(sortP); doing.sort(sortP); done.sort(sortP);
+
+    document.getElementById('cards-todo').innerHTML = todo.length
+        ? todo.map(renderCard).join('')
+        : '<div class="empty-col"><div class="empty-icon">📭</div>Không có task</div>';
+
+    document.getElementById('cards-doing').innerHTML = doing.length
+        ? doing.map(renderCard).join('')
+        : '<div class="empty-col"><div class="empty-icon">📭</div>Không có task</div>';
+
+    document.getElementById('cards-done').innerHTML = done.length
+        ? done.map(renderCard).join('')
+        : '<div class="empty-col"><div class="empty-icon">📭</div>Không có task</div>';
+
+    document.getElementById('count-todo').textContent = todo.length;
+    document.getElementById('count-doing').textContent = doing.length;
+    document.getElementById('count-done').textContent = done.length;
+}
+
+// ===== ACTIONS =====
+function moveTask(id, newStatus) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    const oldStatus = task.status;
+    task.status = newStatus;
+
+    const labels = { todo:'Chưa làm', doing:'Đang làm', done:'Hoàn thành' };
+    const icons = { todo:'🟧', doing:'🟨', done:'🟩' };
+    showToast(`${icons[newStatus]} Chuyển → ${labels[newStatus]}`, newStatus==='done'?'t-green':'t-blue');
+    renderBoard();
+}
+
+function deleteTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    if (!confirm(`Xóa task: "${task.title}"?`)) return;
+    tasks = tasks.filter(t => t.id !== id);
+    showToast('🗑️ Đã xóa task', 't-red');
+    renderBoard();
+}
+
+function createTask() {
+    const title = document.getElementById('new-title').value.trim();
+    if (!title) { document.getElementById('new-title').focus(); return; }
+    const deadline = document.getElementById('new-deadline').value;
+    const priority = +document.getElementById('new-priority').value;
+    tasks.unshift({ id:nextId++, title, desc:'', priority, status:'todo', deadline });
+    document.getElementById('new-title').value = '';
+    showToast('➕ Đã tạo task mới', 't-green');
+    renderBoard();
+}
+
+function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBoard();
+}
+
+function exportExcel() {
+    showToast('📥 Đang xuất Excel...', 't-blue');
+}
+
+// ===== TOAST =====
+function showToast(msg, cls) {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    const t = document.createElement('div');
+    t.className = `toast ${cls||''}`;
+    t.innerHTML = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2500);
+}
+
+// ===== INIT =====
+renderBoard();
+</script>
+</body>
+</html>

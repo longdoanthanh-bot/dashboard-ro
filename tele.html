@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📬 Telegram Inbox — Thư Ký AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0f1117; --bg2: #1a1b2e; --bg3: #232440;
+    --card: #1e1f35; --border: rgba(255,255,255,0.08);
+    --text: #e8e8f0; --text2: #9898b0; --text3: #6a6a82;
+    --blue: #6c8cff; --purple: #a78bfa; --green: #34d399;
+    --red: #f87171; --yellow: #fbbf24; --orange: #fb923c;
+    --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(108,140,255,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 20%, rgba(167,139,250,0.04) 0%, transparent 50%);
+    z-index:0; pointer-events:none; }
+
+/* ===== HEADER ===== */
+.page-header {
+    position:relative; z-index:1; padding:16px 28px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8);
+}
+.page-header-left h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.page-header-left h1 .hicon { font-size:22px; }
+.page-header-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+.header-actions { display:flex; gap:6px; align-items:center; }
+.header-btn {
+    padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg3);
+    color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition:all .2s;
+}
+.header-btn:hover { border-color:var(--blue); color:var(--text); }
+.badge { background:var(--red); color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; min-width:20px; text-align:center; }
+
+/* ===== MAIN LAYOUT ===== */
+.main { position:relative; z-index:1; display:flex; height:calc(100vh - 65px); }
+
+/* Sidebar */
+.sidebar { width:340px; border-right:1px solid var(--border); display:flex; flex-direction:column; background:rgba(26,27,46,0.5); }
+.sidebar-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.sidebar-title { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+.filter-chips { display:flex; gap:4px; }
+.filter-chip {
+    padding:4px 10px; border-radius:14px; border:1px solid var(--border); background:transparent;
+    color:var(--text3); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
+}
+.filter-chip:hover { border-color:var(--blue); color:var(--text); }
+.filter-chip.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+.chat-list { flex:1; overflow-y:auto; }
+.type-header { padding:8px 16px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+.chat-item {
+    padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:all .15s;
+    border-left:3px solid transparent;
+}
+.chat-item:hover { background:rgba(108,140,255,0.05); }
+.chat-item.active { background:rgba(108,140,255,0.1); border-left-color:var(--blue); }
+.chat-name { font-size:13px; font-weight:600; margin-bottom:2px; }
+.chat-preview { font-size:11px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+.chat-time { font-size:10px; color:var(--text3); }
+.chat-badge { font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; background:var(--blue); color:#fff; }
+.chat-tag { font-size:9px; font-weight:600; padding:1px 5px; border-radius:4px; margin-left:6px; }
+.tag-dm { background:rgba(52,211,153,0.15); color:var(--green); }
+.tag-reply { background:rgba(108,140,255,0.15); color:var(--blue); }
+.tag-mention { background:rgba(251,191,36,0.15); color:var(--yellow); }
+
+/* Detail panel */
+.detail { flex:1; display:flex; flex-direction:column; }
+.detail-header {
+    padding:14px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;
+    background:rgba(26,27,46,0.3);
+}
+.detail-header h3 { font-size:15px; font-weight:700; }
+.detail-header .sub { font-size:11px; color:var(--text3); margin-top:1px; }
+.detail-actions { display:flex; gap:6px; }
+.action-btn {
+    padding:6px 14px; border-radius:8px; border:1px solid var(--border); font-size:11px;
+    font-weight:600; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:5px; transition:all .2s;
+}
+.action-btn.btn-green { background:rgba(52,211,153,0.1); color:var(--green); border-color:rgba(52,211,153,0.25); }
+.action-btn.btn-green:hover { background:rgba(52,211,153,0.25); transform:translateY(-1px); }
+.action-btn.btn-red { background:rgba(248,113,113,0.08); color:var(--red); border-color:rgba(248,113,113,0.2); }
+.action-btn.btn-red:hover { background:rgba(248,113,113,0.2); transform:translateY(-1px); }
+.messages { flex:1; overflow-y:auto; padding:16px 24px; display:flex; flex-direction:column; gap:8px; }
+.msg {
+    background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 16px;
+    animation:fadeIn .2s ease;
+}
+.msg-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.msg-sender { font-size:12px; font-weight:700; color:var(--blue); }
+.msg-time { font-size:10px; color:var(--text3); }
+.msg-type-tag { font-size:9px; font-weight:600; padding:1px 5px; border-radius:4px; }
+.msg-text { font-size:12px; color:var(--text2); line-height:1.5; }
+.msg-reply-ref { font-size:10px; color:var(--text3); margin-bottom:4px; padding:4px 8px; border-left:2px solid var(--blue); background:rgba(108,140,255,0.05); border-radius:0 4px 4px 0; }
+
+/* Empty state */
+.empty { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text3); }
+.empty .icon { font-size:40px; margin-bottom:10px; }
+.empty p { font-size:13px; }
+
+/* Toast */
+.toast {
+    position:fixed; bottom:30px; right:30px;
+    background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:12px 20px; font-size:12px; font-weight:600; color:var(--text);
+    box-shadow:0 8px 32px rgba(0,0,0,.5); z-index:1000;
+    animation:fadeIn .3s ease; transition:opacity .3s;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+@media (max-width:800px) {
+    .main { flex-direction:column; }
+    .sidebar { width:100%; height:40vh; border-right:none; border-bottom:1px solid var(--border); }
+    .detail { height:60vh; }
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-left">
+        <h1><span class="hicon">📬</span> Telegram Inbox</h1>
+        <div class="page-header-sub">Thư Ký AI — Chỉ hiện: tin nhắn riêng · trả lời · tag tôi</div>
+    </div>
+    <div class="header-actions">
+        <span class="badge" id="totalBadge">0</span>
+        <button class="header-btn" onclick="location.href='./'">← Dashboard</button>
+    </div>
+</header>
+
+<div class="main">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Hội thoại (<span id="chatCount">0</span>)</span>
+            <div class="filter-chips">
+                <button class="filter-chip active" id="fRelevant" onclick="setFilter('relevant')">🎯 Liên quan</button>
+                <button class="filter-chip" id="fAll" onclick="setFilter('all')">📋 Tất cả</button>
+            </div>
+        </div>
+        <div class="chat-list" id="chatList"></div>
+    </div>
+    <div class="detail" id="detailPanel">
+        <div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện bên trái</p></div>
+    </div>
+</div>
+
+<script>
+// ===== SAMPLE DATA =====
+const ALL_CHATS = [
+    {
+        id:'dm_1', name:'Nguyễn Văn Minh (SCF)', type:'dm',
+        messages:[
+            { sender:'Nguyễn Văn Minh', text:'Anh ơi, bảng giá cước vận chuyển tháng 5 đã cập nhật chưa ạ?', date:'21/05 08:15', msgType:'dm' },
+            { sender:'Nguyễn Văn Minh', text:'Em cần gửi cho đối tác trước 12h trưa nay', date:'21/05 08:16', msgType:'dm' },
+        ]
+    },
+    {
+        id:'dm_2', name:'Trần Thị Hoa (Kho Q7)', type:'dm',
+        messages:[
+            { sender:'Trần Thị Hoa', text:'Anh Long ơi, kho Q7 hôm nay thiếu 15 rổ ABA đông lạnh, anh check giúp em với', date:'21/05 09:30', msgType:'dm' },
+        ]
+    },
+    {
+        id:'dm_3', name:'Lê Hoàng Phúc (IT)', type:'dm',
+        messages:[
+            { sender:'Lê Hoàng Phúc', text:'VPN đã setup xong cho anh rồi nhé, anh thử kết nối lại xem', date:'20/05 16:45', msgType:'dm' },
+            { sender:'Lê Hoàng Phúc', text:'Nếu có lỗi gì anh gửi screenshot em xử lý', date:'20/05 16:46', msgType:'dm' },
+        ]
+    },
+    {
+        id:'grp_1', name:'🏢 Nhóm Vận Hành KFM', type:'group',
+        messages:[
+            { sender:'Phan Thanh Tùng', text:'@Long xe DL-07 đã kiểm tra xong, OK giao chuyến chiều nay', date:'21/05 10:20', msgType:'mention', replyRef:null },
+            { sender:'Ngô Minh Đức', text:'@Long anh confirm giúp lịch thu hồi rổ tuần này', date:'21/05 11:05', msgType:'mention', replyRef:null },
+        ]
+    },
+    {
+        id:'grp_2', name:'🚛 Thu Hồi Rổ Tote', type:'group',
+        messages:[
+            { sender:'Võ Thị Mai', text:'Dạ em đã giao xong 150 rổ cho AIDI Q2, anh Long xác nhận giúp em', date:'21/05 07:50', msgType:'reply', replyRef:'Long: Sáng mai giao 150 rổ cho AIDI nhé' },
+            { sender:'Trần Quốc Bảo', text:'ST A113 báo tồn rổ 142/250, cần thu thêm không anh?', date:'21/05 09:10', msgType:'reply', replyRef:'Long: Check tồn rổ các ST tồn > 200' },
+        ]
+    },
+    {
+        id:'grp_3', name:'📊 Báo Cáo Hàng Ngày', type:'group',
+        messages:[
+            { sender:'Bot Báo Cáo', text:'Báo cáo OTD ngày 20/05: Tỉ lệ giao đúng hạn 94.2%, 3 đơn trễ tại Q12', date:'21/05 06:00', msgType:'general' },
+            { sender:'Lê Văn Hùng', text:'Số liệu Q12 cần kiểm tra lại, có 2 đơn giao sai địa chỉ', date:'21/05 06:30', msgType:'general' },
+        ]
+    },
+    {
+        id:'ch_1', name:'📢 Thông Báo Công Ty', type:'channel',
+        messages:[
+            { sender:'Admin', text:'Thông báo: Nghỉ lễ 2/9 từ 30/08 đến 03/09/2026', date:'20/05 15:00', msgType:'general' },
+        ]
+    },
+    {
+        id:'grp_4', name:'🔧 Hỗ Trợ Kỹ Thuật', type:'group',
+        messages:[
+            { sender:'Phạm Đình Khoa', text:'@Long dashboard rổ tote bị lỗi hiển thị biểu đồ, anh check lại giúp', date:'21/05 14:30', msgType:'mention', replyRef:null },
+        ]
+    },
+];
+
+let currentFilter = 'relevant';
+let selectedChatId = null;
+
+// ===== FILTER LOGIC =====
+function getFilteredChats() {
+    if (currentFilter === 'all') return ALL_CHATS;
+    return ALL_CHATS.filter(chat => {
+        if (chat.type === 'dm') return true;
+        // Group/channel: only keep if has reply or mention
+        const relevant = chat.messages.filter(m => m.msgType === 'reply' || m.msgType === 'mention');
+        return relevant.length > 0;
+    }).map(chat => {
+        if (chat.type === 'dm') return chat;
+        const filtered = chat.messages.filter(m => m.msgType === 'reply' || m.msgType === 'mention');
+        return { ...chat, messages: filtered };
+    });
+}
+
+// ===== RENDER CHAT LIST =====
+function renderChatList() {
+    const chats = getFilteredChats();
+    const el = document.getElementById('chatList');
+    const totalMsgs = chats.reduce((s,c) => s + c.messages.length, 0);
+
+    document.getElementById('totalBadge').textContent = totalMsgs;
+    document.getElementById('chatCount').textContent = chats.length;
+
+    if (!chats.length) {
+        el.innerHTML = '<div class="empty"><div class="icon">✅</div><p>Không có tin nhắn mới</p></div>';
+        return;
+    }
+
+    // Group by type
+    const groups = { dm:[], group:[], channel:[] };
+    chats.forEach(c => { (groups[c.type] || groups.group).push(c); });
+
+    const typeLabels = { dm:'👤 Tin nhắn riêng', group:'👥 Nhóm', channel:'📢 Kênh' };
+    const typeColors = { dm:'var(--green)', group:'var(--blue)', channel:'var(--purple)' };
+
+    let html = '';
+    for (const [type, items] of Object.entries(groups)) {
+        if (!items.length) continue;
+        const total = items.reduce((s,c) => s + c.messages.length, 0);
+        html += `<div class="type-header" style="color:${typeColors[type]}">${typeLabels[type]} (${total})</div>`;
+        for (const chat of items) {
+            const last = chat.messages[chat.messages.length - 1];
+            const isActive = selectedChatId === chat.id;
+            html += `<div class="chat-item${isActive?' active':''}" onclick="selectChat('${chat.id}')" style="border-left-color:${typeColors[type]}">
+                <div class="chat-name">${chat.name}</div>
+                <div class="chat-preview">${last.sender}: ${last.text.slice(0,45)}${last.text.length>45?'...':''}</div>
+                <div class="chat-meta">
+                    <span class="chat-time">${last.date}</span>
+                    <span class="chat-badge">${chat.messages.length}</span>
+                </div>
+            </div>`;
+        }
+    }
+    el.innerHTML = html;
+}
+
+// ===== SELECT CHAT =====
+function selectChat(chatId) {
+    selectedChatId = chatId;
+    renderChatList(); // update active state
+
+    const chats = getFilteredChats();
+    const chat = chats.find(c => c.id === chatId);
+    if (!chat) return;
+
+    const panel = document.getElementById('detailPanel');
+    const typeTag = { dm:'tag-dm', reply:'tag-reply', mention:'tag-mention' };
+    const typeLabel = { dm:'Nhắn riêng', reply:'Trả lời', mention:'Tag tôi', general:'Chung' };
+
+    let html = `<div class="detail-header">
+        <div>
+            <h3>${chat.name}</h3>
+            <div class="sub">${chat.messages.length} tin nhắn</div>
+        </div>
+        <div class="detail-actions">
+            <button class="action-btn btn-green" onclick="dismissChat('${chat.id}')">✅ Đã đọc</button>
+        </div>
+    </div>
+    <div class="messages">`;
+
+    for (const m of chat.messages) {
+        const tag = typeTag[m.msgType] || '';
+        const label = typeLabel[m.msgType] || '';
+        html += `<div class="msg">
+            ${m.replyRef ? `<div class="msg-reply-ref">↩ ${m.replyRef}</div>` : ''}
+            <div class="msg-header">
+                <span class="msg-sender">${m.sender}</span>
+                <span class="msg-time">${m.date}</span>
+                ${tag ? `<span class="msg-type-tag ${tag}">${label}</span>` : ''}
+            </div>
+            <div class="msg-text">${m.text}</div>
+        </div>`;
+    }
+
+    html += '</div>';
+    panel.innerHTML = html;
+}
+
+// ===== DISMISS =====
+function dismissChat(chatId) {
+    const idx = ALL_CHATS.findIndex(c => c.id === chatId);
+    if (idx > -1) ALL_CHATS.splice(idx, 1);
+    selectedChatId = null;
+    document.getElementById('detailPanel').innerHTML = '<div class="empty"><div class="icon">✅</div><p>Đã đánh dấu đã đọc</p></div>';
+    showToast('✅ Đã đánh dấu đã đọc');
+    renderChatList();
+}
+
+// ===== FILTER =====
+function setFilter(mode) {
+    currentFilter = mode;
+    document.getElementById('fRelevant').classList.toggle('active', mode === 'relevant');
+    document.getElementById('fAll').classList.toggle('active', mode === 'all');
+    selectedChatId = null;
+    document.getElementById('detailPanel').innerHTML = '<div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện bên trái</p></div>';
+    renderChatList();
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2500);
+}
+
+// ===== INIT =====
+renderChatList();
+</script>
+</body>
+</html>
