@@ -111,9 +111,24 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     padding:14px; transition:all .2s; animation:fadeIn .3s ease;
 }
 .task-card:hover { border-color:rgba(108,140,255,0.2); }
+.task-card.is-done { opacity:0.65; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-.task-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; line-height:1.4; }
+/* Checkbox + title row */
+.task-title-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+.task-checkbox {
+    appearance:none; -webkit-appearance:none; width:16px; height:16px; min-width:16px;
+    border:2px solid var(--text3); border-radius:4px; background:transparent;
+    cursor:pointer; margin-top:1px; transition:all .2s; position:relative;
+}
+.task-checkbox:checked { background:var(--green); border-color:var(--green); }
+.task-checkbox:checked::after {
+    content:'✓'; position:absolute; top:-2px; left:1px;
+    font-size:12px; font-weight:700; color:#fff;
+}
+.task-checkbox:hover { border-color:var(--blue); }
+.task-title { font-size:13px; font-weight:600; color:var(--text); line-height:1.4; }
+.task-title.done-title { text-decoration:line-through; color:var(--text3); }
 .task-desc { font-size:11px; color:var(--text3); line-height:1.5; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .task-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
 .task-tags { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
@@ -217,6 +232,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
         <div class="page-header-sub">Thư Ký AI — Quản lý task</div>
     </div>
     <div class="header-actions">
+        <button class="header-btn" onclick="resetTasks()" title="Xóa dữ liệu đã lưu, khôi phục mặc định">🔄 Reset</button>
         <button class="header-btn" onclick="exportExcel()">📥 Excel</button>
         <button class="header-btn">← Dashboard</button>
         <button class="header-btn">📬 Tele</button>
@@ -282,8 +298,8 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 </div>
 
 <script>
-// ===== TASK DATA =====
-let tasks = [
+// ===== DEFAULT TASK DATA =====
+const DEFAULT_TASKS = [
     { id:1, title:'list giao việc', desc:'thiết kế list giao việc để kiểm soát tiến độ cv', priority:2, status:'todo', deadline:'2026-05-09T00:00' },
     { id:2, title:'bổ sung chức năng cho Trợ lý AI', desc:'1. Xuất file excel các task đã - đang - chuẩn bị làm 2. Các tn đã đọc thì bên Tele đánh dấu đã đọc Hiển lịch sử các tn đã load về để xem lại 3....', priority:1, status:'doing', deadline:'2026-05-05T10:00' },
     { id:3, title:'book lịch họp với GSM RSM XDBT TF về NSO', desc:'Trao đổi các bất cập của NSO: - Đặc điểm kho giao, giới hạn giờ giao - Không có chỗ để Rổ Tote - Phương án thu hồi Rổ', priority:2, status:'doing', deadline:'2026-05-04T10:00' },
@@ -307,7 +323,32 @@ let tasks = [
     { id:21, title:'update map siêu thị trên dashboard', desc:'Cập nhật tọa độ và thông tin ST mới lên bản đồ', priority:3, status:'done', deadline:'2026-05-04T11:00' },
 ];
 
-let nextId = 22;
+const STORAGE_KEY = 'dashboard_ro_tasks';
+
+// ===== LOCALSTORAGE PERSISTENCE =====
+function saveTasks() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks, nextId }));
+    } catch(e) { console.warn('Cannot save to localStorage:', e); }
+}
+
+function loadTasks() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (Array.isArray(data.tasks) && data.tasks.length > 0) {
+                return data;
+            }
+        }
+    } catch(e) { console.warn('Cannot load from localStorage:', e); }
+    return null;
+}
+
+// ===== INIT DATA =====
+const savedData = loadTasks();
+let tasks = savedData ? savedData.tasks : JSON.parse(JSON.stringify(DEFAULT_TASKS));
+let nextId = savedData ? savedData.nextId : 22;
 let currentFilter = 'all';
 
 // ===== FORMAT DATE =====
@@ -336,6 +377,10 @@ function renderCard(t) {
     const pLabel = t.priority===1?'P1':t.priority===2?'P2':'P3';
     const overdue = t.status !== 'done' && isOverdue(t.deadline);
     const dlCls = overdue ? 'overdue' : '';
+    const isDone = t.status === 'done';
+    const checkedAttr = isDone ? 'checked' : '';
+    const titleCls = isDone ? 'task-title done-title' : 'task-title';
+    const cardCls = isDone ? 'task-card is-done' : 'task-card';
 
     // ===== NÚT HÀNH ĐỘNG VỚI ICON + TEXT =====
     let btns = '';
@@ -372,8 +417,11 @@ function renderCard(t) {
     }
 
     return `
-    <div class="task-card" data-id="${t.id}">
-        <div class="task-title">${t.title}</div>
+    <div class="${cardCls}" data-id="${t.id}">
+        <div class="task-title-row">
+            <input type="checkbox" class="task-checkbox" ${checkedAttr} onchange="toggleTask(${t.id}, this.checked)" title="Đánh dấu hoàn thành">
+            <div class="${titleCls}">${t.title}</div>
+        </div>
         ${t.desc ? `<div class="task-desc">${t.desc}</div>` : ''}
         <div class="task-footer">
             <div class="task-tags">
@@ -426,15 +474,29 @@ function renderBoard() {
 }
 
 // ===== ACTIONS =====
+function toggleTask(id, checked) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    if (checked) {
+        task.status = 'done';
+        showToast('✅ Đã hoàn thành!', 't-green');
+    } else {
+        task.status = 'todo';
+        showToast('🟧 Chuyển về Chưa làm', 't-blue');
+    }
+    saveTasks();
+    renderBoard();
+}
+
 function moveTask(id, newStatus) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
-    const oldStatus = task.status;
     task.status = newStatus;
 
     const labels = { todo:'Chưa làm', doing:'Đang làm', done:'Hoàn thành' };
     const icons = { todo:'🟧', doing:'🟨', done:'🟩' };
     showToast(`${icons[newStatus]} Chuyển → ${labels[newStatus]}`, newStatus==='done'?'t-green':'t-blue');
+    saveTasks();
     renderBoard();
 }
 
@@ -444,6 +506,7 @@ function deleteTask(id) {
     if (!confirm(`Xóa task: "${task.title}"?`)) return;
     tasks = tasks.filter(t => t.id !== id);
     showToast('🗑️ Đã xóa task', 't-red');
+    saveTasks();
     renderBoard();
 }
 
@@ -455,6 +518,7 @@ function createTask() {
     tasks.unshift({ id:nextId++, title, desc:'', priority, status:'todo', deadline });
     document.getElementById('new-title').value = '';
     showToast('➕ Đã tạo task mới', 't-green');
+    saveTasks();
     renderBoard();
 }
 
@@ -462,6 +526,15 @@ function setFilter(f, btn) {
     currentFilter = f;
     document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    renderBoard();
+}
+
+function resetTasks() {
+    if (!confirm('Xóa tất cả dữ liệu đã lưu và khôi phục về mặc định?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+    nextId = 22;
+    showToast('🔄 Đã khôi phục mặc định', 't-blue');
     renderBoard();
 }
 
@@ -482,6 +555,7 @@ function showToast(msg, cls) {
 
 // ===== INIT =====
 renderBoard();
+saveTasks(); // persist defaults on first load
 </script>
 </body>
 </html>
