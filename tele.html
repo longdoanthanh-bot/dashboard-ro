@@ -130,7 +130,8 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
     </div>
     <div class="header-actions">
         <span class="badge" id="totalBadge">0</span>
-        <button class="header-btn" onclick="location.href='./'">← Dashboard</button>
+        <button class="header-btn" onclick="goToTab('tasks')">📋 Công Việc</button>
+        <button class="header-btn" onclick="goToTab('tonkho')">← Dashboard</button>
     </div>
 </header>
 
@@ -151,6 +152,22 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 </div>
 
 <script>
+function goToTab(tabId) {
+    try {
+        if (window.parent && typeof window.parent.switchMain === 'function') {
+            window.parent.switchMain(tabId);
+            return;
+        }
+    } catch(e) {
+        console.warn('Cross-origin parent access failed, falling back to standalone navigation');
+    }
+    if (tabId === 'tonkho' || tabId === 'thuhoi' || tabId === 'storemap') {
+        location.href = './index.html';
+    } else {
+        location.href = tabId + '.html';
+    }
+}
+
 // ===== SAMPLE DATA =====
 const ALL_CHATS = [
     {

@@ -234,8 +234,8 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     <div class="header-actions">
         <button class="header-btn" onclick="resetTasks()" title="Xóa dữ liệu đã lưu, khôi phục mặc định">🔄 Reset</button>
         <button class="header-btn" onclick="exportExcel()">📥 Excel</button>
-        <button class="header-btn">← Dashboard</button>
-        <button class="header-btn">📬 Tele</button>
+        <button class="header-btn" onclick="goToTab('tonkho')">← Dashboard</button>
+        <button class="header-btn" onclick="goToTab('tele')">📬 Tele</button>
     </div>
 </header>
 
@@ -298,6 +298,22 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 </div>
 
 <script>
+function goToTab(tabId) {
+    try {
+        if (window.parent && typeof window.parent.switchMain === 'function') {
+            window.parent.switchMain(tabId);
+            return;
+        }
+    } catch(e) {
+        console.warn('Cross-origin parent access failed, falling back to standalone navigation');
+    }
+    if (tabId === 'tonkho' || tabId === 'thuhoi' || tabId === 'storemap') {
+        location.href = './index.html';
+    } else {
+        location.href = tabId + '.html';
+    }
+}
+
 // ===== DEFAULT TASK DATA =====
 const DEFAULT_TASKS = [
     { id:1, title:'list giao việc', desc:'thiết kế list giao việc để kiểm soát tiến độ cv', priority:2, status:'todo', deadline:'2026-05-09T00:00' },
