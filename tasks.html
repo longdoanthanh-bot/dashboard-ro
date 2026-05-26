@@ -602,8 +602,12 @@ let currentFilter = 'all';
 let expandedCards = new Set();
 
 function toggleExpand(id) {
-    if (expandedCards.has(id)) expandedCards.delete(id);
-    else expandedCards.add(id);
+    if (expandedCards.has(id)) {
+        expandedCards.clear();
+    } else {
+        expandedCards.clear();
+        expandedCards.add(id);
+    }
     renderBoard();
 }
 
@@ -714,6 +718,7 @@ function renderCard(t) {
             </div>
         </div>
         <div class="card-body">
+            ${t.desc ? `<div class="task-desc">${escH(t.desc)}</div>` : ''}
             ${checklistHTML}
             <div class="task-actions">${btns}</div>
         </div>
