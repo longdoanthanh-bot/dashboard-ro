@@ -420,6 +420,10 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
                 <option value="1">🔴 P1</option>
             </select>
         </div>
+        <div class="form-group" style="flex:1;min-width:200px;">
+            <label>Nội dung</label>
+            <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+        </div>
         <button class="btn-create" onclick="createTask()">Tạo</button>
     </div>
 
@@ -817,8 +821,16 @@ function createTask() {
     if (!title) { document.getElementById('new-title').focus(); return; }
     const deadline = document.getElementById('new-deadline').value;
     const priority = +document.getElementById('new-priority').value;
-    tasks.unshift({ id:nextId++, title, desc:'', priority, status:'todo', deadline });
+    const desc = document.getElementById('new-desc').value.trim();
+    const task = { id:nextId++, title, desc, priority, status:'todo', deadline };
+    // Auto-create checklist from multi-line desc
+    const lines = desc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length >= 2) {
+        task.checklist = lines.map((text, i) => ({ id: i+1, text: text.replace(/^\d+\.\s*/, ''), done: false }));
+    }
+    tasks.unshift(task);
     document.getElementById('new-title').value = '';
+    document.getElementById('new-desc').value = '';
     showToast('➕ Đã tạo task mới', 't-green');
     saveTasks();
     renderBoard();
