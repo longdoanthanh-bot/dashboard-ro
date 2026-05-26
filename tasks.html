@@ -65,11 +65,22 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 }
 .btn-create:hover { background:#5a7aee; transform:translateY(-1px); }
 
+/* ===== STATS BAR ===== */
+.stats-row { display:flex; gap:6px; margin-bottom:8px; }
+.stat-card { flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:8px 12px; text-align:center; }
+.stat-num { font-size:20px; font-weight:800; }
+.stat-label { font-size:8px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; margin-top:1px; }
+.stat-card.s-total .stat-num { color:var(--blue); }
+.stat-card.s-todo .stat-num { color:var(--orange); }
+.stat-card.s-doing .stat-num { color:var(--yellow); }
+.stat-card.s-done .stat-num { color:var(--green); }
+.stat-card.s-rate .stat-num { color:var(--purple); }
+
 /* ===== FILTER TABS ===== */
-.filter-tabs { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
 .filter-tab {
-    padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:transparent;
-    color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
+    padding:5px 12px; border-radius:16px; border:1px solid var(--border); background:transparent;
+    color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
 }
 .filter-tab:hover { border-color:var(--blue); color:var(--text); }
 .filter-tab.active { background:var(--blue); color:#fff; border-color:var(--blue); }
@@ -412,6 +423,15 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
         <button class="btn-create" onclick="createTask()">Tạo</button>
     </div>
 
+    <!-- STATS BAR -->
+    <div class="stats-row">
+        <div class="stat-card s-total"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Tổng</div></div>
+        <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div></div>
+        <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div></div>
+        <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div></div>
+        <div class="stat-card s-rate"><div class="stat-num" id="stat-rate">0%</div><div class="stat-label">Tỷ lệ</div></div>
+    </div>
+
     <!-- FILTER TABS -->
     <div class="filter-tabs">
         <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
@@ -736,6 +756,18 @@ function renderBoard() {
     document.getElementById('count-todo').textContent = todo.length;
     document.getElementById('count-doing').textContent = doing.length;
     document.getElementById('count-done').textContent = done.length;
+
+    // Update stats bar (always from ALL tasks, not filtered)
+    const allTodo = tasks.filter(t => t.status === 'todo').length;
+    const allDoing = tasks.filter(t => t.status === 'doing').length;
+    const allDone = tasks.filter(t => t.status === 'done').length;
+    const allTotal = tasks.length;
+    const rate = allTotal > 0 ? Math.round(allDone / allTotal * 100) : 0;
+    document.getElementById('stat-total').textContent = allTotal;
+    document.getElementById('stat-todo').textContent = allTodo;
+    document.getElementById('stat-doing').textContent = allDoing;
+    document.getElementById('stat-done').textContent = allDone;
+    document.getElementById('stat-rate').textContent = rate + '%';
 }
 
 // ===== ACTIONS =====
