@@ -23,29 +23,29 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 
 /* ===== HEADER ===== */
 .page-header {
-    position:relative; z-index:1; padding:20px 36px; display:flex; align-items:center; justify-content:space-between;
+    position:relative; z-index:1; padding:10px 24px; display:flex; align-items:center; justify-content:space-between;
     border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8);
 }
-.page-header-left h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
-.page-header-left h1 .hicon { font-size:22px; }
-.page-header-sub { font-size:11px; color:var(--text3); margin-top:2px; }
-.header-actions { display:flex; gap:6px; }
+.page-header-left h1 { font-size:16px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.page-header-left h1 .hicon { font-size:18px; }
+.page-header-sub { font-size:10px; color:var(--text3); margin-top:1px; }
+.header-actions { display:flex; gap:4px; }
 .header-btn {
-    padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg3);
-    color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer;
-    display:flex; align-items:center; gap:5px; transition:all .2s;
+    padding:5px 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg3);
+    color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:4px; transition:all .2s;
 }
 .header-btn:hover { border-color:var(--blue); color:var(--text); }
 .header-btn.primary { background:var(--blue); color:#fff; border-color:var(--blue); }
 .header-btn.primary:hover { background:#5a7aee; }
 
 /* ===== CONTAINER ===== */
-.container { position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:16px 36px 24px; }
+.container { position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:8px 24px 16px; }
 
 /* ===== ADD TASK FORM ===== */
 .add-form {
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:16px 20px; margin-bottom:14px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;
+    background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:8px 14px; margin-bottom:8px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
 }
 .add-form .form-title { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; margin-bottom:0; white-space:nowrap; }
 .form-group { display:flex; flex-direction:column; gap:3px; }
@@ -104,18 +104,24 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .kanban-col.col-done .col-count { background:rgba(52,211,153,0.15); color:var(--green); }
 
 /* ===== TASK CARDS ===== */
-.col-cards { display:flex; flex-direction:column; gap:10px; flex:1; overflow-y:auto; max-height:calc(100vh - 320px); }
+.col-cards { display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto; max-height:calc(100vh - 240px); }
 
 .task-card {
-    background:var(--bg2); border:1px solid var(--border); border-radius:10px;
-    padding:14px; transition:all .2s; animation:fadeIn .3s ease; cursor:pointer;
+    background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+    padding:10px 12px; transition:all .2s; animation:fadeIn .3s ease;
 }
-.task-card:hover { border-color:rgba(108,140,255,0.3); background:rgba(26,27,46,0.9); transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
-.task-card.is-done { opacity:0.65; }
+.task-card:hover { border-color:rgba(108,140,255,0.2); }
+.task-card.is-done { opacity:0.55; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-/* Checkbox + title row */
-.task-title-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+/* Compact header row: checkbox + title + deadline + expand arrow */
+.task-header-row { display:flex; align-items:center; gap:6px; cursor:pointer; }
+.task-title-row { display:flex; align-items:center; gap:6px; flex:1; min-width:0; }
+.expand-arrow { font-size:10px; color:var(--text3); transition:transform .2s; cursor:pointer; user-select:none; padding:2px; }
+.task-card.expanded .expand-arrow { transform:rotate(90deg); color:var(--blue); }
+.task-card .card-body { display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); animation:fadeIn .2s; }
+.task-card.expanded .card-body { display:block; }
+.task-inline-meta { display:flex; align-items:center; gap:6px; flex-shrink:0; }
 .task-checkbox {
     appearance:none; -webkit-appearance:none; width:16px; height:16px; min-width:16px;
     border:2px solid var(--text3); border-radius:4px; background:transparent;
@@ -127,9 +133,9 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     font-size:12px; font-weight:700; color:#fff;
 }
 .task-checkbox:hover { border-color:var(--blue); }
-.task-title { font-size:13px; font-weight:600; color:var(--text); line-height:1.4; }
+.task-title { font-size:12px; font-weight:600; color:var(--text); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .task-title.done-title { text-decoration:line-through; color:var(--text3); }
-.task-desc { font-size:11px; color:var(--text3); line-height:1.5; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.task-desc { font-size:11px; color:var(--text3); line-height:1.5; margin-bottom:8px; }
 .task-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
 .task-tags { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 
@@ -573,6 +579,13 @@ const savedData = loadTasks();
 let tasks = savedData ? savedData.tasks : JSON.parse(JSON.stringify(DEFAULT_TASKS));
 let nextId = savedData ? savedData.nextId : 22;
 let currentFilter = 'all';
+let expandedCards = new Set();
+
+function toggleExpand(id) {
+    if (expandedCards.has(id)) expandedCards.delete(id);
+    else expandedCards.add(id);
+    renderBoard();
+}
 
 // ===== FORMAT DATE =====
 function fmtDate(d) {
@@ -662,21 +675,27 @@ function renderCard(t) {
             </div>`;
     }
 
+    const isExp = expandedCards.has(t.id);
+    const expCls = isExp ? ' expanded' : '';
+    const clSummary = (t.checklist && t.checklist.length > 0) ? ` <span class="card-cl-text" style="margin-left:4px;">${t.checklist.filter(i=>i.done).length}/${t.checklist.length}</span>` : '';
+
     return `
-    <div class="${cardCls}" data-id="${t.id}" title="Click xem chi tiết & checklist" onclick="if(event.target.closest('.task-checkbox,.task-btn,.task-actions,.card-checklist')) return; openTaskModal(${t.id})">
-        <div class="task-title-row">
-            <input type="checkbox" class="task-checkbox" ${checkedAttr} onchange="toggleTask(${t.id}, this.checked)" title="Đánh dấu hoàn thành">
-            <div class="${titleCls}">${t.title}</div>
-        </div>
-        ${checklistHTML}
-        <div class="task-footer">
-            <div class="task-tags">
+    <div class="${cardCls}${expCls}" data-id="${t.id}">
+        <div class="task-header-row" onclick="toggleExpand(${t.id})">
+            <div class="task-title-row">
+                <input type="checkbox" class="task-checkbox" ${checkedAttr} onchange="event.stopPropagation();toggleTask(${t.id}, this.checked)" title="Đánh dấu hoàn thành">
+                <div class="${titleCls}">${t.title}</div>
+            </div>
+            <div class="task-inline-meta">
                 <span class="priority-badge ${pCls}">${pLabel}</span>
-                ${t.deadline ? `<span class="task-deadline ${dlCls}">📅 ${fmtDate(t.deadline)}</span>` : ''}
+                ${t.deadline ? `<span class="task-deadline ${dlCls}" style="font-size:9px;">📅 ${fmtDate(t.deadline)}</span>` : ''}
+                ${clSummary}
+                <span class="expand-arrow">▶</span>
             </div>
         </div>
-        <div class="task-actions">
-            ${btns}
+        <div class="card-body">
+            ${checklistHTML}
+            <div class="task-actions">${btns}</div>
         </div>
     </div>`;
 }
