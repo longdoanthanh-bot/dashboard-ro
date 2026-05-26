@@ -344,6 +344,19 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     display: flex; justify-content: flex-end; gap: 8px;
 }
 
+/* Card checklist inline */
+.card-checklist { margin:8px 0 4px; }
+.card-cl-progress { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+.card-cl-bar { flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+.card-cl-fill { height:100%; background:linear-gradient(90deg,var(--blue),var(--green)); border-radius:2px; transition:width .3s; }
+.card-cl-text { font-size:9px; color:var(--green); font-weight:700; white-space:nowrap; }
+.card-cl-items { display:flex; flex-direction:column; gap:2px; max-height:180px; overflow-y:auto; }
+.card-cl-item { display:flex; align-items:center; gap:6px; padding:3px 6px; border-radius:4px; cursor:pointer; transition:background .15s; }
+.card-cl-item:hover { background:rgba(255,255,255,0.04); }
+.card-cl-item input[type=checkbox] { accent-color:var(--green); cursor:pointer; width:13px; height:13px; min-width:13px; }
+.card-cl-label { font-size:11px; color:var(--text2); transition:all .2s; line-height:1.4; }
+.card-cl-item.cl-done .card-cl-label { text-decoration:line-through; color:var(--text3); }
+
 /* Responsive */
 @media (max-width:1000px) {
     .kanban { grid-template-columns:1fr; }
@@ -626,29 +639,36 @@ function renderCard(t) {
             </button>`;
     }
 
-    let checklistProgressHTML = '';
+    let checklistHTML = '';
     if (t.checklist && t.checklist.length > 0) {
         const total = t.checklist.length;
         const done = t.checklist.filter(item => item.done).length;
         const pct = Math.round((done / total) * 100);
-        checklistProgressHTML = `
-            <div style="margin-top: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden;">
-                    <div style="width: ${pct}%; height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 2px;"></div>
+        const itemsHTML = t.checklist.map(item => {
+            const cls = item.done ? ' cl-done' : '';
+            const chk = item.done ? 'checked' : '';
+            return `<label class="card-cl-item${cls}" onclick="event.stopPropagation()">
+                <input type="checkbox" ${chk} onchange="toggleCardCL(${t.id},${item.id},this.checked)">
+                <span class="card-cl-label">${escH(item.text)}</span>
+            </label>`;
+        }).join('');
+        checklistHTML = `
+            <div class="card-checklist">
+                <div class="card-cl-progress">
+                    <div class="card-cl-bar"><div class="card-cl-fill" style="width:${pct}%"></div></div>
+                    <span class="card-cl-text">${done}/${total}</span>
                 </div>
-                <span style="font-size: 9px; color: var(--green); font-weight: 700; white-space: nowrap;">${done}/${total} task nhỏ</span>
-            </div>
-        `;
+                <div class="card-cl-items">${itemsHTML}</div>
+            </div>`;
     }
 
     return `
-    <div class="${cardCls}" data-id="${t.id}" title="Click xem chi tiết & checklist" onclick="if(event.target.closest('.task-checkbox, .task-btn, .task-actions')) return; openTaskModal(${t.id})">
+    <div class="${cardCls}" data-id="${t.id}" title="Click xem chi tiết & checklist" onclick="if(event.target.closest('.task-checkbox,.task-btn,.task-actions,.card-checklist')) return; openTaskModal(${t.id})">
         <div class="task-title-row">
             <input type="checkbox" class="task-checkbox" ${checkedAttr} onchange="toggleTask(${t.id}, this.checked)" title="Đánh dấu hoàn thành">
             <div class="${titleCls}">${t.title}</div>
         </div>
-        ${t.desc ? `<div class="task-desc">${t.desc}</div>` : ''}
-        ${checklistProgressHTML}
+        ${checklistHTML}
         <div class="task-footer">
             <div class="task-tags">
                 <span class="priority-badge ${pCls}">${pLabel}</span>
@@ -918,9 +938,43 @@ function saveTaskModal() {
     closeModal();
 }
 
+// ===== HELPERS =====
+function escH(s) { if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function ensureChecklist(task) {
+    if (task.checklist && task.checklist.length > 0) return;
+    if (!task.desc) return;
+    const lines = task.desc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 2) return;
+    task.checklist = lines.map((text, i) => ({
+        id: i + 1,
+        text: text.replace(/^\d+\.\s*/, ''),
+        done: false
+    }));
+}
+
+function toggleCardCL(taskId, itemId, checked) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || !task.checklist) return;
+    const item = task.checklist.find(i => i.id === itemId);
+    if (!item) return;
+    item.done = checked;
+    saveTasks();
+    renderBoard();
+    const total = task.checklist.length;
+    const done = task.checklist.filter(i => i.done).length;
+    if (done === total && total > 0 && task.status !== 'done') {
+        task.status = 'done';
+        saveTasks();
+        renderBoard();
+        showToast('🎉 Tất cả task nhỏ hoàn thành — chuyển Done!', 't-green');
+    }
+}
+
 // ===== INIT =====
+tasks.forEach(ensureChecklist);
 renderBoard();
-saveTasks(); // persist defaults on first load
+saveTasks();
 </script>
 </body>
 </html>
