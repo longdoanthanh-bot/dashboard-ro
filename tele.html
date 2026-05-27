@@ -112,19 +112,7 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 </head>
 <body>
 
-<header class="page-header">
-    <div class="page-header-left">
-        <h1><span class="hicon">📬</span> Telegram Inbox</h1>
-        <div class="page-header-sub">Data: 27/05/2026 09:52 · 5 chat · 11 tin nhắn (7 ngày)</div>
-    </div>
-    <div class="header-actions">
-        <span class="badge" id="totalBadge">0</span>
-        <button class="header-btn" onclick="goToTab('tasks')">📋 Công Việc</button>
-        <button class="header-btn" onclick="goToTab('tonkho')">← Dashboard</button>
-    </div>
-</header>
-
-<div class="main">
+<div class="main" style="height:100vh;">
     <div class="sidebar">
         <div class="sidebar-header">
             <span class="sidebar-title">Hội thoại (<span id="chatCount">0</span>)</span>
