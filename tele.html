@@ -158,6 +158,20 @@ function goToTab(tabId) {
 
 const ALL_CHATS = [{"id": "chat_-1003630390403", "name": "XỬ LÝ SỰ CỐ CÚP ĐIỆN", "type": "group", "messages": [{"sender": "HCM25 - NVĐ - GSM - Thịnh Đoàn - SC009915", "text": "Này bên họ thay đột xuất á anh\nVà khả năng là trễ hơn giờ dự kiến 14h", "date": "27/05 09:02", "msgType": "reply", "replyRef": null, "isRead": true, "hasMedia": false}, {"sender": "HCM25-61BĐT-SM(TT)-Ái Vy -SC003196", "text": "Dạ đúng rồi ạ", "date": "27/05 08:47", "msgType": "reply", "replyRef": null, "isRead": true, "hasMedia": false}, {"sender": "KFM - QA - Dương Huỳnh - SC004896", "text": "Dạ book xe á Chị Cà,\n\nAnh/Chị @thanhntn2603 @Long_SC015349  hỗ trợ book 1 xe cho ST vs ạ", "date": "27/05 08:41", "msgType": "mention", "replyRef": null, "isRead": true, "hasMedia": false}, {"sender": "KFM - RSM - Cà Nguyễn - SC15163", "text": "@Duong_QA @Long_SC015349  này có book xe dc k 2 anh e ơi bùi đình tuý", "date": "27/05 08:37", "msgType": "mention", "replyRef": null, "isRead": true, "hasMedia": false}]}, {"id": "chat_5593486255", "name": "KFM - SCM - Thọ Nguyễn - SC006747", "type": "dm", "messages": [{"sender": "KFM - SCM - Thọ Nguyễn - SC006747", "text": "em gởi báo cáo, anh input lên ggsheet giúp em với nhé", "date": "27/05 09:50", "msgType": "dm", "replyRef": null, "isRead": true, "hasMedia": false}, {"sender": "KFM - SCM - Thọ Nguyễn - SC006747", "text": "(media/sticker)", "date": "27/05 09:50", "msgType": "dm", "replyRef": null, "isRead": true, "hasMedia": true}, {"sender": "KFM - SCM - Thọ Nguyễn - SC006747", "text": "chưa anh ơi", "date": "27/05 09:44", "msgType": "dm", "replyRef": null, "isRead": true, "hasMedia": false}]}, {"id": "chat_-1003823588933", "name": "TRANS-SLOG-KFM", "type": "group", "messages": [{"sender": "SGN - TM - SC007400 - Ngọc Thanh", "text": "Báo ST chạy máy phát điện trc cho an toàn anh @Long_SC015349 , nếu có xe khung h nào trống thì e báo book chạy qua liền , nhưng mà h ko có khung h dự kiến chính xác đc á", "date": "27/05 09:16", "msgType": "mention", "replyRef": null, "isRead": true, "hasMedia": false}, {"sender": "SGN - TM - SC007400 - Ngọc Thanh", "text": "Check hết 2 NVT đang báo ko có xe rồi a @Long_SC015349 ơi", "date": "27/05 09:10", "msgType": "mention", "replyRef": null, "isRead": true, "hasMedia": false}]}, {"id": "chat_-5230270612", "name": "Thọ x Long x Lâm", "type": "group", "messages": [{"sender": "KFM - SCM - Lâm Nguyễn - SC008898", "text": "@Long_SC015349 check lại chỗ này bị sao vậy anh", "date": "27/05 08:07", "msgType": "mention", "replyRef": null, "isRead": true, "hasMedia": false}]}, {"id": "chat_-5115999359", "name": "Giao hàng không người nhận_SCM x HTP x SCV", "type": "group", "messages": [{"sender": "KFM - OPS - Thanh Tống - SC002125", "text": "Chưa có triển khai hướng dẫn tính năng đưa lên liền siêu thị đâu biết làm", "date": "26/05 12:13", "msgType": "reply", "replyRef": null, "isRead": true, "hasMedia": false}]}];
 
+// ===== HISTORY: merge old loaded data with new =====
+const HISTORY_KEY = 'tele_history';
+try {
+    const saved = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const currentIds = new Set(ALL_CHATS.map(c => c.id));
+    for (const old of saved) {
+        if (!currentIds.has(old.id)) {
+            old._archived = true;
+            ALL_CHATS.push(old);
+        }
+    }
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(ALL_CHATS));
+} catch(e) {}
+
 const READ_KEY = 'tele_read_chats';
 let readChats = {};
 try { readChats = JSON.parse(localStorage.getItem(READ_KEY) || '{}'); } catch(e) {}
