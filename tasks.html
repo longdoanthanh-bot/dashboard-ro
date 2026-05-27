@@ -65,16 +65,25 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 }
 .btn-create:hover { background:#5a7aee; transform:translateY(-1px); }
 
-/* ===== STATS BAR ===== */
-.stats-row { display:flex; gap:6px; margin-bottom:8px; }
+/* ===== STATS BAR — 2 COLUMNS ===== */
+.stats-row { display:flex; gap:8px; margin-bottom:8px; align-items:stretch; }
+.stat-total-card {
+    flex:0 0 140px; background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    position:relative; overflow:hidden; transition:background .4s;
+}
+.stat-total-card .stat-num { font-size:28px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 4px rgba(0,0,0,0.3); }
+.stat-total-card .stat-label { font-size:9px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; position:relative; z-index:1; font-weight:700; }
+.stat-total-card .stat-pct { font-size:11px; color:rgba(255,255,255,0.9); font-weight:700; margin-top:4px; position:relative; z-index:1; }
+.stat-right-group {
+    flex:1; display:flex; gap:6px;
+}
 .stat-card { flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:8px 12px; text-align:center; }
 .stat-num { font-size:20px; font-weight:800; }
 .stat-label { font-size:8px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; margin-top:1px; }
-.stat-card.s-total .stat-num { color:var(--blue); }
 .stat-card.s-todo .stat-num { color:var(--orange); }
 .stat-card.s-doing .stat-num { color:var(--yellow); }
 .stat-card.s-done .stat-num { color:var(--green); }
-.stat-card.s-rate .stat-num { color:var(--purple); }
 
 /* ===== FILTER TABS ===== */
 .filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
@@ -427,13 +436,18 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
         <button class="btn-create" onclick="createTask()">Tạo</button>
     </div>
 
-    <!-- STATS BAR -->
+    <!-- STATS BAR — 2 COLUMNS -->
     <div class="stats-row">
-        <div class="stat-card s-total"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Tổng</div></div>
-        <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div></div>
-        <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div></div>
-        <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div></div>
-        <div class="stat-card s-rate"><div class="stat-num" id="stat-rate">0%</div><div class="stat-label">Tỷ lệ</div></div>
+        <div class="stat-total-card" id="stat-total-card">
+            <div class="stat-num" id="stat-total">0</div>
+            <div class="stat-label">Tổng</div>
+            <div class="stat-pct" id="stat-pct">0% hoàn thành</div>
+        </div>
+        <div class="stat-right-group">
+            <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div></div>
+            <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div></div>
+            <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div></div>
+        </div>
     </div>
 
     <!-- FILTER TABS -->
@@ -776,7 +790,13 @@ function renderBoard() {
     document.getElementById('stat-todo').textContent = allTodo;
     document.getElementById('stat-doing').textContent = allDoing;
     document.getElementById('stat-done').textContent = allDone;
-    document.getElementById('stat-rate').textContent = rate + '%';
+    document.getElementById('stat-pct').textContent = rate + '% hoàn thành';
+    // Color the Tổng card based on completion rate
+    const totalCard = document.getElementById('stat-total-card');
+    if (rate <= 25) totalCard.style.background = 'linear-gradient(135deg, #dc2626, #b91c1c)';
+    else if (rate <= 50) totalCard.style.background = 'linear-gradient(135deg, #ea580c, #c2410c)';
+    else if (rate <= 75) totalCard.style.background = 'linear-gradient(135deg, #d97706, #b45309)';
+    else totalCard.style.background = 'linear-gradient(135deg, #059669, #047857)';
 }
 
 // ===== ACTIONS =====
