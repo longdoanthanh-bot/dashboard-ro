@@ -13,8 +13,15 @@ body{font-family:'Inter',sans-serif;background:#080c1f;color:#e0e4f0;min-height:
 .nav-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#a0a8c4;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s}
 .nav-btn:hover{background:rgba(99,130,255,.2);color:#fff;border-color:rgba(99,130,255,.4)}
 .month-title{font-size:20px;font-weight:600;color:#fff}
-.today-btn{background:rgba(99,130,255,.15);border:1px solid rgba(99,130,255,.3);color:#7b9cff;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:500;transition:.2s}
-.today-btn:hover{background:rgba(99,130,255,.3);color:#fff}
+.header-right{display:flex;gap:8px;align-items:center}
+.today-btn,.reload-btn{background:rgba(99,130,255,.15);border:1px solid rgba(99,130,255,.3);color:#7b9cff;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:500;transition:.2s}
+.today-btn:hover,.reload-btn:hover{background:rgba(99,130,255,.3);color:#fff}
+.reload-btn{background:rgba(78,203,113,.12);border-color:rgba(78,203,113,.3);color:#4ecb71}
+.reload-btn:hover{background:rgba(78,203,113,.25);color:#fff}
+.reload-btn.loading{opacity:.5;pointer-events:none}
+.status-bar{text-align:center;padding:6px;font-size:11px;color:#6b7394;margin-bottom:8px}
+.status-bar.error{color:#f87171}
+.status-bar.ok{color:#4ecb71}
 .legend{display:flex;align-items:center;justify-content:center;gap:20px;padding:8px 0;margin-bottom:10px;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#a0a8c4;cursor:pointer;user-select:none;transition:.2s;padding:3px 7px;border-radius:6px}
 .legend-item:hover{background:rgba(255,255,255,.05)}
@@ -35,10 +42,11 @@ body{font-family:'Inter',sans-serif;background:#080c1f;color:#e0e4f0;min-height:
 .ev{font-size:10px;padding:2.5px 5px;margin-bottom:2px;border-radius:3px;line-height:1.3;cursor:default;transition:.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ev:hover{filter:brightness(1.2);transform:translateX(2px)}
 .ev-time{font-weight:600;margin-right:3px}
-.ev.ban{background:rgba(240,160,48,.18);color:#f0a030;border-left:3px solid #f0a030}
-.ev.phong{background:rgba(78,203,113,.15);color:#4ecb71;border-left:3px solid #4ecb71}
-.ev.duan{background:rgba(54,181,224,.15);color:#36b5e0;border-left:3px solid #36b5e0}
-.ev.khac{background:rgba(180,130,255,.15);color:#b482ff;border-left:3px solid #b482ff}
+.ev.meeting{background:rgba(240,160,48,.18);color:#f0a030;border-left:3px solid #f0a030}
+.ev.task{background:rgba(78,203,113,.15);color:#4ecb71;border-left:3px solid #4ecb71}
+.ev.reminder{background:rgba(54,181,224,.15);color:#36b5e0;border-left:3px solid #36b5e0}
+.ev.other{background:rgba(180,130,255,.15);color:#b482ff;border-left:3px solid #b482ff}
+.ev.allday{background:rgba(255,255,255,.06);color:#a0a8c4;border-left:3px solid #6b7394}
 .ev.hidden{display:none}
 .tooltip{position:fixed;background:#1a2040;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:12px;color:#d0d4e8;z-index:100;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:320px;opacity:0;transition:opacity .15s}
 .tooltip.show{opacity:1}
@@ -49,6 +57,8 @@ body{font-family:'Inter',sans-serif;background:#080c1f;color:#e0e4f0;min-height:
 .stat-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 18px;text-align:center}
 .stat-num{font-size:20px;font-weight:700;margin-bottom:1px}
 .stat-label{font-size:10px;color:#6b7394;text-transform:uppercase;letter-spacing:.5px}
+.no-data{text-align:center;padding:60px 20px;color:#6b7394;font-size:14px}
+.no-data .icon{font-size:40px;margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -58,62 +68,117 @@ body{font-family:'Inter',sans-serif;background:#080c1f;color:#e0e4f0;min-height:
     <span class="month-title" id="mTitle"></span>
     <button class="nav-btn" onclick="chgMonth(1)">▶</button>
   </div>
-  <button class="today-btn" onclick="goToday()">Hôm Nay</button>
+  <div class="header-right">
+    <button class="reload-btn" id="reloadBtn" onclick="fetchCalendar()">🔄 Tải lại</button>
+    <button class="today-btn" onclick="goToday()">Hôm Nay</button>
+  </div>
 </div>
+<div class="status-bar" id="statusBar">Đang kết nối server...</div>
 <div class="legend" id="legend"></div>
 <div class="calendar" id="cal"></div>
 <div class="stats" id="stats"></div>
 <div class="tooltip" id="tt"></div>
 
 <script>
-const TYPES={
-  ban:  {label:'Họp Ban Lãnh Đạo',color:'#f0a030'},
-  phong:{label:'Họp Phòng / Bộ Phận',color:'#4ecb71'},
-  duan: {label:'Họp Dự Án',color:'#36b5e0'},
-  khac: {label:'Họp Khác / Đào Tạo',color:'#b482ff'}
-};
-
-// ========== DỮ LIỆU LỊCH HỌP — CHỈNH SỬA Ở ĐÂY ==========
-const MEETINGS=[
-  // Tuần 1
-  {date:'2026-05-04',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
-  {date:'2026-05-05',time:'14:00',title:'Họp phòng Kinh Doanh',type:'phong',room:'Phòng họp B',attendees:'Phòng KD'},
-  {date:'2026-05-06',time:'09:00',title:'Review dự án mở rộng Q3',type:'duan',room:'Online - Google Meet',attendees:'PM, Dev Team'},
-  {date:'2026-05-07',time:'10:00',title:'Đào tạo quy trình vận hành mới',type:'khac',room:'Hội trường',attendees:'Toàn bộ nhân viên mới'},
-  // Tuần 2
-  {date:'2026-05-11',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
-  {date:'2026-05-12',time:'09:30',title:'Họp phòng Vận Hành',type:'phong',room:'Phòng họp B',attendees:'Phòng VH'},
-  {date:'2026-05-13',time:'14:00',title:'Họp dự án Giao Vận',type:'duan',room:'Phòng họp C',attendees:'PM, Logistics Team'},
-  {date:'2026-05-14',time:'15:00',title:'Họp phòng IT',type:'phong',room:'Phòng họp B',attendees:'Phòng IT'},
-  // Tuần 3
-  {date:'2026-05-18',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
-  {date:'2026-05-19',time:'10:00',title:'Họp phòng Nhân Sự',type:'phong',room:'Phòng họp B',attendees:'Phòng HR'},
-  {date:'2026-05-20',time:'09:00',title:'Review tiến độ dự án Dashboard',type:'duan',room:'Online - Google Meet',attendees:'PM, Dev Team'},
-  {date:'2026-05-21',time:'14:00',title:'Họp chiến lược mở rộng thị trường',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ'},
-  {date:'2026-05-22',time:'16:00',title:'Workshop kỹ năng quản lý',type:'khac',room:'Hội trường',attendees:'Quản lý cấp trung'},
-  // Tuần 4
-  {date:'2026-05-25',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
-  {date:'2026-05-26',time:'09:00',title:'Họp phòng Kế Toán',type:'phong',room:'Phòng họp B',attendees:'Phòng Kế Toán'},
-  {date:'2026-05-27',time:'14:00',title:'Họp dự án SOP Unattended Delivery',type:'duan',room:'Phòng họp C',attendees:'PM, Ops Team'},
-  {date:'2026-05-27',time:'16:00',title:'Họp phòng Giao Vận',type:'phong',room:'Phòng họp B',attendees:'Phòng GV'},
-  {date:'2026-05-28',time:'09:00',title:'Tổng kết tháng 5',type:'ban',room:'Hội trường',attendees:'Toàn công ty'},
-  {date:'2026-05-29',time:'14:00',title:'Planning Sprint tháng 6',type:'duan',room:'Online - Google Meet',attendees:'Scrum Team'},
-  {date:'2026-05-30',time:'10:00',title:'Đào tạo an toàn lao động',type:'khac',room:'Hội trường',attendees:'NV kho'},
-  // Tháng 6 mẫu
-  {date:'2026-06-01',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
-  {date:'2026-06-03',time:'14:00',title:'Họp dự án Chuyển Kho',type:'duan',room:'Phòng họp C',attendees:'PM, Logistics'},
-  {date:'2026-06-05',time:'09:00',title:'Họp phòng Kinh Doanh',type:'phong',room:'Phòng họp B',attendees:'Phòng KD'},
-];
-// ========== KẾT THÚC DỮ LIỆU ==========
-
+// Server Trợ Lý API
+const API_BASE = 'http://localhost:8080';
 const DAYS=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','CN'];
 const MN=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
-let cY=2026,cM=4,filters=new Set(Object.keys(TYPES));
-const now=new Date();
-const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+const TYPES={
+  meeting: {label:'Cuộc họp',color:'#f0a030'},
+  task:    {label:'Công việc',color:'#4ecb71'},
+  reminder:{label:'Nhắc nhở',color:'#36b5e0'},
+  other:   {label:'Khác',color:'#b482ff'},
+  allday:  {label:'Cả ngày',color:'#6b7394'}
+};
+
+let cY, cM;
+let allEvents = []; // parsed from Google Calendar
+let filters = new Set(Object.keys(TYPES));
+const now = new Date();
+const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 
 function goToday(){cY=now.getFullYear();cM=now.getMonth();render()}
 function chgMonth(d){cM+=d;if(cM>11){cM=0;cY++}if(cM<0){cM=11;cY--}render()}
+
+// Classify event type based on summary keywords
+function classifyEvent(summary){
+  const s = (summary||'').toLowerCase();
+  if(s.includes('họp')||s.includes('meeting')||s.includes('review')||s.includes('standup')||s.includes('sync')) return 'meeting';
+  if(s.includes('deadline')||s.includes('task')||s.includes('việc')||s.includes('nộp')||s.includes('hoàn thành')) return 'task';
+  if(s.includes('nhắc')||s.includes('remind')||s.includes('alarm')) return 'reminder';
+  return 'other';
+}
+
+// Parse Google Calendar event into our format
+function parseGCalEvent(ev){
+  const start = ev.start || '';
+  const end = ev.end || '';
+  const isAllDay = !start.includes('T');
+  let date, time = '';
+
+  if(isAllDay){
+    date = start; // YYYY-MM-DD
+  } else {
+    // ISO datetime: 2026-05-27T14:00:00+07:00
+    const dt = new Date(start);
+    date = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    time = `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+  }
+
+  let endTime = '';
+  if(!isAllDay && end){
+    const edt = new Date(end);
+    endTime = `${String(edt.getHours()).padStart(2,'0')}:${String(edt.getMinutes()).padStart(2,'0')}`;
+  }
+
+  return {
+    date,
+    time,
+    endTime,
+    title: ev.summary || '(Không tiêu đề)',
+    type: isAllDay ? 'allday' : classifyEvent(ev.summary),
+    location: ev.location || '',
+    description: ev.description || '',
+    attendees: (ev.attendees||[]).map(a => a.email || a).join(', '),
+    isAllDay
+  };
+}
+
+// Fetch from Trợ Lý server
+async function fetchCalendar(){
+  const btn = document.getElementById('reloadBtn');
+  const bar = document.getElementById('statusBar');
+  btn.classList.add('loading');
+  btn.textContent = '⏳ Đang tải...';
+  bar.className = 'status-bar';
+  bar.textContent = 'Đang kết nối server Trợ Lý...';
+
+  try {
+    // Fetch 60 days to cover current + next month
+    const res = await fetch(`${API_BASE}/api/calendar/week?days=60`, {signal: AbortSignal.timeout(10000)});
+    const data = await res.json();
+
+    if(!data.available){
+      bar.className = 'status-bar error';
+      bar.textContent = '⚠️ Google Calendar chưa cấu hình trên server Trợ Lý';
+      return;
+    }
+
+    allEvents = (data.events||[]).map(parseGCalEvent);
+    bar.className = 'status-bar ok';
+    bar.textContent = `✅ Đã tải ${allEvents.length} sự kiện từ Google Calendar — ${new Date().toLocaleTimeString('vi-VN')}`;
+    render();
+  } catch(e){
+    bar.className = 'status-bar error';
+    bar.textContent = '❌ Không kết nối được server Trợ Lý (localhost:8080). Hãy đảm bảo server đang chạy.';
+    console.error('Fetch error:', e);
+  } finally {
+    btn.classList.remove('loading');
+    btn.textContent = '🔄 Tải lại';
+  }
+}
 
 function render(){
   // Legend
@@ -125,50 +190,76 @@ function render(){
     it.onclick=()=>{filters.has(k)?filters.delete(k):filters.add(k);render()};
     lg.appendChild(it);
   }
-  // Calendar
+
   const cal=document.getElementById('cal');cal.innerHTML='';
+
+  if(allEvents.length===0){
+    cal.innerHTML='<div class="no-data" style="grid-column:1/-1"><div class="icon">📅</div>Chưa có dữ liệu. Nhấn "🔄 Tải lại" để lấy lịch từ Google Calendar.</div>';
+    document.getElementById('stats').innerHTML='';
+    document.getElementById('mTitle').textContent=`${MN[cM]}, ${cY}`;
+    return;
+  }
+
+  // Headers
   DAYS.forEach((d,i)=>{const h=document.createElement('div');h.className='day-header'+(i===6?' sun':'');h.textContent=d;cal.appendChild(h)});
   const f=new Date(cY,cM,1);let sd=f.getDay();sd=sd===0?6:sd-1;
   const dim=new Date(cY,cM+1,0).getDate();
+
   for(let i=0;i<sd;i++){const c=document.createElement('div');c.className='cell empty';cal.appendChild(c)}
+
   for(let d=1;d<=dim;d++){
     const ds=`${cY}-${String(cM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const dow=(sd+d-1)%7;const isT=ds===todayStr;const isS=dow===6;
     const cell=document.createElement('div');
     cell.className='cell'+(isT?' today':'')+(isS?' sun':'');
     const num=document.createElement('div');num.className='date-num';num.textContent=d;cell.appendChild(num);
-    MEETINGS.filter(m=>m.date===ds).sort((a,b)=>a.time.localeCompare(b.time)).forEach(m=>{
+
+    allEvents.filter(m=>m.date===ds).sort((a,b)=>{
+      if(a.isAllDay&&!b.isAllDay)return -1;if(!a.isAllDay&&b.isAllDay)return 1;
+      return (a.time||'').localeCompare(b.time||'');
+    }).forEach(m=>{
       const ev=document.createElement('div');
       ev.className='ev '+m.type+(!filters.has(m.type)?' hidden':'');
-      ev.innerHTML=`<span class="ev-time">${m.time}</span>${m.title}`;
+      ev.innerHTML=m.time?`<span class="ev-time">${m.time}</span>${m.title}`:m.title;
       ev.onmouseenter=e=>showTT(e,m);ev.onmouseleave=hideTT;
       cell.appendChild(ev);
     });
     cal.appendChild(cell);
   }
+
   const tot=sd+dim;const rem=tot%7;
   if(rem>0)for(let i=0;i<7-rem;i++){const c=document.createElement('div');c.className='cell empty';cal.appendChild(c)}
+
   document.getElementById('mTitle').textContent=`${MN[cM]}, ${cY}`;
-  // Stats
-  const ms=MEETINGS.filter(m=>{const[y,mo]=m.date.split('-').map(Number);return y===cY&&mo===cM+1});
+  renderStats();
+}
+
+function renderStats(){
+  const ms=allEvents.filter(m=>{const[y,mo]=m.date.split('-').map(Number);return y===cY&&mo===cM+1});
   const ct={};for(const k of Object.keys(TYPES))ct[k]=0;ms.forEach(m=>ct[m.type]++);
   const st=document.getElementById('stats');st.innerHTML='';
   for(const[k,v]of Object.entries(TYPES)){if(ct[k]>0){const b=document.createElement('div');b.className='stat-box';b.innerHTML=`<div class="stat-num" style="color:${v.color}">${ct[k]}</div><div class="stat-label">${v.label}</div>`;st.appendChild(b)}}
-  const total=ms.length;if(total>0){const b=document.createElement('div');b.className='stat-box';b.innerHTML=`<div class="stat-num" style="color:#fff">${total}</div><div class="stat-label">Tổng cuộc họp</div>`;st.appendChild(b)}
+  const total=ms.length;if(total>0){const b=document.createElement('div');b.className='stat-box';b.innerHTML=`<div class="stat-num" style="color:#fff">${total}</div><div class="stat-label">Tổng sự kiện</div>`;st.appendChild(b)}
 }
 
 function showTT(e,m){
   const tt=document.getElementById('tt');const t=TYPES[m.type];
+  let timeStr = m.isAllDay ? 'Cả ngày' : (m.endTime ? `${m.time} → ${m.endTime}` : m.time);
   tt.innerHTML=`<div class="tt-title" style="color:${t.color}">${m.title}</div>
-    <div class="tt-row"><span class="tt-label">🕐 Giờ:</span>${m.time}</div>
+    <div class="tt-row"><span class="tt-label">🕐 Giờ:</span>${timeStr}</div>
     <div class="tt-row"><span class="tt-label">📅 Ngày:</span>${m.date.split('-').reverse().join('/')}</div>
-    <div class="tt-row"><span class="tt-label">📍 Phòng:</span>${m.room||'—'}</div>
-    <div class="tt-row"><span class="tt-label">👥 Tham dự:</span>${m.attendees||'—'}</div>`;
+    ${m.location?`<div class="tt-row"><span class="tt-label">📍 Nơi:</span>${m.location}</div>`:''}
+    ${m.attendees?`<div class="tt-row"><span class="tt-label">👥 Dự:</span>${m.attendees}</div>`:''}
+    ${m.description?`<div class="tt-row"><span class="tt-label">📝 Ghi:</span>${m.description.substring(0,100)}</div>`:''}`;
   tt.style.left=Math.min(e.clientX+12,window.innerWidth-340)+'px';
   tt.style.top=(e.clientY+12)+'px';tt.classList.add('show');
 }
 function hideTT(){document.getElementById('tt').classList.remove('show')}
+
+// Init
+cY=now.getFullYear();cM=now.getMonth();
 render();
+fetchCalendar();
 </script>
 </body>
 </html>
