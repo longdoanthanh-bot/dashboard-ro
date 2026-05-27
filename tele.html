@@ -238,10 +238,16 @@ function renderChatList() {
 
 function selectChat(chatId) {
     selectedChatId = chatId;
+
+    // Auto-mark as read when opening chat
+    if (!isChatRead(chatId)) {
+        markRead(chatId);
+    }
+
     renderChatList();
 
     const chats = getFilteredChats();
-    const chat = chats.find(c => c.id === chatId);
+    const chat = chats.find(c => c.id === chatId) || ALL_CHATS.find(c => c.id === chatId);
     if (!chat) return;
 
     const panel = document.getElementById('detailPanel');
