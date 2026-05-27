@@ -417,6 +417,10 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
             <label>Tiêu đề</label>
             <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
         </div>
+        <div class="form-group" style="flex:1;min-width:200px;">
+            <label>Nội dung</label>
+            <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+        </div>
         <div class="form-group">
             <label>Deadline</label>
             <input class="form-input" type="datetime-local" id="new-deadline">
@@ -428,10 +432,6 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
                 <option value="2">🟠 P2</option>
                 <option value="1">🔴 P1</option>
             </select>
-        </div>
-        <div class="form-group" style="flex:1;min-width:200px;">
-            <label>Nội dung</label>
-            <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
         </div>
         <button class="btn-create" onclick="createTask()">Tạo</button>
     </div>
