@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lịch Họp Tháng - KingFoodMart</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#080c1f;color:#e0e4f0;min-height:100vh;padding:16px 24px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.nav{display:flex;align-items:center;gap:10px}
+.nav-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#a0a8c4;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.nav-btn:hover{background:rgba(99,130,255,.2);color:#fff;border-color:rgba(99,130,255,.4)}
+.month-title{font-size:20px;font-weight:600;color:#fff}
+.today-btn{background:rgba(99,130,255,.15);border:1px solid rgba(99,130,255,.3);color:#7b9cff;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:500;transition:.2s}
+.today-btn:hover{background:rgba(99,130,255,.3);color:#fff}
+.legend{display:flex;align-items:center;justify-content:center;gap:20px;padding:8px 0;margin-bottom:10px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#a0a8c4;cursor:pointer;user-select:none;transition:.2s;padding:3px 7px;border-radius:6px}
+.legend-item:hover{background:rgba(255,255,255,.05)}
+.legend-item.inactive{opacity:.25}
+.legend-dot{width:11px;height:11px;border-radius:3px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
+.day-header{background:rgba(255,255,255,.04);padding:9px 6px;text-align:center;font-size:12.5px;font-weight:600;color:#7b8ab5;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,.08)}
+.day-header:not(:last-child){border-right:1px solid rgba(255,255,255,.06)}
+.day-header.sun{color:#ff6b6b}
+.cell{min-height:105px;padding:5px 6px;border-bottom:1px solid rgba(255,255,255,.06);border-right:1px solid rgba(255,255,255,.06);position:relative;transition:background .2s}
+.cell:nth-child(7n){border-right:none}
+.cell:hover{background:rgba(255,255,255,.02)}
+.cell.empty{background:rgba(0,0,0,.15)}
+.cell.today{box-shadow:inset 0 0 0 2px #4070ff;background:rgba(64,112,255,.06)}
+.date-num{font-size:12.5px;font-weight:500;color:#8892b5;margin-bottom:3px}
+.cell.sun .date-num{color:#ff6b6b}
+.cell.today .date-num{color:#7ba4ff;font-weight:700}
+.ev{font-size:10px;padding:2.5px 5px;margin-bottom:2px;border-radius:3px;line-height:1.3;cursor:default;transition:.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev:hover{filter:brightness(1.2);transform:translateX(2px)}
+.ev-time{font-weight:600;margin-right:3px}
+.ev.ban{background:rgba(240,160,48,.18);color:#f0a030;border-left:3px solid #f0a030}
+.ev.phong{background:rgba(78,203,113,.15);color:#4ecb71;border-left:3px solid #4ecb71}
+.ev.duan{background:rgba(54,181,224,.15);color:#36b5e0;border-left:3px solid #36b5e0}
+.ev.khac{background:rgba(180,130,255,.15);color:#b482ff;border-left:3px solid #b482ff}
+.ev.hidden{display:none}
+.tooltip{position:fixed;background:#1a2040;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:12px;color:#d0d4e8;z-index:100;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:320px;opacity:0;transition:opacity .15s}
+.tooltip.show{opacity:1}
+.tooltip .tt-title{font-weight:600;margin-bottom:5px;font-size:13px}
+.tooltip .tt-row{margin-bottom:2px;display:flex;gap:6px}
+.tooltip .tt-label{color:#6b7394;min-width:65px}
+.stats{display:flex;gap:16px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.stat-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 18px;text-align:center}
+.stat-num{font-size:20px;font-weight:700;margin-bottom:1px}
+.stat-label{font-size:10px;color:#6b7394;text-transform:uppercase;letter-spacing:.5px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="nav">
+    <button class="nav-btn" onclick="chgMonth(-1)">◀</button>
+    <span class="month-title" id="mTitle"></span>
+    <button class="nav-btn" onclick="chgMonth(1)">▶</button>
+  </div>
+  <button class="today-btn" onclick="goToday()">Hôm Nay</button>
+</div>
+<div class="legend" id="legend"></div>
+<div class="calendar" id="cal"></div>
+<div class="stats" id="stats"></div>
+<div class="tooltip" id="tt"></div>
+
+<script>
+const TYPES={
+  ban:  {label:'Họp Ban Lãnh Đạo',color:'#f0a030'},
+  phong:{label:'Họp Phòng / Bộ Phận',color:'#4ecb71'},
+  duan: {label:'Họp Dự Án',color:'#36b5e0'},
+  khac: {label:'Họp Khác / Đào Tạo',color:'#b482ff'}
+};
+
+// ========== DỮ LIỆU LỊCH HỌP — CHỈNH SỬA Ở ĐÂY ==========
+const MEETINGS=[
+  // Tuần 1
+  {date:'2026-05-04',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
+  {date:'2026-05-05',time:'14:00',title:'Họp phòng Kinh Doanh',type:'phong',room:'Phòng họp B',attendees:'Phòng KD'},
+  {date:'2026-05-06',time:'09:00',title:'Review dự án mở rộng Q3',type:'duan',room:'Online - Google Meet',attendees:'PM, Dev Team'},
+  {date:'2026-05-07',time:'10:00',title:'Đào tạo quy trình vận hành mới',type:'khac',room:'Hội trường',attendees:'Toàn bộ nhân viên mới'},
+  // Tuần 2
+  {date:'2026-05-11',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
+  {date:'2026-05-12',time:'09:30',title:'Họp phòng Vận Hành',type:'phong',room:'Phòng họp B',attendees:'Phòng VH'},
+  {date:'2026-05-13',time:'14:00',title:'Họp dự án Giao Vận',type:'duan',room:'Phòng họp C',attendees:'PM, Logistics Team'},
+  {date:'2026-05-14',time:'15:00',title:'Họp phòng IT',type:'phong',room:'Phòng họp B',attendees:'Phòng IT'},
+  // Tuần 3
+  {date:'2026-05-18',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
+  {date:'2026-05-19',time:'10:00',title:'Họp phòng Nhân Sự',type:'phong',room:'Phòng họp B',attendees:'Phòng HR'},
+  {date:'2026-05-20',time:'09:00',title:'Review tiến độ dự án Dashboard',type:'duan',room:'Online - Google Meet',attendees:'PM, Dev Team'},
+  {date:'2026-05-21',time:'14:00',title:'Họp chiến lược mở rộng thị trường',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ'},
+  {date:'2026-05-22',time:'16:00',title:'Workshop kỹ năng quản lý',type:'khac',room:'Hội trường',attendees:'Quản lý cấp trung'},
+  // Tuần 4
+  {date:'2026-05-25',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
+  {date:'2026-05-26',time:'09:00',title:'Họp phòng Kế Toán',type:'phong',room:'Phòng họp B',attendees:'Phòng Kế Toán'},
+  {date:'2026-05-27',time:'14:00',title:'Họp dự án SOP Unattended Delivery',type:'duan',room:'Phòng họp C',attendees:'PM, Ops Team'},
+  {date:'2026-05-27',time:'16:00',title:'Họp phòng Giao Vận',type:'phong',room:'Phòng họp B',attendees:'Phòng GV'},
+  {date:'2026-05-28',time:'09:00',title:'Tổng kết tháng 5',type:'ban',room:'Hội trường',attendees:'Toàn công ty'},
+  {date:'2026-05-29',time:'14:00',title:'Planning Sprint tháng 6',type:'duan',room:'Online - Google Meet',attendees:'Scrum Team'},
+  {date:'2026-05-30',time:'10:00',title:'Đào tạo an toàn lao động',type:'khac',room:'Hội trường',attendees:'NV kho'},
+  // Tháng 6 mẫu
+  {date:'2026-06-01',time:'08:30',title:'Họp giao ban đầu tuần',type:'ban',room:'Phòng họp A',attendees:'Ban GĐ, Trưởng phòng'},
+  {date:'2026-06-03',time:'14:00',title:'Họp dự án Chuyển Kho',type:'duan',room:'Phòng họp C',attendees:'PM, Logistics'},
+  {date:'2026-06-05',time:'09:00',title:'Họp phòng Kinh Doanh',type:'phong',room:'Phòng họp B',attendees:'Phòng KD'},
+];
+// ========== KẾT THÚC DỮ LIỆU ==========
+
+const DAYS=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','CN'];
+const MN=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+let cY=2026,cM=4,filters=new Set(Object.keys(TYPES));
+const now=new Date();
+const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+function goToday(){cY=now.getFullYear();cM=now.getMonth();render()}
+function chgMonth(d){cM+=d;if(cM>11){cM=0;cY++}if(cM<0){cM=11;cY--}render()}
+
+function render(){
+  // Legend
+  const lg=document.getElementById('legend');lg.innerHTML='';
+  for(const[k,v]of Object.entries(TYPES)){
+    const it=document.createElement('div');
+    it.className='legend-item'+(filters.has(k)?'':' inactive');
+    it.innerHTML=`<span class="legend-dot" style="background:${v.color}"></span>${v.label}`;
+    it.onclick=()=>{filters.has(k)?filters.delete(k):filters.add(k);render()};
+    lg.appendChild(it);
+  }
+  // Calendar
+  const cal=document.getElementById('cal');cal.innerHTML='';
+  DAYS.forEach((d,i)=>{const h=document.createElement('div');h.className='day-header'+(i===6?' sun':'');h.textContent=d;cal.appendChild(h)});
+  const f=new Date(cY,cM,1);let sd=f.getDay();sd=sd===0?6:sd-1;
+  const dim=new Date(cY,cM+1,0).getDate();
+  for(let i=0;i<sd;i++){const c=document.createElement('div');c.className='cell empty';cal.appendChild(c)}
+  for(let d=1;d<=dim;d++){
+    const ds=`${cY}-${String(cM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow=(sd+d-1)%7;const isT=ds===todayStr;const isS=dow===6;
+    const cell=document.createElement('div');
+    cell.className='cell'+(isT?' today':'')+(isS?' sun':'');
+    const num=document.createElement('div');num.className='date-num';num.textContent=d;cell.appendChild(num);
+    MEETINGS.filter(m=>m.date===ds).sort((a,b)=>a.time.localeCompare(b.time)).forEach(m=>{
+      const ev=document.createElement('div');
+      ev.className='ev '+m.type+(!filters.has(m.type)?' hidden':'');
+      ev.innerHTML=`<span class="ev-time">${m.time}</span>${m.title}`;
+      ev.onmouseenter=e=>showTT(e,m);ev.onmouseleave=hideTT;
+      cell.appendChild(ev);
+    });
+    cal.appendChild(cell);
+  }
+  const tot=sd+dim;const rem=tot%7;
+  if(rem>0)for(let i=0;i<7-rem;i++){const c=document.createElement('div');c.className='cell empty';cal.appendChild(c)}
+  document.getElementById('mTitle').textContent=`${MN[cM]}, ${cY}`;
+  // Stats
+  const ms=MEETINGS.filter(m=>{const[y,mo]=m.date.split('-').map(Number);return y===cY&&mo===cM+1});
+  const ct={};for(const k of Object.keys(TYPES))ct[k]=0;ms.forEach(m=>ct[m.type]++);
+  const st=document.getElementById('stats');st.innerHTML='';
+  for(const[k,v]of Object.entries(TYPES)){if(ct[k]>0){const b=document.createElement('div');b.className='stat-box';b.innerHTML=`<div class="stat-num" style="color:${v.color}">${ct[k]}</div><div class="stat-label">${v.label}</div>`;st.appendChild(b)}}
+  const total=ms.length;if(total>0){const b=document.createElement('div');b.className='stat-box';b.innerHTML=`<div class="stat-num" style="color:#fff">${total}</div><div class="stat-label">Tổng cuộc họp</div>`;st.appendChild(b)}
+}
+
+function showTT(e,m){
+  const tt=document.getElementById('tt');const t=TYPES[m.type];
+  tt.innerHTML=`<div class="tt-title" style="color:${t.color}">${m.title}</div>
+    <div class="tt-row"><span class="tt-label">🕐 Giờ:</span>${m.time}</div>
+    <div class="tt-row"><span class="tt-label">📅 Ngày:</span>${m.date.split('-').reverse().join('/')}</div>
+    <div class="tt-row"><span class="tt-label">📍 Phòng:</span>${m.room||'—'}</div>
+    <div class="tt-row"><span class="tt-label">👥 Tham dự:</span>${m.attendees||'—'}</div>`;
+  tt.style.left=Math.min(e.clientX+12,window.innerWidth-340)+'px';
+  tt.style.top=(e.clientY+12)+'px';tt.classList.add('show');
+}
+function hideTT(){document.getElementById('tt').classList.remove('show')}
+render();
+</script>
+</body>
+</html>
