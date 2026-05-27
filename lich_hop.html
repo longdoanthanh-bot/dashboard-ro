@@ -13,15 +13,9 @@ body{font-family:'Inter',sans-serif;background:#080c1f;color:#e0e4f0;min-height:
 .nav-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#a0a8c4;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s}
 .nav-btn:hover{background:rgba(99,130,255,.2);color:#fff;border-color:rgba(99,130,255,.4)}
 .month-title{font-size:20px;font-weight:600;color:#fff}
-.header-right{display:flex;gap:8px;align-items:center}
-.today-btn,.reload-btn{background:rgba(99,130,255,.15);border:1px solid rgba(99,130,255,.3);color:#7b9cff;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:500;transition:.2s}
-.today-btn:hover,.reload-btn:hover{background:rgba(99,130,255,.3);color:#fff}
-.reload-btn{background:rgba(78,203,113,.12);border-color:rgba(78,203,113,.3);color:#4ecb71}
-.reload-btn:hover{background:rgba(78,203,113,.25);color:#fff}
-.reload-btn.loading{opacity:.5;pointer-events:none}
-.status-bar{text-align:center;padding:6px;font-size:11px;color:#6b7394;margin-bottom:8px}
-.status-bar.error{color:#f87171}
-.status-bar.ok{color:#4ecb71}
+.today-btn{background:rgba(99,130,255,.15);border:1px solid rgba(99,130,255,.3);color:#7b9cff;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:500;transition:.2s}
+.today-btn:hover{background:rgba(99,130,255,.3);color:#fff}
+.updated{text-align:center;padding:4px;font-size:10.5px;color:#4ecb71;margin-bottom:8px}
 .legend{display:flex;align-items:center;justify-content:center;gap:20px;padding:8px 0;margin-bottom:10px;flex-wrap:wrap}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#a0a8c4;cursor:pointer;user-select:none;transition:.2s;padding:3px 7px;border-radius:6px}
 .legend-item:hover{background:rgba(255,255,255,.05)}
@@ -39,227 +33,120 @@ body{font-family:'Inter',sans-serif;background:#080c1f;color:#e0e4f0;min-height:
 .date-num{font-size:12.5px;font-weight:500;color:#8892b5;margin-bottom:3px}
 .cell.sun .date-num{color:#ff6b6b}
 .cell.today .date-num{color:#7ba4ff;font-weight:700}
-.ev{font-size:10px;padding:2.5px 5px;margin-bottom:2px;border-radius:3px;line-height:1.3;cursor:default;transition:.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev{font-size:10px;padding:2.5px 5px;margin-bottom:2px;border-radius:3px;line-height:1.3;cursor:pointer;transition:.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;display:block}
 .ev:hover{filter:brightness(1.2);transform:translateX(2px)}
 .ev-time{font-weight:600;margin-right:3px}
 .ev.meeting{background:rgba(240,160,48,.18);color:#f0a030;border-left:3px solid #f0a030}
-.ev.task{background:rgba(78,203,113,.15);color:#4ecb71;border-left:3px solid #4ecb71}
-.ev.reminder{background:rgba(54,181,224,.15);color:#36b5e0;border-left:3px solid #36b5e0}
-.ev.other{background:rgba(180,130,255,.15);color:#b482ff;border-left:3px solid #b482ff}
 .ev.allday{background:rgba(255,255,255,.06);color:#a0a8c4;border-left:3px solid #6b7394}
 .ev.hidden{display:none}
-.tooltip{position:fixed;background:#1a2040;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:12px;color:#d0d4e8;z-index:100;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:320px;opacity:0;transition:opacity .15s}
+.tooltip{position:fixed;background:#1a2040;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:12px;color:#d0d4e8;z-index:100;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:340px;opacity:0;transition:opacity .15s}
 .tooltip.show{opacity:1}
-.tooltip .tt-title{font-weight:600;margin-bottom:5px;font-size:13px}
+.tooltip .tt-title{font-weight:600;margin-bottom:5px;font-size:13px;color:#f0a030}
 .tooltip .tt-row{margin-bottom:2px;display:flex;gap:6px}
 .tooltip .tt-label{color:#6b7394;min-width:65px}
 .stats{display:flex;gap:16px;justify-content:center;margin-top:12px;flex-wrap:wrap}
 .stat-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 18px;text-align:center}
-.stat-num{font-size:20px;font-weight:700;margin-bottom:1px}
+.stat-num{font-size:20px;font-weight:700;margin-bottom:1px;color:#f0a030}
 .stat-label{font-size:10px;color:#6b7394;text-transform:uppercase;letter-spacing:.5px}
-.no-data{text-align:center;padding:60px 20px;color:#6b7394;font-size:14px}
-.no-data .icon{font-size:40px;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="nav">
-    <button class="nav-btn" onclick="chgMonth(-1)">◀</button>
+    <button class="nav-btn" onclick="chgMonth(-1)">&#9664;</button>
     <span class="month-title" id="mTitle"></span>
-    <button class="nav-btn" onclick="chgMonth(1)">▶</button>
+    <button class="nav-btn" onclick="chgMonth(1)">&#9654;</button>
   </div>
-  <div class="header-right">
-    <button class="reload-btn" id="reloadBtn" onclick="fetchCalendar()">🔄 Tải lại</button>
-    <button class="today-btn" onclick="goToday()">Hôm Nay</button>
-  </div>
+  <button class="today-btn" onclick="goToday()">H&#244;m Nay</button>
 </div>
-<div class="status-bar" id="statusBar">Đang kết nối server...</div>
-<div class="legend" id="legend"></div>
+<div class="updated">&#x2705; C&#7853;p nh&#7853;t: 27/05/2026 20:48</div>
 <div class="calendar" id="cal"></div>
 <div class="stats" id="stats"></div>
 <div class="tooltip" id="tt"></div>
 
 <script>
-// Server Trợ Lý API
-const API_BASE = 'http://localhost:8080';
-const DAYS=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','CN'];
-const MN=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+const RAW_EVENTS = [{"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260527T063000Z", "summary": "Dự Án GHKNN", "start": "2026-05-27T13:30:00+07:00", "end": "2026-05-27T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA1MjdUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260527T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-05-27T15:00:00+07:00", "end": "2026-05-27T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA1MjdUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "_60q30c1g60o30e1i60o4ac1g60rj8gpl88rj2c1h84s34h9g60s30c1g60o30c1g68oj2gi46cr36dhn8l0k8gpg64o30c1g60o30c1g60o30c1g60o32c1g60o30c1g6t2k2c9p61238dpi8kr38d1k6ss32da68csk2e9n8p130ha574sg", "summary": "Trao đổi dự án giao hàng không người nhận", "start": "2026-05-28T09:00:00+07:00", "end": "2026-05-28T10:00:00+07:00", "location": "", "description": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<a href=\"https://meet.google.com/ebz-jawb-tow\" id=\"OWA31b747aa-dd18-35f7-243e-d9246081b621\" class=\"x_x_OWAAutoLink\">https://meet.google.com/ebz-jawb-tow</a></div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<br>\r\n</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<br>\r\n</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\nDear anh/chị</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<br>\r\n</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\nNhằm rà soát lại quá trình giao hàng đã thực hiện từ ngày 19/5 đến nay và thảo luận đề xuất các biện pháp, giải pháp để dự án hoàn thiện, mở rộng thêm về số lượng ST, quy mô dự án</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<br>\r\n</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\nTeam gửi lịch anh/chị sắp xếp thời gian để tham gia, thảo luận chi tiết hơn.</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<br>\r\n</div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<s>Nhằm trao đổi hiệu quả hơn, team book phòng họp Infinity để họp offline luôn nhé anh/chị</s></div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\n<s><br>\r\n</s></div>\r\n<div style=\"font-family:&quot;Times New Roman&quot;,Times,serif; font-size:12pt; color:rgb(0,0,0)\">\r\nPhòng Commitment ở VP 571 Huỳnh Tấn Phát đang trống nên mình chuyển sang phòng này nhé anh/chị!</div>\r\n</body>\r\n</html>\r\n", "attendees": ["duong.huynhngoc@kingfoodmart.com", "duyen.hothimy@kingfoodmart.net", "tinh.vo@kingfoodmart.com", "an.nguyenvan@kingfoodmart.com", "cong.nguyenthihong@kingfoodmart.com", "hue.vo@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "phong.truongminh@kingfoodmart.net", "giang.nguyentruc@kingfoodmart.com", "ca.nguyenthi@kingfoodmart.com", "nhi.huynhthituyet@kingfoodmart.net", "thanh.tong@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=XzYwcTMwYzFnNjBvMzBlMWk2MG80YWMxZzYwcmo4Z3BsODhyajJjMWg4NHMzNGg5ZzYwczMwYzFnNjBvMzBjMWc2OG9qMmdpNDZjcjM2ZGhuOGwwazhncGc2NG8zMGMxZzYwbzMwYzFnNjBvMzBjMWc2MG8zMmMxZzYwbzMwYzFnNnQyazJjOXA2MTIzOGRwaThrcjM4ZDFrNnNzMzJkYTY4Y3NrMmU5bjhwMTMwaGE1NzRzZyBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260602T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-06-02T13:30:00+07:00", "end": "2026-06-02T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA2MDJUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260602T080000Z", "summary": "Update logistic", "start": "2026-06-02T15:00:00+07:00", "end": "2026-06-02T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA2MDJUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260603T063000Z", "summary": "Dự Án GHKNN", "start": "2026-06-03T13:30:00+07:00", "end": "2026-06-03T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA2MDNUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260603T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-06-03T15:00:00+07:00", "end": "2026-06-03T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA2MDNUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260609T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-06-09T13:30:00+07:00", "end": "2026-06-09T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA2MDlUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260609T080000Z", "summary": "Update logistic", "start": "2026-06-09T15:00:00+07:00", "end": "2026-06-09T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA2MDlUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260610T063000Z", "summary": "Dự Án GHKNN", "start": "2026-06-10T13:30:00+07:00", "end": "2026-06-10T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA2MTBUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260610T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-06-10T15:00:00+07:00", "end": "2026-06-10T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA2MTBUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260616T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-06-16T13:30:00+07:00", "end": "2026-06-16T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA2MTZUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260616T080000Z", "summary": "Update logistic", "start": "2026-06-16T15:00:00+07:00", "end": "2026-06-16T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA2MTZUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260617T063000Z", "summary": "Dự Án GHKNN", "start": "2026-06-17T13:30:00+07:00", "end": "2026-06-17T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA2MTdUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260617T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-06-17T15:00:00+07:00", "end": "2026-06-17T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA2MTdUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260623T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-06-23T13:30:00+07:00", "end": "2026-06-23T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA2MjNUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260623T080000Z", "summary": "Update logistic", "start": "2026-06-23T15:00:00+07:00", "end": "2026-06-23T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA2MjNUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260624T063000Z", "summary": "Dự Án GHKNN", "start": "2026-06-24T13:30:00+07:00", "end": "2026-06-24T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA2MjRUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260624T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-06-24T15:00:00+07:00", "end": "2026-06-24T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA2MjRUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260630T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-06-30T13:30:00+07:00", "end": "2026-06-30T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA2MzBUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260630T080000Z", "summary": "Update logistic", "start": "2026-06-30T15:00:00+07:00", "end": "2026-06-30T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA2MzBUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260701T063000Z", "summary": "Dự Án GHKNN", "start": "2026-07-01T13:30:00+07:00", "end": "2026-07-01T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA3MDFUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260701T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-07-01T15:00:00+07:00", "end": "2026-07-01T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA3MDFUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260707T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-07-07T13:30:00+07:00", "end": "2026-07-07T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA3MDdUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260707T080000Z", "summary": "Update logistic", "start": "2026-07-07T15:00:00+07:00", "end": "2026-07-07T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA3MDdUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260708T063000Z", "summary": "Dự Án GHKNN", "start": "2026-07-08T13:30:00+07:00", "end": "2026-07-08T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA3MDhUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260708T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-07-08T15:00:00+07:00", "end": "2026-07-08T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA3MDhUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260714T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-07-14T13:30:00+07:00", "end": "2026-07-14T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA3MTRUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260714T080000Z", "summary": "Update logistic", "start": "2026-07-14T15:00:00+07:00", "end": "2026-07-14T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA3MTRUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260715T063000Z", "summary": "Dự Án GHKNN", "start": "2026-07-15T13:30:00+07:00", "end": "2026-07-15T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA3MTVUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260715T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-07-15T15:00:00+07:00", "end": "2026-07-15T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA3MTVUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "1bdc6bqaa6qgedr9r300jre4c9", "summary": "[Quan trọng] KFM - Town Hall - Tổng kết 6 tháng đầu năm 2026", "start": "2026-07-16T16:00:00+07:00", "end": "2026-07-16T17:30:00+07:00", "location": "571 Huỳnh Tấn Phát, Tân Thuận, Hồ Chí Minh 700000, Vietnam", "description": "", "attendees": ["long.doanthanh@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWJkYzZicWFhNnFnZWRyOXIzMDBqcmU0YzkgbG9uZy5kb2FudGhhbmhAa2luZ2Zvb2RtYXJ0LmNvbQ"}, {"id": "1h7cohq0gpd8dqreqm4jdn7hed_20260721T063000Z", "summary": "Weekly meeting Review SLA", "start": "2026-07-21T13:30:00+07:00", "end": "2026-07-21T14:30:00+07:00", "location": "", "description": "<a href=\"https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916\" target=\"_blank\">https://docs.google.com/spreadsheets/d/13rLlWaOpNTkGnR_2LN-LIo8v31wDuj0PVcmKNXMtrvI/edit?gid=786719916#gid=786719916</a><br><br><a href=\"https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677\" class=\"pastedDriveLink-0\">https://docs.google.com/spreadsheets/d/1nOBn6-a6DFRo-DaJRD-75TZ-Ngi7yRbN/edit?gid=539710677#gid=539710677</a>", "attendees": ["luan.nguyen@kingfoodmart.com", "quang.nguyen@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "yen.nguyen@seedcom.vn", "quan.vo@seedcom.vn", "giang.luongthihuong@kingfoodmart.com", "thu.dang@seedcom.vn", "tai@kingfoodmart.com", "ngoc.nguyenthianh@seedcom.vn", "thanh.nguyen@seedcom.vn", "duyen.pham@seedcom.vn", "hung.phan@seedcom.vn", "nguyen.nguyen@seedcom.vn", "linh.lieumy@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "thaolam.nguyen@kingfoodmart.com", "phu.tran@seedcom.vn", "nhung.maihuynhcam@kingfoodmart.com", "nhan.hoangthihong@kingfoodmart.com", "diem.tranhong@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "thien.tranngoc@kingfoodmart.com", "trang.nguyen@seedcom.vn", "nhaphuong.nguyen@kingfoodmart.com", "dien.lam@seedcom.vn", "tam.ho@seedcom.vn", "diem.tran@seedcom.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=MWg3Y29ocTBncGQ4ZHFyZXFtNGpkbjdoZWRfMjAyNjA3MjFUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "6f3pn9i5ejqevj8ovvv402ok8v_20260721T080000Z", "summary": "Update logistic", "start": "2026-07-21T15:00:00+07:00", "end": "2026-07-21T16:00:00+07:00", "location": "", "description": "<a href=\"https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s\">https://www.notion.so/kingfoodmart/1927a7906f3b803faa70dd48636f37c9?v=1927a7906f3b80668c89000c911117f3&amp;p=2087a7906f3b808cb58ad2b0a193e546&amp;pm=s</a>", "attendees": ["hac.truongthibao@kingfoodmart.com", "lam.nguyenhoang@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "thanh.phamtrung@kingfoodmart.com", "lam.vuviet@kingfoodmart.com", "nhi.phamtu@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=NmYzcG45aTVlanFldmo4b3Z2djQwMm9rOHZfMjAyNjA3MjFUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "7mrhegfn1a6s3bthpnhlpqhaqk_20260722T063000Z", "summary": "Dự Án GHKNN", "start": "2026-07-22T13:30:00+07:00", "end": "2026-07-22T14:30:00+07:00", "location": "", "description": "", "attendees": ["dien.lam@seedcom.vn", "duyen.pham@seedcom.vn", "quang.nguyen@seedcom.vn", "phu.tran@seedcom.vn", "lam.nguyenhoang@kingfoodmart.com", "thanh.nguyen@seedcom.vn", "hung.phan@seedcom.vn", "thu.dang@seedcom.vn", "long.doanthanh@kingfoodmart.com", "trang.nguyen@seedcom.vn", "truc.nguyenxuan@seedcom.vn", "vi.huynh@seedcom.vn", "tinh.nguyenthitram@seedcom.vn", "tho.nguyen@kingfoodmart.com"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=N21yaGVnZm4xYTZzM2J0aHBuaGxwcWhhcWtfMjAyNjA3MjJUMDYzMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}, {"id": "nvlhekrmqbigjvrdvbscira62g_20260722T080000Z", "summary": "[ABA - KFM] WEEKLY MEETING ", "start": "2026-07-22T15:00:00+07:00", "end": "2026-07-22T16:00:00+07:00", "location": "", "description": "", "attendees": ["lam.nguyenhoang@kingfoodmart.com", "phat.tranvinh@kingfoodmart.com", "hac.truongthibao@kingfoodmart.com", "long.doanthanh@kingfoodmart.com", "tho.nguyen@kingfoodmart.com", "phuc@aba.com.vn", "hien.nguyen2@aba.com.vn", "chau.nguyen2@aba.com.vn", "dat.do@aba.com.vn", "si.mai@aba.com.vn", "luom.nguyen@aba.com.vn", "thinh.huynh@aba.com.vn", "mui.le@aba.com.vn", "sang.mai@aba.com.vn", "hien.thai@aba.com.vn", "quyen.nguyen1@aba.com.vn"], "status": "confirmed", "html_link": "https://www.google.com/calendar/event?eid=bnZsaGVrcm1xYmlnanZyZHZic2NpcmE2MmdfMjAyNjA3MjJUMDgwMDAwWiBsb25nLmRvYW50aGFuaEBraW5nZm9vZG1hcnQuY29t"}];
 
-const TYPES={
-  meeting: {label:'Cuộc họp',color:'#f0a030'},
-  task:    {label:'Công việc',color:'#4ecb71'},
-  reminder:{label:'Nhắc nhở',color:'#36b5e0'},
-  other:   {label:'Khác',color:'#b482ff'},
-  allday:  {label:'Cả ngày',color:'#6b7394'}
-};
+const DAYS=['Th&#7913; 2','Th&#7913; 3','Th&#7913; 4','Th&#7913; 5','Th&#7913; 6','Th&#7913; 7','CN'];
+const MN=['Th\u00e1ng 1','Th\u00e1ng 2','Th\u00e1ng 3','Th\u00e1ng 4','Th\u00e1ng 5','Th\u00e1ng 6','Th\u00e1ng 7','Th\u00e1ng 8','Th\u00e1ng 9','Th\u00e1ng 10','Th\u00e1ng 11','Th\u00e1ng 12'];
+let cY,cM;
+const now=new Date();
+const todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
 
-let cY, cM;
-let allEvents = []; // parsed from Google Calendar
-let filters = new Set(Object.keys(TYPES));
-const now = new Date();
-const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+// Parse events
+const EVENTS = RAW_EVENTS.map(ev => {
+  const start = ev.start || '';
+  const end = ev.end || '';
+  const isAllDay = !start.includes('T');
+  let date, time='', endTime='';
+  if(isAllDay){ date=start; }
+  else {
+    const dt=new Date(start);
+    date=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    time=String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+    if(end){const edt=new Date(end);endTime=String(edt.getHours()).padStart(2,'0')+':'+String(edt.getMinutes()).padStart(2,'0');}
+  }
+  return {date,time,endTime,title:ev.summary||'(Kh\u00f4ng ti\u00eau \u0111\u1ec1)',
+    location:ev.location||'',description:ev.description||'',
+    attendees:(ev.attendees||[]).join(', '),
+    htmlLink:ev.html_link||'',isAllDay,type:isAllDay?'allday':'meeting'};
+});
 
 function goToday(){cY=now.getFullYear();cM=now.getMonth();render()}
 function chgMonth(d){cM+=d;if(cM>11){cM=0;cY++}if(cM<0){cM=11;cY--}render()}
 
-// Classify event type based on summary keywords
-function classifyEvent(summary){
-  const s = (summary||'').toLowerCase();
-  if(s.includes('họp')||s.includes('meeting')||s.includes('review')||s.includes('standup')||s.includes('sync')) return 'meeting';
-  if(s.includes('deadline')||s.includes('task')||s.includes('việc')||s.includes('nộp')||s.includes('hoàn thành')) return 'task';
-  if(s.includes('nhắc')||s.includes('remind')||s.includes('alarm')) return 'reminder';
-  return 'other';
-}
-
-// Parse Google Calendar event into our format
-function parseGCalEvent(ev){
-  const start = ev.start || '';
-  const end = ev.end || '';
-  const isAllDay = !start.includes('T');
-  let date, time = '';
-
-  if(isAllDay){
-    date = start; // YYYY-MM-DD
-  } else {
-    // ISO datetime: 2026-05-27T14:00:00+07:00
-    const dt = new Date(start);
-    date = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-    time = `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
-  }
-
-  let endTime = '';
-  if(!isAllDay && end){
-    const edt = new Date(end);
-    endTime = `${String(edt.getHours()).padStart(2,'0')}:${String(edt.getMinutes()).padStart(2,'0')}`;
-  }
-
-  return {
-    date,
-    time,
-    endTime,
-    title: ev.summary || '(Không tiêu đề)',
-    type: isAllDay ? 'allday' : classifyEvent(ev.summary),
-    location: ev.location || '',
-    description: ev.description || '',
-    attendees: (ev.attendees||[]).map(a => a.email || a).join(', '),
-    isAllDay
-  };
-}
-
-// Fetch from Trợ Lý server
-async function fetchCalendar(){
-  const btn = document.getElementById('reloadBtn');
-  const bar = document.getElementById('statusBar');
-  btn.classList.add('loading');
-  btn.textContent = '⏳ Đang tải...';
-  bar.className = 'status-bar';
-  bar.textContent = 'Đang kết nối server Trợ Lý...';
-
-  try {
-    // Fetch 60 days to cover current + next month
-    const res = await fetch(`${API_BASE}/api/calendar/week?days=60`, {signal: AbortSignal.timeout(10000)});
-    const data = await res.json();
-
-    if(!data.available){
-      bar.className = 'status-bar error';
-      bar.textContent = '⚠️ Google Calendar chưa cấu hình trên server Trợ Lý';
-      return;
-    }
-
-    allEvents = (data.events||[]).map(parseGCalEvent);
-    bar.className = 'status-bar ok';
-    bar.textContent = `✅ Đã tải ${allEvents.length} sự kiện từ Google Calendar — ${new Date().toLocaleTimeString('vi-VN')}`;
-    render();
-  } catch(e){
-    bar.className = 'status-bar error';
-    bar.textContent = '❌ Không kết nối được server Trợ Lý (localhost:8080). Hãy đảm bảo server đang chạy.';
-    console.error('Fetch error:', e);
-  } finally {
-    btn.classList.remove('loading');
-    btn.textContent = '🔄 Tải lại';
-  }
-}
-
 function render(){
-  // Legend
-  const lg=document.getElementById('legend');lg.innerHTML='';
-  for(const[k,v]of Object.entries(TYPES)){
-    const it=document.createElement('div');
-    it.className='legend-item'+(filters.has(k)?'':' inactive');
-    it.innerHTML=`<span class="legend-dot" style="background:${v.color}"></span>${v.label}`;
-    it.onclick=()=>{filters.has(k)?filters.delete(k):filters.add(k);render()};
-    lg.appendChild(it);
-  }
-
   const cal=document.getElementById('cal');cal.innerHTML='';
-
-  if(allEvents.length===0){
-    cal.innerHTML='<div class="no-data" style="grid-column:1/-1"><div class="icon">📅</div>Chưa có dữ liệu. Nhấn "🔄 Tải lại" để lấy lịch từ Google Calendar.</div>';
-    document.getElementById('stats').innerHTML='';
-    document.getElementById('mTitle').textContent=`${MN[cM]}, ${cY}`;
-    return;
-  }
-
-  // Headers
   DAYS.forEach((d,i)=>{const h=document.createElement('div');h.className='day-header'+(i===6?' sun':'');h.textContent=d;cal.appendChild(h)});
   const f=new Date(cY,cM,1);let sd=f.getDay();sd=sd===0?6:sd-1;
   const dim=new Date(cY,cM+1,0).getDate();
-
   for(let i=0;i<sd;i++){const c=document.createElement('div');c.className='cell empty';cal.appendChild(c)}
-
   for(let d=1;d<=dim;d++){
-    const ds=`${cY}-${String(cM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const ds=cY+'-'+String(cM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const dow=(sd+d-1)%7;const isT=ds===todayStr;const isS=dow===6;
     const cell=document.createElement('div');
     cell.className='cell'+(isT?' today':'')+(isS?' sun':'');
     const num=document.createElement('div');num.className='date-num';num.textContent=d;cell.appendChild(num);
-
-    allEvents.filter(m=>m.date===ds).sort((a,b)=>{
+    EVENTS.filter(m=>m.date===ds).sort((a,b)=>{
       if(a.isAllDay&&!b.isAllDay)return -1;if(!a.isAllDay&&b.isAllDay)return 1;
-      return (a.time||'').localeCompare(b.time||'');
+      return(a.time||'').localeCompare(b.time||'');
     }).forEach(m=>{
-      const ev=document.createElement('div');
-      ev.className='ev '+m.type+(!filters.has(m.type)?' hidden':'');
-      ev.innerHTML=m.time?`<span class="ev-time">${m.time}</span>${m.title}`:m.title;
+      const ev=document.createElement('a');
+      ev.className='ev '+m.type;
+      ev.innerHTML=m.time?'<span class="ev-time">'+m.time+'</span>'+m.title:m.title;
+      if(m.htmlLink){ev.href=m.htmlLink;ev.target='_blank';}
       ev.onmouseenter=e=>showTT(e,m);ev.onmouseleave=hideTT;
       cell.appendChild(ev);
     });
     cal.appendChild(cell);
   }
-
   const tot=sd+dim;const rem=tot%7;
   if(rem>0)for(let i=0;i<7-rem;i++){const c=document.createElement('div');c.className='cell empty';cal.appendChild(c)}
-
-  document.getElementById('mTitle').textContent=`${MN[cM]}, ${cY}`;
-  renderStats();
-}
-
-function renderStats(){
-  const ms=allEvents.filter(m=>{const[y,mo]=m.date.split('-').map(Number);return y===cY&&mo===cM+1});
-  const ct={};for(const k of Object.keys(TYPES))ct[k]=0;ms.forEach(m=>ct[m.type]++);
+  document.getElementById('mTitle').textContent=MN[cM]+', '+cY;
+  // Stats
+  const ms=EVENTS.filter(m=>{const p=m.date.split('-').map(Number);return p[0]===cY&&p[1]===cM+1});
   const st=document.getElementById('stats');st.innerHTML='';
-  for(const[k,v]of Object.entries(TYPES)){if(ct[k]>0){const b=document.createElement('div');b.className='stat-box';b.innerHTML=`<div class="stat-num" style="color:${v.color}">${ct[k]}</div><div class="stat-label">${v.label}</div>`;st.appendChild(b)}}
-  const total=ms.length;if(total>0){const b=document.createElement('div');b.className='stat-box';b.innerHTML=`<div class="stat-num" style="color:#fff">${total}</div><div class="stat-label">Tổng sự kiện</div>`;st.appendChild(b)}
+  if(ms.length>0){
+    const b=document.createElement('div');b.className='stat-box';
+    b.innerHTML='<div class="stat-num">'+ms.length+'</div><div class="stat-label">S\u1ef1 ki\u1ec7n trong th\u00e1ng</div>';
+    st.appendChild(b);
+  }
 }
 
 function showTT(e,m){
-  const tt=document.getElementById('tt');const t=TYPES[m.type];
-  let timeStr = m.isAllDay ? 'Cả ngày' : (m.endTime ? `${m.time} → ${m.endTime}` : m.time);
-  tt.innerHTML=`<div class="tt-title" style="color:${t.color}">${m.title}</div>
-    <div class="tt-row"><span class="tt-label">🕐 Giờ:</span>${timeStr}</div>
-    <div class="tt-row"><span class="tt-label">📅 Ngày:</span>${m.date.split('-').reverse().join('/')}</div>
-    ${m.location?`<div class="tt-row"><span class="tt-label">📍 Nơi:</span>${m.location}</div>`:''}
-    ${m.attendees?`<div class="tt-row"><span class="tt-label">👥 Dự:</span>${m.attendees}</div>`:''}
-    ${m.description?`<div class="tt-row"><span class="tt-label">📝 Ghi:</span>${m.description.substring(0,100)}</div>`:''}`;
-  tt.style.left=Math.min(e.clientX+12,window.innerWidth-340)+'px';
+  const tt=document.getElementById('tt');
+  let timeStr=m.isAllDay?'C\u1ea3 ng\u00e0y':(m.endTime?m.time+' \u2192 '+m.endTime:m.time);
+  let html='<div class="tt-title">'+m.title+'</div>';
+  html+='<div class="tt-row"><span class="tt-label">\ud83d\udd50 Gi\u1edd:</span>'+timeStr+'</div>';
+  html+='<div class="tt-row"><span class="tt-label">\ud83d\udcc5 Ng\u00e0y:</span>'+m.date.split('-').reverse().join('/')+'</div>';
+  if(m.location)html+='<div class="tt-row"><span class="tt-label">\ud83d\udccd N\u01a1i:</span>'+m.location+'</div>';
+  if(m.attendees)html+='<div class="tt-row"><span class="tt-label">\ud83d\udc65 D\u1ef1:</span>'+m.attendees.substring(0,120)+'</div>';
+  tt.innerHTML=html;
+  tt.style.left=Math.min(e.clientX+12,window.innerWidth-360)+'px';
   tt.style.top=(e.clientY+12)+'px';tt.classList.add('show');
 }
 function hideTT(){document.getElementById('tt').classList.remove('show')}
-
-// Init
-cY=now.getFullYear();cM=now.getMonth();
-render();
-fetchCalendar();
+cY=now.getFullYear();cM=now.getMonth();render();
 </script>
 </body>
 </html>
