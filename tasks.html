@@ -94,6 +94,19 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .filter-tab:hover { border-color:var(--blue); color:var(--text); }
 .filter-tab.active { background:var(--blue); color:#fff; border-color:var(--blue); }
 
+/* ===== CALENDAR SECTION ===== */
+.cal-section { margin-bottom:8px; background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:10px 14px; }
+.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; cursor:pointer; }
+.cal-header h3 { font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.cal-header .cal-toggle { font-size:10px; color:var(--text3); }
+.cal-events { display:flex; flex-direction:column; gap:4px; }
+.cal-event { display:flex; align-items:center; gap:10px; padding:6px 10px; background:var(--bg2); border-radius:8px; border-left:3px solid var(--blue); }
+.cal-event .cal-time { font-size:10px; font-weight:700; color:var(--blue); white-space:nowrap; min-width:90px; }
+.cal-event .cal-title { font-size:11px; font-weight:600; flex:1; }
+.cal-event .cal-loc { font-size:9px; color:var(--text3); }
+.cal-empty { font-size:11px; color:var(--text3); text-align:center; padding:8px; }
+.cal-loading { font-size:11px; color:var(--text3); text-align:center; padding:6px; }
+
 /* ===== KANBAN BOARD ===== */
 .kanban { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
 
@@ -453,6 +466,16 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
         <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
         <button class="filter-tab" onclick="setFilter('overdue',this)">Quá hạn</button>
         <button class="filter-tab" onclick="setFilter('high',this)">Ưu tiên cao</button>
+    </div>
+
+    <!-- CALENDAR SECTION -->
+    <div class="cal-section" id="calSection">
+        <div class="cal-header" onclick="toggleCal()">
+            <h3>📅 Lịch họp tuần này <span class="cal-toggle" id="calToggle">▼</span></h3>
+        </div>
+        <div class="cal-events" id="calEvents">
+            <div class="cal-loading">⏳ Đang tải lịch...</div>
+        </div>
     </div>
 
     <!-- KANBAN BOARD -->
@@ -1055,6 +1078,51 @@ function toggleCardCL(taskId, itemId, checked) {
         showToast('🎉 Tất cả task nhỏ hoàn thành — chuyển Done!', 't-green');
     }
 }
+
+// ===== CALENDAR =====
+let calCollapsed = false;
+function toggleCal() {
+    calCollapsed = !calCollapsed;
+    document.getElementById('calEvents').style.display = calCollapsed ? 'none' : 'flex';
+    document.getElementById('calToggle').textContent = calCollapsed ? '▶' : '▼';
+}
+
+async function loadCalendar() {
+    const el = document.getElementById('calEvents');
+    try {
+        const resp = await fetch('http://localhost:8080/api/calendar/week?days=7', { signal: AbortSignal.timeout(5000) });
+        const data = await resp.json();
+        if (!data.available) {
+            el.innerHTML = '<div class="cal-empty">⚠️ Google Calendar chưa cấu hình</div>';
+            return;
+        }
+        if (!data.events || data.events.length === 0) {
+            el.innerHTML = '<div class="cal-empty">✅ Không có lịch họp tuần này</div>';
+            return;
+        }
+        let html = '';
+        for (const ev of data.events) {
+            const start = ev.start || '';
+            const title = ev.summary || ev.title || 'Không tiêu đề';
+            const loc = ev.location || '';
+            // Format time
+            let timeStr = start;
+            try {
+                const d = new Date(start);
+                timeStr = d.toLocaleDateString('vi-VN', {weekday:'short', day:'2-digit', month:'2-digit'}) + ' ' + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+            } catch(e) {}
+            html += `<div class="cal-event">
+                <span class="cal-time">${timeStr}</span>
+                <span class="cal-title">${title}</span>
+                ${loc ? `<span class="cal-loc">📍 ${loc}</span>` : ''}
+            </div>`;
+        }
+        el.innerHTML = html;
+    } catch(e) {
+        el.innerHTML = '<div class="cal-empty">📴 Trợ Lý AI offline — không tải được lịch</div>';
+    }
+}
+loadCalendar();
 
 // ===== INIT =====
 tasks.forEach(ensureChecklist);
