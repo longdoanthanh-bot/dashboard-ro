@@ -407,18 +407,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="page-header">
-    <div class="page-header-left">
-        <h1><span class="hicon">📋</span> Công Việc</h1>
-        <div class="page-header-sub">Thư Ký AI — Quản lý task</div>
-    </div>
-    <div class="header-actions">
-        <button class="header-btn" onclick="exportExcel()">📥 Excel</button>
-    </div>
-</header>
-
-<div class="container">
+<div class="container" style="padding-top:12px;">
 
     <!-- ADD TASK FORM -->
     <div class="add-form">
@@ -444,6 +433,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
             </select>
         </div>
         <button class="btn-create" onclick="createTask()">Tạo</button>
+        <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
     </div>
 
     <!-- STATS BAR — 2 COLUMNS -->
