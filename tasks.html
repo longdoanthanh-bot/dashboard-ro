@@ -226,6 +226,15 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     transform:translateY(-1px); box-shadow:0 3px 10px rgba(167,139,250,0.15);
 }
 
+/* ✏️ Chỉnh sửa */
+.task-btn.btn-edit {
+    background:rgba(251,191,36,0.1); color:var(--yellow); border-color:rgba(251,191,36,0.25);
+}
+.task-btn.btn-edit:hover {
+    background:rgba(251,191,36,0.25); border-color:var(--yellow);
+    transform:translateY(-1px); box-shadow:0 3px 10px rgba(251,191,36,0.15);
+}
+
 /* 🗑️ Xóa */
 .task-btn.btn-delete {
     background:rgba(248,113,113,0.08); color:var(--red); border-color:rgba(248,113,113,0.2);
@@ -661,6 +670,10 @@ function renderCard(t) {
     const cardCls = isDone ? 'task-card is-done' : 'task-card';
 
     // ===== NÚT HÀNH ĐỘNG VỚI ICON + TEXT =====
+    const editBtn = `
+            <button class="task-btn btn-edit" onclick="event.stopPropagation();openTaskModal(${t.id})" title="Chỉnh sửa nội dung">
+                <span class="btn-icon">✏️</span> Sửa
+            </button>`;
     let btns = '';
     if (t.status === 'todo') {
         btns = `
@@ -670,6 +683,7 @@ function renderCard(t) {
             <button class="task-btn btn-done" onclick="moveTask(${t.id},'done')" title="Đánh dấu hoàn thành">
                 <span class="btn-icon">✅</span> Hoàn thành
             </button>
+            ${editBtn}
             <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
                 <span class="btn-icon">🗑️</span> Xóa
             </button>`;
@@ -681,6 +695,7 @@ function renderCard(t) {
             <button class="task-btn btn-redo" onclick="moveTask(${t.id},'todo')" title="Chuyển về Chưa làm">
                 <span class="btn-icon">🔄</span> Quay lại
             </button>
+            ${editBtn}
             <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
                 <span class="btn-icon">🗑️</span> Xóa
             </button>`;
@@ -689,6 +704,7 @@ function renderCard(t) {
             <button class="task-btn btn-redo" onclick="moveTask(${t.id},'doing')" title="Mở lại công việc">
                 <span class="btn-icon">🔄</span> Làm lại
             </button>
+            ${editBtn}
             <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
                 <span class="btn-icon">🗑️</span> Xóa
             </button>`;
