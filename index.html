@@ -836,7 +836,8 @@ function switchMain(panel, btn) {
         if (iframe && !iframe.src) iframe.src = 'tasks.html';
     }
     if (panel === 'calendar') {
-        loadCalendarTab();
+        const iframe = document.getElementById('iframe-calendar');
+        if (iframe && !iframe.src.includes('lich_hop.html')) iframe.src = 'lich_hop.html';
     }
     if (panel === 'tele') {
         const iframe = document.getElementById('iframe-tele');
