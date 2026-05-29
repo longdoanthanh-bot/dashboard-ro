@@ -1292,7 +1292,7 @@ function renderTags() {
     const counter = document.getElementById('tag-counter');
     counter.textContent = _searchTags.length > 0 ? `(${_searchTags.length}/10)` : '';
     if(_searchTags.length >= 10) { input.placeholder = 'Đã đủ 10 ST'; input.disabled = true; }
-    else { input.placeholder = _searchTags.length > 0 ? 'Thêm ST...' : 'Gõ mã ST, Enter để thêm (tối đa 10)'; input.disabled = false; }
+    else { input.placeholder = _searchTags.length > 0 ? 'Thêm ST...' : 'Mã ST, tên, hoặc địa chỉ...'; input.disabled = false; }
     input.value = '';
 }
 function tagSuggest() {
