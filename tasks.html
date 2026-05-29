@@ -42,10 +42,13 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 /* ===== CONTAINER ===== */
 .container { position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:8px 24px 16px; }
 
+/* ===== TOP ROW: FORM LEFT | STATS RIGHT ===== */
+.top-row { display:flex; gap:10px; margin-bottom:6px; align-items:stretch; }
+
 /* ===== ADD TASK FORM ===== */
 .add-form {
-    background:var(--card); border:1px solid var(--border); border-radius:8px;
-    padding:8px 14px; margin-bottom:8px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
+    flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:8px 14px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
 }
 .add-form .form-title { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; margin-bottom:0; white-space:nowrap; }
 .form-group { display:flex; flex-direction:column; gap:3px; }
@@ -65,25 +68,29 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 }
 .btn-create:hover { background:#5a7aee; transform:translateY(-1px); }
 
-/* ===== STATS BAR — 2 COLUMNS: TỔNG | THÀNH PHẦN ===== */
-.stats-row { display:flex; gap:6px; margin-bottom:6px; align-items:stretch; }
+/* ===== STATS — RIGHT SIDE ===== */
+.stats-row { flex:0 0 auto; display:flex; gap:6px; align-items:stretch; }
 .stat-total-card {
-    flex:0 0 90px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
-    padding:8px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    flex:0 0 80px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+    padding:6px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center;
     position:relative; overflow:hidden; transition:background .4s;
 }
-.stat-total-card .stat-num { font-size:22px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
-.stat-total-card .stat-label { font-size:8px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.4px; margin-top:1px; position:relative; z-index:1; font-weight:700; }
-.stat-total-card .stat-pct { font-size:9px; color:rgba(255,255,255,0.9); font-weight:700; margin-top:2px; position:relative; z-index:1; }
+.stat-total-card .stat-num { font-size:20px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+.stat-total-card .stat-label { font-size:7px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.4px; margin-top:1px; position:relative; z-index:1; font-weight:700; }
+.stat-total-card .stat-pct { font-size:8px; color:rgba(255,255,255,0.9); font-weight:700; margin-top:2px; position:relative; z-index:1; }
 .stat-right-group {
     flex:0 0 auto; display:flex; flex-direction:column; gap:3px;
 }
-.stat-card { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:2px 14px; display:flex; align-items:center; gap:8px; }
-.stat-card .stat-num { font-size:14px; font-weight:800; min-width:20px; text-align:right; }
-.stat-card .stat-label { font-size:8px; color:var(--text3); text-transform:uppercase; letter-spacing:.4px; white-space:nowrap; }
+.stat-card { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:2px 12px; display:flex; align-items:center; gap:6px; }
+.stat-card .stat-num { font-size:13px; font-weight:800; min-width:18px; text-align:right; }
+.stat-card .stat-label { font-size:7px; color:var(--text3); text-transform:uppercase; letter-spacing:.4px; white-space:nowrap; }
+.stat-card .stat-pct-detail { font-size:9px; font-weight:700; min-width:28px; text-align:right; }
 .stat-card.s-todo .stat-num { color:var(--orange); }
+.stat-card.s-todo .stat-pct-detail { color:var(--orange); }
 .stat-card.s-doing .stat-num { color:var(--yellow); }
+.stat-card.s-doing .stat-pct-detail { color:var(--yellow); }
 .stat-card.s-done .stat-num { color:var(--green); }
+.stat-card.s-done .stat-pct-detail { color:var(--green); }
 
 /* ===== FILTER TABS ===== */
 .filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
@@ -418,44 +425,47 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 
 <div class="container" style="padding-top:12px;">
 
-    <!-- ADD TASK FORM -->
-    <div class="add-form">
-        <div class="form-title">➕ Thêm task mới</div>
-        <div class="form-group">
-            <label>Tiêu đề</label>
-            <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+    <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
+    <div class="top-row">
+        <!-- ADD TASK FORM -->
+        <div class="add-form">
+            <div class="form-title">➕ Thêm task mới</div>
+            <div class="form-group">
+                <label>Tiêu đề</label>
+                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+            </div>
+            <div class="form-group" style="flex:1;min-width:200px;">
+                <label>Nội dung</label>
+                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Deadline</label>
+                <input class="form-input" type="datetime-local" id="new-deadline">
+            </div>
+            <div class="form-group">
+                <label>Ưu tiên</label>
+                <select class="form-input" id="new-priority" style="min-width:90px;">
+                    <option value="3">🟢 P3</option>
+                    <option value="2">🟠 P2</option>
+                    <option value="1">🔴 P1</option>
+                </select>
+            </div>
+            <button class="btn-create" onclick="createTask()">Tạo</button>
+            <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
         </div>
-        <div class="form-group" style="flex:1;min-width:200px;">
-            <label>Nội dung</label>
-            <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
-        </div>
-        <div class="form-group">
-            <label>Deadline</label>
-            <input class="form-input" type="datetime-local" id="new-deadline">
-        </div>
-        <div class="form-group">
-            <label>Ưu tiên</label>
-            <select class="form-input" id="new-priority" style="min-width:90px;">
-                <option value="3">🟢 P3</option>
-                <option value="2">🟠 P2</option>
-                <option value="1">🔴 P1</option>
-            </select>
-        </div>
-        <button class="btn-create" onclick="createTask()">Tạo</button>
-        <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
-    </div>
 
-    <!-- STATS BAR — 2 COLUMNS -->
-    <div class="stats-row">
-        <div class="stat-total-card" id="stat-total-card">
-            <div class="stat-num" id="stat-total">0</div>
-            <div class="stat-label">Tổng</div>
-            <div class="stat-pct" id="stat-pct">0% hoàn thành</div>
-        </div>
-        <div class="stat-right-group">
-            <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div></div>
-            <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div></div>
-            <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div></div>
+        <!-- STATS — RIGHT SIDE -->
+        <div class="stats-row">
+            <div class="stat-total-card" id="stat-total-card">
+                <div class="stat-num" id="stat-total">0</div>
+                <div class="stat-label">Tổng</div>
+                <div class="stat-pct" id="stat-pct">0%</div>
+            </div>
+            <div class="stat-right-group">
+                <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
+                <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
+                <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
+            </div>
         </div>
     </div>
 
@@ -802,11 +812,16 @@ function renderBoard() {
     const allDone = tasks.filter(t => t.status === 'done').length;
     const allTotal = tasks.length;
     const rate = allTotal > 0 ? Math.round(allDone / allTotal * 100) : 0;
+    const pTodo = allTotal > 0 ? Math.round(allTodo / allTotal * 100) : 0;
+    const pDoing = allTotal > 0 ? Math.round(allDoing / allTotal * 100) : 0;
     document.getElementById('stat-total').textContent = allTotal;
     document.getElementById('stat-todo').textContent = allTodo;
     document.getElementById('stat-doing').textContent = allDoing;
     document.getElementById('stat-done').textContent = allDone;
-    document.getElementById('stat-pct').textContent = rate + '% hoàn thành';
+    document.getElementById('stat-pct').textContent = rate + '%';
+    document.getElementById('pct-todo').textContent = pTodo + '%';
+    document.getElementById('pct-doing').textContent = pDoing + '%';
+    document.getElementById('pct-done').textContent = rate + '%';
     // Color the Tổng card based on completion rate
     const totalCard = document.getElementById('stat-total-card');
     if (rate <= 25) totalCard.style.background = 'linear-gradient(135deg, #dc2626, #b91c1c)';
