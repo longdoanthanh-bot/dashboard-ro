@@ -752,7 +752,7 @@ function renderCard(t) {
             </div>
         </div>
         <div class="card-body">
-            ${t.desc ? `<div class="task-desc">${escH(t.desc)}</div>` : ''}
+            ${(t.desc && !(t.checklist && t.checklist.length > 0)) ? `<div class="task-desc">${escH(t.desc)}</div>` : ''}
             ${checklistHTML}
             <div class="task-actions">${btns}</div>
         </div>
@@ -858,11 +858,13 @@ function createTask() {
     const deadline = document.getElementById('new-deadline').value;
     const priority = +document.getElementById('new-priority').value;
     const desc = document.getElementById('new-desc').value.trim();
-    const task = { id:nextId++, title, desc, priority, status:'todo', deadline };
+    const task = { id:nextId++, title, desc:'', priority, status:'todo', deadline };
     // Auto-create checklist from multi-line desc
     const lines = desc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
     if (lines.length >= 2) {
         task.checklist = lines.map((text, i) => ({ id: i+1, text: text.replace(/^\d+\.\s*/, ''), done: false }));
+    } else {
+        task.desc = desc; // Single line or empty → keep as desc
     }
     tasks.unshift(task);
     document.getElementById('new-title').value = '';
@@ -915,7 +917,12 @@ function openTaskModal(id) {
     
     document.getElementById('modal-task-id').value = task.id;
     document.getElementById('modal-title').value = task.title || '';
-    document.getElementById('modal-desc').value = task.desc || '';
+    // If task has checklist but no desc, reconstruct desc from checklist for editing
+    let modalDesc = task.desc || '';
+    if (!modalDesc && task.checklist && task.checklist.length > 0) {
+        modalDesc = task.checklist.map(item => item.text).join('\n');
+    }
+    document.getElementById('modal-desc').value = modalDesc;
     document.getElementById('modal-deadline').value = task.deadline || '';
     document.getElementById('modal-priority').value = task.priority || 3;
     
@@ -1029,12 +1036,29 @@ function saveTaskModal() {
     const updatedTitle = document.getElementById('modal-title').value.trim();
     if (!updatedTitle) { document.getElementById('modal-title').focus(); return; }
     
+    const newDesc = document.getElementById('modal-desc').value.trim();
+    const descLines = newDesc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    
     // Save modal edits back to the main task
     tasks[taskIdx].title = updatedTitle;
-    tasks[taskIdx].desc = document.getElementById('modal-desc').value.trim();
     tasks[taskIdx].deadline = document.getElementById('modal-deadline').value;
     tasks[taskIdx].priority = +document.getElementById('modal-priority').value;
-    tasks[taskIdx].checklist = currentModalTask.checklist;
+    
+    // Sync desc ↔ checklist: multi-line desc → update checklist, clear desc
+    if (descLines.length >= 2) {
+        // Rebuild checklist from desc lines, preserving done state where text matches
+        const oldCL = currentModalTask.checklist || [];
+        const oldDone = {};
+        oldCL.forEach(item => { oldDone[item.text] = item.done; });
+        tasks[taskIdx].checklist = descLines.map((text, i) => {
+            const cleanText = text.replace(/^\d+\.\s*/, '');
+            return { id: i+1, text: cleanText, done: !!oldDone[cleanText] };
+        });
+        tasks[taskIdx].desc = ''; // Content lives in checklist
+    } else {
+        tasks[taskIdx].desc = newDesc;
+        tasks[taskIdx].checklist = currentModalTask.checklist;
+    }
     
     showToast('💾 Đã lưu thay đổi công việc!', 't-green');
     saveTasks();
