@@ -219,20 +219,7 @@ async function reloadTele() {
     }, 3000);
 }
 
-const HISTORY_KEY = 'tele_history';
-try {
-    const saved = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    // Merge: add saved chats that are NOT in current ALL_CHATS
-    const currentIds = new Set(ALL_CHATS.map(c => c.id));
-    for (const old of saved) {
-        if (!currentIds.has(old.id)) {
-            old._archived = true;
-            ALL_CHATS.push(old);
-        }
-    }
-    // Save current+merged for next time
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(ALL_CHATS));
-} catch(e) {}
+// HISTORY_KEY merge is handled inside fetchTelegramData()
 
 const READ_KEY = 'tele_read_chats';
 let readChats = {};
@@ -274,7 +261,8 @@ function renderChatList() {
     const el = document.getElementById('chatList');
     const unreadCount = chats.reduce((s,c) => s + (isChatRead(c.id) ? 0 : c.messages.length), 0);
 
-    document.getElementById('totalBadge').textContent = unreadCount;
+    const totalBadgeEl = document.getElementById('totalBadge');
+    if (totalBadgeEl) totalBadgeEl.textContent = unreadCount;
     document.getElementById('chatCount').textContent = chats.length;
 
     if (!chats.length) {
