@@ -156,22 +156,55 @@ const API_BASE = 'http://localhost:8080';
 let ALL_CHATS = [];
 let isLiveData = false;
 
+function normalizeChats(apiData) {
+    // API returns {available, chats: {chatId: {name, type, messages: [{msg_id, sender, text, date, ts, has_media}]}}}
+    // Convert to array format: [{id, name, type, messages: [{sender, text, date, msgType, replyRef, isRead, hasMedia}]}]
+    const chatsDict = apiData.chats || {};
+    const result = [];
+    for (const [chatId, chat] of Object.entries(chatsDict)) {
+        if (!chat.messages || chat.messages.length === 0) continue;
+        const msgs = chat.messages.map(m => ({
+            sender: m.sender || '',
+            text: m.text || '',
+            date: m.date || '',
+            msgType: m.msgType || m.msg_type || 'mention',
+            replyRef: m.replyRef || m.reply_ref || null,
+            isRead: m.isRead || m.is_read || false,
+            hasMedia: m.hasMedia || m.has_media || false
+        }));
+        result.push({
+            id: 'chat_' + chatId,
+            name: chat.name || chatId,
+            type: chat.type || 'group',
+            messages: msgs
+        });
+    }
+    // Sort by latest message date (newest first)
+    result.sort((a, b) => {
+        const aDate = a.messages[0]?.date || '';
+        const bDate = b.messages[0]?.date || '';
+        return bDate.localeCompare(aDate);
+    });
+    return result;
+}
+
 async function fetchTelegramData() {
     const btn = document.getElementById('btnReload');
     if (btn) { btn.classList.add('loading'); btn.textContent = '⏳ Đang tải...'; }
     
     try {
-        const res = await fetch(API_BASE + '/api/telegram/messages', {
-            signal: AbortSignal.timeout(8000)
+        const res = await fetch(API_BASE + '/api/telegram/all-unread', {
+            signal: AbortSignal.timeout(10000)
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         
-        if (Array.isArray(data) && data.length > 0) {
-            ALL_CHATS = data;
+        if (data && data.chats && Object.keys(data.chats).length > 0) {
+            ALL_CHATS = normalizeChats(data);
             isLiveData = true;
-            if (btn) { btn.textContent = '✅ Live (' + data.length + ' nhóm)'; }
-            showToast('✅ Đã tải ' + data.length + ' nhóm từ server');
+            const scanTime = data.last_scan || 'N/A';
+            if (btn) { btn.textContent = '✅ Live (' + ALL_CHATS.length + ' nhóm)'; }
+            showToast('✅ ' + ALL_CHATS.length + ' nhóm · Scan: ' + scanTime);
         } else {
             throw new Error('Empty data');
         }
