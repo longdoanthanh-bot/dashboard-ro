@@ -729,7 +729,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <span class="filter-label">Tìm kiếm ST <span class="tag-counter" id="tag-counter"></span></span>
             <div class="tag-input-wrap">
                 <div class="tag-input-box" id="tag-box" onclick="document.getElementById('tag-input').focus()">
-                    <input type="text" id="tag-input" placeholder="Gõ mã ST, Enter để thêm (tối đa 10)" autocomplete="off"
+                    <input type="text" id="tag-input" placeholder="Mã ST, tên, hoặc địa chỉ..." autocomplete="off"
                         oninput="this.value=this.value.toUpperCase();tagSuggest()" onkeydown="tagKeydown(event)" onfocus="tagSuggest()">
                 </div>
                 <div class="tag-suggest" id="tag-suggest-list"></div>
@@ -1307,7 +1307,8 @@ function tagSuggest() {
         const abbrU = (s.abbr||'').toUpperCase();
         if(_searchTags.includes(abbrU)) continue;
         const sn = (s.name||'').split(' - ').slice(1).join(' - ');
-        const label = (s.abbr||'') + ' ' + sn + ' ' + (s.code||'');
+        const addr = s.address||'';
+        const label = (s.abbr||'') + ' ' + sn + ' ' + (s.code||'') + ' ' + addr;
         if(!label.toLowerCase().includes(q)) continue;
         html += `<div class="combo-item" data-abbr="${s.abbr}" onmousedown="event.preventDefault();addSearchTag('${s.abbr}');document.getElementById('tag-suggest-list').classList.remove('open')">`;
         html += `<span class="ci-code">${s.abbr}</span><span class="ci-name">${sn.substring(0,30)}</span></div>`;
@@ -1367,7 +1368,9 @@ function filterMap() {
         if(hasSearch) {
             const abbrU = (s.abbr||'').toUpperCase();
             const codeU = (s.code||'').toUpperCase();
-            isMatch = tags.some(t => abbrU === t || codeU === t);
+            const addrL = (s.address||'').toLowerCase();
+            const nameL = (s.name||'').toLowerCase();
+            isMatch = tags.some(t => abbrU === t || codeU === t || addrL.includes(t.toLowerCase()) || nameL.includes(t.toLowerCase()));
         } else { isMatch = true; }
         const isMart = (s.store_type||'').includes('Mart');
         const revLabel = (s.revenue||'').split(' ')[0];
