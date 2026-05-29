@@ -65,22 +65,22 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 }
 .btn-create:hover { background:#5a7aee; transform:translateY(-1px); }
 
-/* ===== STATS BAR — 2 COLUMNS: TỔNG | THÀNH PHẦN ===== */
+/* ===== STATS BAR — COMPACT 2 COLUMNS ===== */
 .stats-row { display:flex; gap:6px; margin-bottom:6px; align-items:stretch; }
 .stat-total-card {
     flex:0 0 90px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
-    padding:8px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:6px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center;
     position:relative; overflow:hidden; transition:background .4s;
 }
-.stat-total-card .stat-num { font-size:22px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+.stat-total-card .stat-num { font-size:20px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
 .stat-total-card .stat-label { font-size:8px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.4px; margin-top:1px; position:relative; z-index:1; font-weight:700; }
 .stat-total-card .stat-pct { font-size:9px; color:rgba(255,255,255,0.9); font-weight:700; margin-top:2px; position:relative; z-index:1; }
 .stat-right-group {
-    flex:0 0 auto; display:flex; flex-direction:column; gap:3px;
+    flex:1; display:flex; gap:5px;
 }
-.stat-card { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:2px 14px; display:flex; align-items:center; gap:8px; }
-.stat-card .stat-num { font-size:14px; font-weight:800; min-width:20px; text-align:right; }
-.stat-card .stat-label { font-size:8px; color:var(--text3); text-transform:uppercase; letter-spacing:.4px; white-space:nowrap; }
+.stat-card { flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:5px 8px; text-align:center; }
+.stat-num { font-size:16px; font-weight:800; }
+.stat-label { font-size:7px; color:var(--text3); text-transform:uppercase; letter-spacing:.4px; margin-top:1px; }
 .stat-card.s-todo .stat-num { color:var(--orange); }
 .stat-card.s-doing .stat-num { color:var(--yellow); }
 .stat-card.s-done .stat-num { color:var(--green); }
