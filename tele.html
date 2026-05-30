@@ -90,7 +90,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
         <div class="sidebar-header">
             <div class="sidebar-top">
                 <span class="sidebar-title">Hội thoại (<span id="chatCount">0</span>)</span>
-                <span class="scan-time">🕐 30/05 09:23:16 · <span id="countdown"></span></span>
+                <span class="scan-time">🕐 30/05 09:30:45 · <span id="countdown"></span></span>
             </div>
             <div class="filter-row">
                 <button class="filter-chip active" id="fAll" onclick="setFilter('all')">📋 Tất cả</button>
@@ -238,6 +238,12 @@ setInterval(() => { _cd--; if(_cd<0) return; if(_cd===0){ window.location.href =
 async function reloadTele() {
     const btn = document.getElementById('btnRefresh');
     btn.disabled = true;
+    // On HTTPS (GitHub Pages), can't call localhost API
+    if (location.protocol === 'https:') {
+        btn.textContent = '🔄 Đang tải...';
+        window.location.href = location.pathname + '?t=' + Date.now();
+        return;
+    }
     btn.textContent = '⏳ Đang quét...';
     try {
         const r1 = await fetch(API_BASE + '/api/telegram/all-unread?force=1', {signal: AbortSignal.timeout(10000)});
@@ -316,7 +322,7 @@ async function reloadTele() {
         setTimeout(() => { btn.textContent = '🔄 Tải mới'; btn.disabled = false; }, 2000);
     } catch(e) {
         btn.textContent = '🔄 Đang reload...';
-        window.location.reload(true);
+        window.location.href = location.pathname + '?t=' + Date.now();
     }
 }
 </script>
