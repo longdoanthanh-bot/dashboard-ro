@@ -211,7 +211,7 @@ function selectChat(chatId) {
                 ${tc ? `<span class="msg-type-tag ${tc}">${tl}</span>` : ''}
             </div>
             <div class="msg-text">${escHtml(m.text)}</div>
-            ${m.hasMedia && m.chatId && m.msgId ? `<div class="msg-media"><img src="${API_BASE}/api/telegram/media/${m.chatId}/${m.msgId}" alt="media" loading="lazy" style="max-width:100%;max-height:300px;border-radius:8px;margin-top:4px;cursor:pointer" onerror="this.outerHTML='<span>📎 Media</span>'" onclick="window.open(this.src,&apos;_blank&apos;)"></div>` : m.hasMedia ? '<div class="msg-media">📎 Media</div>' : ''}
+            ${m.hasMedia && m.chatId && m.msgId ? `<div class="msg-media"><img src="${API_BASE}/api/telegram/media/${m.chatId}/${m.msgId}" alt="media" loading="lazy" style="max-width:100%;max-height:300px;border-radius:8px;margin-top:4px;cursor:pointer" onerror="this.outerHTML='<span>📎 Media</span>'" onclick="window.open(this.src,'_blank')"></div>` : m.hasMedia ? '<div class="msg-media">📎 Media</div>' : ''}
         </div>`;
     }
 
