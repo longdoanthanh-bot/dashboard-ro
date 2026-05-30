@@ -233,7 +233,7 @@ function setFilter(mode) {
 
 renderList();
 let _cd = 300;
-setInterval(() => { _cd--; if(_cd<=0) return; const m=Math.floor(_cd/60),s=_cd%60; document.getElementById('countdown').textContent = '🔄 '+m+':'+String(s).padStart(2,'0'); }, 1000);
+setInterval(() => { _cd--; if(_cd<0) return; if(_cd===0){ window.location.href = location.pathname + '?t=' + Date.now(); return; } const m=Math.floor(_cd/60),s=_cd%60; document.getElementById('countdown').textContent = '🔄 '+m+':'+String(s).padStart(2,'0'); }, 1000);
 
 async function reloadTele() {
     const btn = document.getElementById('btnRefresh');
