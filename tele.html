@@ -260,7 +260,11 @@ async function reloadTele() {
             freshData = await r3.json();
         }
         btn.textContent = '⏳ Đang xử lý...';
+        // Start from existing data (history) so we MERGE, not replace
         const chatsMap = {};
+        for (const old of ALL_CHATS) {
+            chatsMap[old.id] = {id:old.id, name:old.name, type:old.type, messages: old.messages.map(m => ({...m, _mid: m.msgId||0}))};
+        }
         const allChats = freshData.chats || {};
         for (const [cid, chat] of Object.entries(allChats)) {
             const msgs = chat.messages || [];
