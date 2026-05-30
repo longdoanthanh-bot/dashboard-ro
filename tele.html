@@ -89,14 +89,14 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
         <div class="sidebar-header">
             <div class="sidebar-top">
                 <span class="sidebar-title">Hội thoại (<span id="chatCount">0</span>)</span>
-                <span class="scan-time">🕐 30/05 08:15:22 · <span id="countdown"></span></span>
+                <span class="scan-time">🕐 30/05 08:23:25 · <span id="countdown"></span></span>
             </div>
             <div class="filter-row">
                 <button class="filter-chip active" id="fAll" onclick="setFilter('all')">📋 Tất cả</button>
                 <button class="filter-chip" id="fDm" onclick="setFilter('dm')">👤 Riêng</button>
                 <button class="filter-chip" id="fGroup" onclick="setFilter('group')">👥 Nhóm</button>
                 <button class="filter-chip" id="fUnread" onclick="setFilter('unread')">🔴 Chưa đọc</button>
-                <button class="btn-refresh" id="btnRefresh" onclick="reloadTele()">🔄 Tải mới</button>
+                <button class="btn-refresh" onclick="window.location.reload(true)">🔄 Tải mới</button>
             </div>
         </div>
         <div class="chat-list" id="chatList"></div>
@@ -106,9 +106,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
     </div>
 </div>
 <script>
-const API_BASE = 'http://localhost:8080';
-const USER_TAGS = ['Long_SC015349','@Long_SC015349','long_sc015349','@long_sc015349','SC015349','Long Doãn','Long Doan'];
-let ALL_CHATS = [{"id":"chat_-1003823588933","name":"TRANS-SLOG-KFM","type":"group","messages":[{"sender":"SCF_SCT_SC003147_PHU TRAN","text":"1. Cần cho 8 ST này mượn Tote để đóng hàng ==> căn cứ lượng cần sẽ không thu ngày 31/5 hoặc 1/6, thiếu sẽ chuyển thêm cho đủ: **a confirm vs DC xong báo lại bên e nhé.**\n\n2. 3/6 ST đóng hàng xong, mìn","date":"29/05 17:05","msgType":"reply","hasMedia":false},{"sender":"Gia Vĩ","text":"@Long_SC015349 e đang bên GHA mà ST e tự tìm BQL để làm việc, hỗ trợ giúp e a ơi","date":"28/05 14:01","msgType":"mention","hasMedia":false}]},{"id":"chat_-5230270612","name":"Thọ x Long x Lâm","type":"group","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Có 2 cái\n1. Cái check list cần đẻ siêu thị có thể chạy\n2. Pivot ngược lại cái nào bộ phận nào làm","date":"29/05 16:36","msgType":"reply","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Chỗ bác Tín, a xử lý theo hướng của em. Trễ chạy ko dc, … cho it chốt timeline","date":"29/05 12:16","msgType":"reply","hasMedia":false}]},{"id":"chat_7380825428","name":"SGN - TM - SC007400 - Ngọc Thanh","type":"dm","messages":[{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"(media/sticker)","date":"29/05 10:06","msgType":"dm","hasMedia":true},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"kiểu khẩn cấp như cúp điện thì ok chứ mấy cái chuyển này nọ thì team planning phải tính toán với chi phí nữa","date":"29/05 10:06","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"đâu phải mún book là book đâu","date":"29/05 10:05","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"đúng gòi a ơi","date":"29/05 10:05","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"Phần này a nhắn lên nhóm chung báo Phú giúp em nha, liên quan đến tính toán xe và chi phí dự kiến thì Team Planning đang làm và cần đc anh Quang với a Lâm duyệt thì e sẽ book theo kế hoạch của team Planning của Phú á","date":"29/05 00:25","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"(media/sticker)","date":"28/05 14:23","msgType":"dm","hasMedia":true},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"gì trời","date":"28/05 14:22","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"e hỏi ảnh cười cười ko à","date":"28/05 14:02","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"ko phải e á","date":"28/05 14:02","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"ảnh nói với Dương","date":"28/05 14:02","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"(media/sticker)","date":"28/05 11:43","msgType":"dm","hasMedia":true},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"anh đâu r","date":"28/05 11:39","msgType":"dm","hasMedia":false}]},{"id":"chat_-4795315212","name":"Logistic KFM","type":"group","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Chỗ xe đầy a @Long_SC015349 làm việc với Thanh có rule sắp ưu tiên lấy cho tuyến sau nhé","date":"29/05 08:55","msgType":"mention","hasMedia":false}]},{"id":"chat_-4898763987","name":"QA/QC -SCM","type":"group","messages":[{"sender":"Hương Nguyễn - SC012829 KFM - QC -","text":"@baohactruong @Long_SC015349 Hold sản phẩm lại này giúp em ko chia về ST bắt đầu từ hôm nay ạ","date":"28/05 17:38","msgType":"mention","hasMedia":false}]},{"id":"chat_791123385","name":"KFM - IT - Hoàng Long - SC005793","type":"dm","messages":[{"sender":"KFM - IT - Hoàng Long - SC005793","text":"....","date":"28/05 14:32","msgType":"dm","hasMedia":false}]},{"id":"chat_1076720375","name":"KFM - SCM - Lâm Nguyễn - SC008898","type":"dm","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Cái này cần trao đổi với bên Vận tải trước nha anh","date":"28/05 14:29","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Đề xuất xử lý theo hướng này: ST phát hiện vi phạm các quy định tại nơi giao hàng ==> không nhận hàng, yêu cầu TX tuân thủ đúng mới nhận hàng.\n\nChứ nhắc nhở mãi không có hiệu quả, vài ngày lại lặp lại hoặc cố tình vi phạm. Kho sẽ triển khai, quán triệt với NVT luôn, tránh xử lý lắt nhắt","date":"28/05 14:29","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"e xử luôn vụ camera","date":"28/05 08:51","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"a mời thêm Tú, SOC vô nha","date":"28/05 08:51","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"e đang tới","date":"28/05 08:51","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"@Long_SC015349 gửi lại nhu cầu hình ảnh, lấy 1 góc camera chuẩn gửi lại làm mẫu giúp em","date":"27/05 18:16","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"chỗ này a chỉ cần đưa cái mẫu 90 độ lên là xong rồi.\nKhông cần hỏi nhiều đâu","date":"27/05 18:16","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"có cái dí","date":"27/05 16:08","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"nên e mới dí ép report tuần đó","date":"27/05 16:08","msgType":"dm","hasMedia":false}]},{"id":"chat_-5174669566","name":"26.SCF x KFM | UD Project","type":"group","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"@Long_SC015349 trao đổi với chị Thanh thử nhé anh","date":"28/05 14:01","msgType":"mention","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"anh @Long_SC015349 anh @hoanglam666 ơi vấn đề trang bị bảng treo ở cửa ST phải kéo hàng xa cho giao hàng ko người nhận thì chỗ này e đề xuất phía ST trang bị như tài sản của ST ạ , NVT ko chỉ chạy cho mỗi bên mình, với lại lượng xe booking cũng dao động chứ k phải cố định số lượng xe , việc tự trang bị bảng cho toàn bộ xe khó nhắm chừng số lượng cần trang bị, với lại việc hợp tác với các NVT cũng tùy từng giai đoạn , cái này ST trang bị để ST lâu dài cố định tại ST thì ổn hơn ạ","date":"28/05 13:59","msgType":"mention","hasMedia":false}]},{"id":"chat_7466254400","name":"KFM - SCM - Hà Phạm - SC007251","type":"dm","messages":[{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"(media/sticker)","date":"28/05 13:32","msgType":"dm","hasMedia":true},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"Phòng mai book đk trên VP r à a","date":"27/05 19:06","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"Kkkkk","date":"27/05 19:06","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"E đang chạy xe k thấy tin","date":"27/05 19:01","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"(media/sticker)","date":"27/05 19:01","msgType":"dm","hasMedia":true}]},{"id":"chat_-5115999359","name":"Giao hàng không người nhận_SCM x HTP x SCV","type":"group","messages":[{"sender":"KFM - IT - Phong Trương - SC008704 🧑🏻‍💻","text":"Em gửi nha anh @Long_SC015349","date":"28/05 13:08","msgType":"mention","hasMedia":false},{"sender":"KFM - IT - Tính Võ - SC002122","text":"@phongtmp e gửi apk môi trường Dev lên cho a @Long_SC015349 test luồng tài xế giao hàng nha e","date":"28/05 13:05","msgType":"mention","hasMedia":false}]},{"id":"chat_-4752734610","name":"XỬ LÝ CHÊNH LỆCH ABA","type":"group","messages":[{"sender":"KFM - SCM - Thành Phạm - SC006932","text":"Em gửi phiếu chuyển hàng claim ABA xác nhận T04 nhé anh [KFM - SCM - Thọ Nguyễn - SC006747](tg://user?id=5593486255) \n+ Hàng claim tại kho : **PT1360431**\n+ Hàng claim tại ST nhận thiếu : **PT1360450**\nSố này em tạo từ file chị Hạc nhưng bên sheet chi tiết , lọc cột ABA xác nhận , còn sheet tổng hợp là đang có số lượng từ chối và Write-off nha anh \n@Long_SC015349 @baohactruong","date":"27/05 10:55","msgType":"mention","hasMedia":false}]}];
+const ALL_CHATS = [{"id":"chat_-1003823588933","name":"TRANS-SLOG-KFM","type":"group","messages":[{"sender":"SCF_SCT_SC003147_PHU TRAN","text":"1. Cần cho 8 ST này mượn Tote để đóng hàng ==> căn cứ lượng cần sẽ không thu ngày 31/5 hoặc 1/6, thiếu sẽ chuyển thêm cho đủ: **a confirm vs DC xong báo lại bên e nhé.**\n\n2. 3/6 ST đóng hàng xong, mìn","date":"29/05 17:05","msgType":"reply","hasMedia":false},{"sender":"Gia Vĩ","text":"@Long_SC015349 e đang bên GHA mà ST e tự tìm BQL để làm việc, hỗ trợ giúp e a ơi","date":"28/05 14:01","msgType":"mention","hasMedia":false}]},{"id":"chat_-5230270612","name":"Thọ x Long x Lâm","type":"group","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Có 2 cái\n1. Cái check list cần đẻ siêu thị có thể chạy\n2. Pivot ngược lại cái nào bộ phận nào làm","date":"29/05 16:36","msgType":"reply","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Chỗ bác Tín, a xử lý theo hướng của em. Trễ chạy ko dc, … cho it chốt timeline","date":"29/05 12:16","msgType":"reply","hasMedia":false}]},{"id":"chat_7380825428","name":"SGN - TM - SC007400 - Ngọc Thanh","type":"dm","messages":[{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"(media/sticker)","date":"29/05 10:06","msgType":"dm","hasMedia":true},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"kiểu khẩn cấp như cúp điện thì ok chứ mấy cái chuyển này nọ thì team planning phải tính toán với chi phí nữa","date":"29/05 10:06","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"đâu phải mún book là book đâu","date":"29/05 10:05","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"đúng gòi a ơi","date":"29/05 10:05","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"Phần này a nhắn lên nhóm chung báo Phú giúp em nha, liên quan đến tính toán xe và chi phí dự kiến thì Team Planning đang làm và cần đc anh Quang với a Lâm duyệt thì e sẽ book theo kế hoạch của team Planning của Phú á","date":"29/05 00:25","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"(media/sticker)","date":"28/05 14:23","msgType":"dm","hasMedia":true},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"gì trời","date":"28/05 14:22","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"e hỏi ảnh cười cười ko à","date":"28/05 14:02","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"ko phải e á","date":"28/05 14:02","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"ảnh nói với Dương","date":"28/05 14:02","msgType":"dm","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"(media/sticker)","date":"28/05 11:43","msgType":"dm","hasMedia":true},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"anh đâu r","date":"28/05 11:39","msgType":"dm","hasMedia":false}]},{"id":"chat_-4795315212","name":"Logistic KFM","type":"group","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Chỗ xe đầy a @Long_SC015349 làm việc với Thanh có rule sắp ưu tiên lấy cho tuyến sau nhé","date":"29/05 08:55","msgType":"mention","hasMedia":false}]},{"id":"chat_-4898763987","name":"QA/QC -SCM","type":"group","messages":[{"sender":"Hương Nguyễn - SC012829 KFM - QC -","text":"@baohactruong @Long_SC015349 Hold sản phẩm lại này giúp em ko chia về ST bắt đầu từ hôm nay ạ","date":"28/05 17:38","msgType":"mention","hasMedia":false}]},{"id":"chat_791123385","name":"KFM - IT - Hoàng Long - SC005793","type":"dm","messages":[{"sender":"KFM - IT - Hoàng Long - SC005793","text":"....","date":"28/05 14:32","msgType":"dm","hasMedia":false}]},{"id":"chat_1076720375","name":"KFM - SCM - Lâm Nguyễn - SC008898","type":"dm","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Cái này cần trao đổi với bên Vận tải trước nha anh","date":"28/05 14:29","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"Đề xuất xử lý theo hướng này: ST phát hiện vi phạm các quy định tại nơi giao hàng ==> không nhận hàng, yêu cầu TX tuân thủ đúng mới nhận hàng.\n\nChứ nhắc nhở mãi không có hiệu quả, vài ngày lại lặp lại hoặc cố tình vi phạm. Kho sẽ triển khai, quán triệt với NVT luôn, tránh xử lý lắt nhắt","date":"28/05 14:29","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"e xử luôn vụ camera","date":"28/05 08:51","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"a mời thêm Tú, SOC vô nha","date":"28/05 08:51","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"e đang tới","date":"28/05 08:51","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"@Long_SC015349 gửi lại nhu cầu hình ảnh, lấy 1 góc camera chuẩn gửi lại làm mẫu giúp em","date":"27/05 18:16","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"chỗ này a chỉ cần đưa cái mẫu 90 độ lên là xong rồi.\nKhông cần hỏi nhiều đâu","date":"27/05 18:16","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"có cái dí","date":"27/05 16:08","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"nên e mới dí ép report tuần đó","date":"27/05 16:08","msgType":"dm","hasMedia":false}]},{"id":"chat_-5174669566","name":"26.SCF x KFM | UD Project","type":"group","messages":[{"sender":"KFM - SCM - Lâm Nguyễn - SC008898","text":"@Long_SC015349 trao đổi với chị Thanh thử nhé anh","date":"28/05 14:01","msgType":"mention","hasMedia":false},{"sender":"SGN - TM - SC007400 - Ngọc Thanh","text":"anh @Long_SC015349 anh @hoanglam666 ơi vấn đề trang bị bảng treo ở cửa ST phải kéo hàng xa cho giao hàng ko người nhận thì chỗ này e đề xuất phía ST trang bị như tài sản của ST ạ , NVT ko chỉ chạy cho mỗi bên mình, với lại lượng xe booking cũng dao động chứ k phải cố định số lượng xe , việc tự trang bị bảng cho toàn bộ xe khó nhắm chừng số lượng cần trang bị, với lại việc hợp tác với các NVT cũng tùy từng giai đoạn , cái này ST trang bị để ST lâu dài cố định tại ST thì ổn hơn ạ","date":"28/05 13:59","msgType":"mention","hasMedia":false}]},{"id":"chat_7466254400","name":"KFM - SCM - Hà Phạm - SC007251","type":"dm","messages":[{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"(media/sticker)","date":"28/05 13:32","msgType":"dm","hasMedia":true},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"Phòng mai book đk trên VP r à a","date":"27/05 19:06","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"Kkkkk","date":"27/05 19:06","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"E đang chạy xe k thấy tin","date":"27/05 19:01","msgType":"dm","hasMedia":false},{"sender":"KFM - SCM - Hà Phạm - SC007251","text":"(media/sticker)","date":"27/05 19:01","msgType":"dm","hasMedia":true}]},{"id":"chat_-5115999359","name":"Giao hàng không người nhận_SCM x HTP x SCV","type":"group","messages":[{"sender":"KFM - IT - Phong Trương - SC008704 🧑🏻‍💻","text":"Em gửi nha anh @Long_SC015349","date":"28/05 13:08","msgType":"mention","hasMedia":false},{"sender":"KFM - IT - Tính Võ - SC002122","text":"@phongtmp e gửi apk môi trường Dev lên cho a @Long_SC015349 test luồng tài xế giao hàng nha e","date":"28/05 13:05","msgType":"mention","hasMedia":false}]},{"id":"chat_-4752734610","name":"XỬ LÝ CHÊNH LỆCH ABA","type":"group","messages":[{"sender":"KFM - SCM - Thành Phạm - SC006932","text":"Em gửi phiếu chuyển hàng claim ABA xác nhận T04 nhé anh [KFM - SCM - Thọ Nguyễn - SC006747](tg://user?id=5593486255) \n+ Hàng claim tại kho : **PT1360431**\n+ Hàng claim tại ST nhận thiếu : **PT1360450**\nSố này em tạo từ file chị Hạc nhưng bên sheet chi tiết , lọc cột ABA xác nhận , còn sheet tổng hợp là đang có số lượng từ chối và Write-off nha anh \n@Long_SC015349 @baohactruong","date":"27/05 10:55","msgType":"mention","hasMedia":false}]}];
 
 const READ_KEY = 'tele_read_v2';
 let readChats = {};
@@ -233,93 +231,6 @@ function setFilter(mode) {
 renderList();
 let _cd = 300;
 setInterval(() => { _cd--; if(_cd<=0) return; const m=Math.floor(_cd/60),s=_cd%60; document.getElementById('countdown').textContent = '🔄 '+m+':'+String(s).padStart(2,'0'); }, 1000);
-
-// === LIVE FETCH: "Tải mới" fetches realtime from localhost API ===
-async function reloadTele() {
-    const btn = document.getElementById('btnRefresh');
-    btn.disabled = true;
-    btn.textContent = '⏳ Đang quét...';
-    try {
-        // 1. Get current scan time & trigger new scan
-        const r1 = await fetch(API_BASE + '/api/telegram/all-unread?force=1', {signal: AbortSignal.timeout(10000)});
-        const d1 = await r1.json();
-        const oldScan = d1.last_scan || '';
-        btn.textContent = '⏳ Quét TG...0s';
-        // 2. Poll for scan completion (max 3 min)
-        let freshData = null;
-        const t0 = Date.now();
-        while (Date.now() - t0 < 180000) {
-            await new Promise(r => setTimeout(r, 8000));
-            btn.textContent = '⏳ Quét TG...' + Math.floor((Date.now()-t0)/1000) + 's';
-            try {
-                const r2 = await fetch(API_BASE + '/api/telegram/all-unread', {signal: AbortSignal.timeout(10000)});
-                const d2 = await r2.json();
-                if (d2.last_scan && d2.last_scan !== oldScan) { freshData = d2; break; }
-            } catch(e2) {}
-        }
-        if (!freshData) {
-            const r3 = await fetch(API_BASE + '/api/telegram/all-unread', {signal: AbortSignal.timeout(10000)});
-            freshData = await r3.json();
-        }
-        // 3. Merge: DMs + text-match from all-unread
-        btn.textContent = '⏳ Đang xử lý...';
-        const chatsMap = {};
-        const allChats = freshData.chats || {};
-        for (const [cid, chat] of Object.entries(allChats)) {
-            const msgs = chat.messages || [];
-            if (!msgs.length) continue;
-            const cType = chat.type || 'group';
-            const name = chat.name || String(cid);
-            const key = 'chat_' + cid;
-            if (cType === 'dm') {
-                if (!chatsMap[key]) chatsMap[key] = {id:key, name:name, type:'dm', messages:[]};
-                const eids = new Set(chatsMap[key].messages.map(m=>m._mid));
-                for (const m of msgs) {
-                    if (!eids.has(m.msg_id||0)) {
-                        chatsMap[key].messages.push({sender:m.sender||'',text:m.text||'',date:m.date||'',msgType:'dm',hasMedia:m.has_media||false,_mid:m.msg_id||0});
-                    }
-                }
-            } else {
-                const rel = msgs.filter(m => {
-                    const t = (m.text||'').toLowerCase();
-                    return USER_TAGS.some(tag => t.includes(tag.toLowerCase()));
-                });
-                if (rel.length) {
-                    if (!chatsMap[key]) chatsMap[key] = {id:key, name:name, type:cType, messages:[]};
-                    const eids = new Set(chatsMap[key].messages.map(m=>m._mid));
-                    for (const m of rel) {
-                        if (!eids.has(m.msg_id||0)) {
-                            chatsMap[key].messages.push({sender:m.sender||'',text:m.text||'',date:m.date||'',msgType:'mention',hasMedia:m.has_media||false,_mid:m.msg_id||0});
-                        }
-                    }
-                }
-            }
-        }
-        const result = Object.values(chatsMap);
-        for (const c of result) {
-            c.messages.forEach(m => delete m._mid);
-            c.messages.sort((a,b) => b.date.localeCompare(a.date));
-        }
-        result.sort((a,b) => (b.messages[0]?.date||'').localeCompare(a.messages[0]?.date||''));
-        // 4. Update UI
-        ALL_CHATS.length = 0;
-        ALL_CHATS.push(...result);
-        const now = new Date();
-        const st = String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+' '
-            +String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
-        document.querySelector('.scan-time').innerHTML = '🕐 ' + st + ' · <span id="countdown"></span>';
-        _cd = 300;
-        selectedChatId = null;
-        document.getElementById('detailPanel').innerHTML = '<div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện bên trái</p></div>';
-        renderList();
-        btn.textContent = '✅ Đã tải!';
-        setTimeout(() => { btn.textContent = '🔄 Tải mới'; btn.disabled = false; }, 2000);
-    } catch(e) {
-        // Localhost unreachable (HTTPS mixed content block) → fallback reload
-        btn.textContent = '🔄 Đang reload...';
-        window.location.reload(true);
-    }
-}
 </script>
 </body>
 </html>
