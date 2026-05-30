@@ -182,8 +182,8 @@ function selectChat(chatId) {
     if (!chat) return;
 
     const panel = document.getElementById('detailPanel');
-    const tagCls = { dm:'tag-dm', reply:'tag-reply', mention:'tag-mention' };
-    const tagLbl = { dm:'Nhắn riêng', reply:'Trả lời', mention:'Tag tôi' };
+    const tagCls = { dm:'tag-dm', reply:'tag-reply', mention:'tag-mention', group:'tag-group' };
+    const tagLbl = { dm:'Nhắn riêng', reply:'Trả lời', mention:'Tag tôi', group:'Nhóm' };
     const isRead = isChatRead(chatId);
 
     let html = `<div class="detail-header">
