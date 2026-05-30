@@ -838,7 +838,7 @@ function switchMain(panel, btn) {
     }
     if (panel === 'tele') {
         const iframe = document.getElementById('iframe-tele');
-        if (iframe && !iframe.src) iframe.src = 'tele.html';
+        if (iframe && !iframe.src) iframe.src = 'tele.html?t=' + Date.now();
     }
 }
 window.switchMain = switchMain;
