@@ -233,6 +233,93 @@ function setFilter(mode) {
 renderList();
 let _cd = 300;
 setInterval(() => { _cd--; if(_cd<=0) return; const m=Math.floor(_cd/60),s=_cd%60; document.getElementById('countdown').textContent = '🔄 '+m+':'+String(s).padStart(2,'0'); }, 1000);
+
+// === LIVE FETCH: "Tải mới" fetches realtime from localhost API ===
+async function reloadTele() {
+    const btn = document.getElementById('btnRefresh');
+    btn.disabled = true;
+    btn.textContent = '⏳ Đang quét...';
+    try {
+        // 1. Get current scan time & trigger new scan
+        const r1 = await fetch(API_BASE + '/api/telegram/all-unread?force=1', {signal: AbortSignal.timeout(10000)});
+        const d1 = await r1.json();
+        const oldScan = d1.last_scan || '';
+        btn.textContent = '⏳ Quét TG...0s';
+        // 2. Poll for scan completion (max 3 min)
+        let freshData = null;
+        const t0 = Date.now();
+        while (Date.now() - t0 < 180000) {
+            await new Promise(r => setTimeout(r, 8000));
+            btn.textContent = '⏳ Quét TG...' + Math.floor((Date.now()-t0)/1000) + 's';
+            try {
+                const r2 = await fetch(API_BASE + '/api/telegram/all-unread', {signal: AbortSignal.timeout(10000)});
+                const d2 = await r2.json();
+                if (d2.last_scan && d2.last_scan !== oldScan) { freshData = d2; break; }
+            } catch(e2) {}
+        }
+        if (!freshData) {
+            const r3 = await fetch(API_BASE + '/api/telegram/all-unread', {signal: AbortSignal.timeout(10000)});
+            freshData = await r3.json();
+        }
+        // 3. Merge: DMs + text-match from all-unread
+        btn.textContent = '⏳ Đang xử lý...';
+        const chatsMap = {};
+        const allChats = freshData.chats || {};
+        for (const [cid, chat] of Object.entries(allChats)) {
+            const msgs = chat.messages || [];
+            if (!msgs.length) continue;
+            const cType = chat.type || 'group';
+            const name = chat.name || String(cid);
+            const key = 'chat_' + cid;
+            if (cType === 'dm') {
+                if (!chatsMap[key]) chatsMap[key] = {id:key, name:name, type:'dm', messages:[]};
+                const eids = new Set(chatsMap[key].messages.map(m=>m._mid));
+                for (const m of msgs) {
+                    if (!eids.has(m.msg_id||0)) {
+                        chatsMap[key].messages.push({sender:m.sender||'',text:m.text||'',date:m.date||'',msgType:'dm',hasMedia:m.has_media||false,_mid:m.msg_id||0});
+                    }
+                }
+            } else {
+                const rel = msgs.filter(m => {
+                    const t = (m.text||'').toLowerCase();
+                    return USER_TAGS.some(tag => t.includes(tag.toLowerCase()));
+                });
+                if (rel.length) {
+                    if (!chatsMap[key]) chatsMap[key] = {id:key, name:name, type:cType, messages:[]};
+                    const eids = new Set(chatsMap[key].messages.map(m=>m._mid));
+                    for (const m of rel) {
+                        if (!eids.has(m.msg_id||0)) {
+                            chatsMap[key].messages.push({sender:m.sender||'',text:m.text||'',date:m.date||'',msgType:'mention',hasMedia:m.has_media||false,_mid:m.msg_id||0});
+                        }
+                    }
+                }
+            }
+        }
+        const result = Object.values(chatsMap);
+        for (const c of result) {
+            c.messages.forEach(m => delete m._mid);
+            c.messages.sort((a,b) => b.date.localeCompare(a.date));
+        }
+        result.sort((a,b) => (b.messages[0]?.date||'').localeCompare(a.messages[0]?.date||''));
+        // 4. Update UI
+        ALL_CHATS.length = 0;
+        ALL_CHATS.push(...result);
+        const now = new Date();
+        const st = String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+' '
+            +String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+        document.querySelector('.scan-time').innerHTML = '🕐 ' + st + ' · <span id="countdown"></span>';
+        _cd = 300;
+        selectedChatId = null;
+        document.getElementById('detailPanel').innerHTML = '<div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện bên trái</p></div>';
+        renderList();
+        btn.textContent = '✅ Đã tải!';
+        setTimeout(() => { btn.textContent = '🔄 Tải mới'; btn.disabled = false; }, 2000);
+    } catch(e) {
+        // Localhost unreachable (HTTPS mixed content block) → fallback reload
+        btn.textContent = '🔄 Đang reload...';
+        window.location.reload(true);
+    }
+}
 </script>
 </body>
 </html>
