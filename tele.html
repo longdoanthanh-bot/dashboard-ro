@@ -276,17 +276,13 @@ async function reloadTele() {
                     }
                 }
             } else {
-                const rel = msgs.filter(m => {
-                    const t = (m.text||'').toLowerCase();
-                    return USER_TAGS_JS.some(tag => t.includes(tag.toLowerCase()));
-                });
-                if (rel.length) {
-                    if (!chatsMap[key]) chatsMap[key] = {id:key, name:name, type:cType, messages:[]};
-                    const eids = new Set(chatsMap[key].messages.map(m=>m._mid));
-                    for (const m of rel) {
-                        if (!eids.has(m.msg_id||0)) {
-                            chatsMap[key].messages.push({sender:m.sender||'',text:m.text||'',date:m.date||'',msgType:'mention',hasMedia:m.has_media||false,_mid:m.msg_id||0});
-                        }
+                if (!chatsMap[key]) chatsMap[key] = {id:key, name:name, type:cType, messages:[]};
+                const eids = new Set(chatsMap[key].messages.map(m=>m._mid));
+                for (const m of msgs) {
+                    if (!eids.has(m.msg_id||0)) {
+                        const txt = (m.text||'').toLowerCase();
+                        const isMention = USER_TAGS_JS.some(tag => txt.includes(tag.toLowerCase()));
+                        chatsMap[key].messages.push({sender:m.sender||'',text:m.text||'',date:m.date||'',msgType:isMention?'mention':'group',hasMedia:m.has_media||false,_mid:m.msg_id||0});
                     }
                 }
             }
@@ -297,7 +293,9 @@ async function reloadTele() {
             c.messages.sort((a,b) => b.date.localeCompare(a.date));
         }
         result.sort((a,b) => (b.messages[0]?.date||'').localeCompare(a.messages[0]?.date||''));
+        const top30 = result.slice(0, 30);
         ALL_CHATS.length = 0;
+        ALL_CHATS.push(...top30);
         ALL_CHATS.push(...result);
         const now = new Date();
         const st = String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+' '
