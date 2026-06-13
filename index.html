@@ -325,7 +325,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <button class="main-tab" onclick="switchMain('thuhoi',this)"><span class="tab-icon">🔄</span> Tiến Độ Thu Hồi</button>
     <button class="main-tab" onclick="switchMain('storemap',this)"><span class="tab-icon">🗺️</span> Sơ Đồ ST</button>
     <button class="main-tab" onclick="switchMain('tasks',this)"><span class="tab-icon">📋</span> Công Việc</button>
-    <button class="main-tab" onclick="switchMain('tele',this)"><span class="tab-icon">📬</span> Telegram</button>
+
 </div>
 
 <!-- PANEL 1: TỒN KHO -->
@@ -775,10 +775,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <div class="main-panel" id="panel-tasks" style="padding:0;">
     <iframe id="iframe-tasks" style="width:100%;height:calc(100vh - 100px);border:none;border-radius:8px;"></iframe>
 </div>
-<!-- PANEL: TELEGRAM -->
-<div class="main-panel" id="panel-tele" style="padding:0;">
-    <iframe id="iframe-tele" style="width:100%;height:calc(100vh - 100px);border:none;border-radius:8px;"></iframe>
-</div>
+
 
 </div>
 
@@ -1601,6 +1598,41 @@ function calcDistance() {
         window._map.fitBounds([aLL, bLL], {padding:[80,80], maxZoom:16});
     }).catch(() => { resEl.textContent = '\u274C L\u1ed7i k\u1ebft n\u1ed1i'; resEl.style.color='var(--red)'; });
 }
+
+function switchMain(tabId, btn) {
+    // 1. Manage active class on tab buttons
+    document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
+    if (btn) {
+        btn.classList.add('active');
+    } else {
+        const targetBtn = Array.from(document.querySelectorAll('.main-tab')).find(b => {
+            const attr = b.getAttribute('onclick');
+            return attr && attr.includes(`'${tabId}'`);
+        });
+        if (targetBtn) targetBtn.classList.add('active');
+    }
+    
+    // 2. Manage active class on panels
+    document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
+    const targetPanel = document.getElementById('panel-' + tabId);
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
+    
+    // 3. Lazy-load iframes
+    if (tabId === 'tasks') {
+        const iframe = document.getElementById('iframe-tasks');
+        if (iframe && !iframe.src) {
+            iframe.src = 'tasks.html';
+        }
+    } else if (tabId === 'storemap') {
+        // 4. Lazy-initialize map
+        if (typeof initMap === 'function') {
+            initMap();
+        }
+    }
+}
+window.switchMain = switchMain;
 </script>
 </body>
 </html>
