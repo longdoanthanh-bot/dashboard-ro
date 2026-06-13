@@ -15,7 +15,7 @@
     --radius: 12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow:hidden; }
 body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
     background: radial-gradient(ellipse at 30% 50%, rgba(108,140,255,0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 70% 20%, rgba(167,139,250,0.04) 0%, transparent 50%);
@@ -23,101 +23,144 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 
 /* ===== HEADER ===== */
 .page-header {
-    position:relative; z-index:1; padding:16px 28px; display:flex; align-items:center; justify-content:space-between;
-    border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8);
+    position:relative; z-index:10; padding:12px 24px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.9);
 }
-.page-header-left h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
-.page-header-left h1 .hicon { font-size:22px; }
-.page-header-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+.page-header-left { display:flex; align-items:center; gap:12px; }
+.page-header-left h1 { font-size:18px; font-weight:700;
+    background:linear-gradient(135deg,var(--text),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.page-header-sub { font-size:10px; color:var(--text3); margin-top:1px; }
 .header-actions { display:flex; gap:6px; align-items:center; }
-.header-btn {
-    padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg3);
+.btn {
+    padding:6px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg3);
     color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer;
-    display:flex; align-items:center; gap:5px; transition:all .2s;
+    display:flex; align-items:center; gap:5px; transition:all .2s; text-decoration:none;
 }
-.header-btn:hover { border-color:var(--blue); color:var(--text); }
-.badge { background:var(--red); color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; min-width:20px; text-align:center; }
+.btn:hover { border-color:var(--blue); color:var(--text); transform:translateY(-1px); }
+.btn-primary { background:var(--blue); color:#fff; border-color:var(--blue); }
+.btn-primary:hover { background:#5a7af0; }
+.btn-green { background:rgba(52,211,153,0.1); color:var(--green); border-color:rgba(52,211,153,0.25); }
+.btn-green:hover { background:rgba(52,211,153,0.25); }
+.btn-red { background:rgba(248,113,113,0.08); color:var(--red); border-color:rgba(248,113,113,0.2); }
+.btn-red:hover { background:rgba(248,113,113,0.2); }
+.badge { background:var(--blue); color:#fff; font-size:11px; font-weight:700; padding:2px 10px; border-radius:12px; min-width:24px; text-align:center; }
+.badge-pulse { animation: badgePulse 2s ease infinite; }
+@keyframes badgePulse { 0%,100%{box-shadow:0 0 0 0 rgba(108,140,255,0.4)} 50%{box-shadow:0 0 0 6px rgba(108,140,255,0)} }
+
+/* Live indicator */
+.live-dot { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block;
+    animation: livePulse 1.5s ease infinite; margin-right:4px; }
+@keyframes livePulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,0.5)} 50%{opacity:0.6;box-shadow:0 0 0 4px rgba(52,211,153,0)} }
+.live-label { font-size:10px; color:var(--green); font-weight:600; display:flex; align-items:center; }
+
+/* ===== STATS BAR ===== */
+.stats-bar { display:flex; gap:12px; padding:10px 24px; border-bottom:1px solid var(--border); background:rgba(26,27,46,0.3); position:relative; z-index:1; }
+.stat-chip { display:flex; align-items:center; gap:6px; padding:4px 12px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--border); }
+.stat-chip .num { font-size:16px; font-weight:800; }
+.stat-chip .lbl { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.3px; }
 
 /* ===== MAIN LAYOUT ===== */
-.main { position:relative; z-index:1; display:flex; height:calc(100vh - 65px); }
+.main { position:relative; z-index:1; display:flex; height:calc(100vh - 100px); }
 
 /* Sidebar */
-.sidebar { width:340px; border-right:1px solid var(--border); display:flex; flex-direction:column; background:rgba(26,27,46,0.5); }
-.sidebar-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.sidebar-title { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+.sidebar { width:360px; min-width:280px; border-right:1px solid var(--border); display:flex; flex-direction:column; background:rgba(26,27,46,0.3); }
+.sidebar-header { padding:10px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.sidebar-title { font-size:11px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
 .filter-chips { display:flex; gap:4px; }
-.filter-chip {
+.chip {
     padding:4px 10px; border-radius:14px; border:1px solid var(--border); background:transparent;
     color:var(--text3); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
 }
-.filter-chip:hover { border-color:var(--blue); color:var(--text); }
-.filter-chip.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+.chip:hover { border-color:var(--blue); color:var(--text); }
+.chip.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+
 .chat-list { flex:1; overflow-y:auto; }
-.type-header { padding:8px 16px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+.chat-list::-webkit-scrollbar { width:4px; }
+.chat-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:4px; }
+
+.type-header { padding:8px 16px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:flex; align-items:center; gap:6px;
+    border-top:1px solid var(--border); margin-top:4px; }
+.type-header:first-child { border-top:none; margin-top:0; }
+.type-count { font-size:9px; padding:1px 6px; border-radius:8px; background:rgba(255,255,255,0.06); }
+
 .chat-item {
-    padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:all .15s;
+    padding:10px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:all .15s;
     border-left:3px solid transparent;
 }
 .chat-item:hover { background:rgba(108,140,255,0.05); }
 .chat-item.active { background:rgba(108,140,255,0.1); border-left-color:var(--blue); }
-.chat-name { font-size:13px; font-weight:600; margin-bottom:2px; }
-.chat-preview { font-size:11px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.chat-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
-.chat-time { font-size:10px; color:var(--text3); }
-.chat-badge { font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; background:var(--blue); color:#fff; }
-.chat-tag { font-size:9px; font-weight:600; padding:1px 5px; border-radius:4px; margin-left:6px; }
+.chat-item.unread { }
+.chat-item .chat-name { font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; }
+.chat-item .chat-preview { font-size:11px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+.chat-item .chat-meta { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+.chat-item .chat-time { font-size:10px; color:var(--text3); }
+.chat-item .chat-badge { font-size:10px; font-weight:700; padding:1px 7px; border-radius:8px; color:#fff; min-width:20px; text-align:center; }
+.chat-item .type-tag { font-size:8px; font-weight:700; padding:1px 5px; border-radius:4px; text-transform:uppercase; }
 .tag-dm { background:rgba(52,211,153,0.15); color:var(--green); }
-.tag-reply { background:rgba(108,140,255,0.15); color:var(--blue); }
-.tag-mention { background:rgba(251,191,36,0.15); color:var(--yellow); }
+.tag-mention { background:rgba(108,140,255,0.15); color:var(--blue); }
+.tag-reply { background:rgba(251,191,36,0.15); color:var(--yellow); }
 
 /* Detail panel */
 .detail { flex:1; display:flex; flex-direction:column; }
 .detail-header {
-    padding:14px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;
-    background:rgba(26,27,46,0.3);
+    padding:12px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;
+    background:rgba(26,27,46,0.3); min-height:52px;
 }
 .detail-header h3 { font-size:15px; font-weight:700; }
 .detail-header .sub { font-size:11px; color:var(--text3); margin-top:1px; }
 .detail-actions { display:flex; gap:6px; }
-.action-btn {
-    padding:6px 14px; border-radius:8px; border:1px solid var(--border); font-size:11px;
-    font-weight:600; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:5px; transition:all .2s;
-}
-.action-btn.btn-green { background:rgba(52,211,153,0.1); color:var(--green); border-color:rgba(52,211,153,0.25); }
-.action-btn.btn-green:hover { background:rgba(52,211,153,0.25); transform:translateY(-1px); }
-.action-btn.btn-red { background:rgba(248,113,113,0.08); color:var(--red); border-color:rgba(248,113,113,0.2); }
-.action-btn.btn-red:hover { background:rgba(248,113,113,0.2); transform:translateY(-1px); }
-.messages { flex:1; overflow-y:auto; padding:16px 24px; display:flex; flex-direction:column; gap:8px; }
+
+.messages { flex:1; overflow-y:auto; padding:16px 24px; display:flex; flex-direction:column; gap:6px; }
+.messages::-webkit-scrollbar { width:4px; }
+.messages::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:4px; }
+
 .msg {
-    background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 16px;
-    animation:fadeIn .2s ease;
+    background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 14px;
+    animation:msgIn .25s ease;
 }
-.msg-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.msg.new-msg { border-left:3px solid var(--blue); animation:msgNew .5s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+@keyframes msgNew { 0%{background:rgba(108,140,255,0.15)} 100%{background:var(--card)} }
+
+.msg-header { display:flex; align-items:center; gap:8px; margin-bottom:3px; }
 .msg-sender { font-size:12px; font-weight:700; color:var(--blue); }
 .msg-time { font-size:10px; color:var(--text3); }
-.msg-type-tag { font-size:9px; font-weight:600; padding:1px 5px; border-radius:4px; }
-.msg-text { font-size:12px; color:var(--text2); line-height:1.5; }
-.msg-reply-ref { font-size:10px; color:var(--text3); margin-bottom:4px; padding:4px 8px; border-left:2px solid var(--blue); background:rgba(108,140,255,0.05); border-radius:0 4px 4px 0; }
+.msg-type-badge { font-size:8px; font-weight:700; padding:1px 5px; border-radius:4px; text-transform:uppercase; }
+.msg-text { font-size:12.5px; color:var(--text2); line-height:1.6; word-break:break-word; }
+.msg-media { font-size:11px; color:var(--purple); margin-top:3px; display:flex; align-items:center; gap:4px; }
+.msg-read-status { font-size:9px; color:var(--text3); margin-left:auto; }
+
+/* Context messages (older messages for context) */
+.msg-context { opacity:0.5; border-left:2px solid var(--border); padding-left:12px; }
+.msg-context .msg-sender { color:var(--text3); }
+.context-divider { text-align:center; font-size:10px; color:var(--text3); padding:6px 0; display:flex; align-items:center; gap:8px; }
+.context-divider::before, .context-divider::after { content:''; flex:1; height:1px; background:var(--border); }
 
 /* Empty state */
-.empty { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text3); }
-.empty .icon { font-size:40px; margin-bottom:10px; }
+.empty { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text3); gap:8px; }
+.empty .icon { font-size:40px; opacity:0.4; }
 .empty p { font-size:13px; }
 
 /* Toast */
 .toast {
-    position:fixed; bottom:30px; right:30px;
-    background:var(--bg3); border:1px solid var(--border); border-radius:10px;
-    padding:12px 20px; font-size:12px; font-weight:600; color:var(--text);
+    position:fixed; bottom:24px; right:24px;
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:10px 18px; font-size:12px; font-weight:600; color:var(--text);
     box-shadow:0 8px 32px rgba(0,0,0,.5); z-index:1000;
-    animation:fadeIn .3s ease; transition:opacity .3s;
+    animation:msgIn .3s ease; transition:opacity .3s;
 }
-@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* Scanning indicator */
+.scanning { display:none; align-items:center; gap:6px; padding:6px 12px; font-size:10px; color:var(--yellow); }
+.scanning.active { display:flex; }
+.scanning .spinner { width:12px; height:12px; border:2px solid rgba(251,191,36,0.3); border-top-color:var(--yellow); border-radius:50%; animation:spin .6s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
 
 @media (max-width:800px) {
     .main { flex-direction:column; }
     .sidebar { width:100%; height:40vh; border-right:none; border-bottom:1px solid var(--border); }
     .detail { height:60vh; }
+    .stats-bar { flex-wrap:wrap; gap:6px; padding:8px 16px; }
 }
 </style>
 </head>
@@ -125,25 +168,45 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 
 <header class="page-header">
     <div class="page-header-left">
-        <h1><span class="hicon">📬</span> Telegram Inbox</h1>
-        <div class="page-header-sub">Thư Ký AI — Chỉ hiện: tin nhắn riêng · trả lời · tag tôi</div>
+        <div>
+            <h1>📬 Telegram Inbox</h1>
+            <div class="page-header-sub">Thư Ký AI — DM · Tag tôi · Trả lời tôi</div>
+        </div>
     </div>
     <div class="header-actions">
-        <span class="badge" id="totalBadge">0</span>
-        <button class="header-btn" onclick="location.href='./'">← Dashboard</button>
+        <div class="scanning" id="scanIndicator">
+            <div class="spinner"></div>
+            <span>Đang quét...</span>
+        </div>
+        <div class="live-label"><span class="live-dot"></span> <span id="liveStatus">Live 15s</span></div>
+        <span class="badge" id="totalBadge">--</span>
+        <button class="btn btn-primary" onclick="loadMentions(true)">🔄 Quét mới</button>
+        <a href="/" class="btn">← Dashboard</a>
     </div>
 </header>
+
+<div class="stats-bar">
+    <div class="stat-chip"><div class="num" style="color:var(--green)" id="sDm">0</div><div class="lbl">Nhắn riêng</div></div>
+    <div class="stat-chip"><div class="num" style="color:var(--blue)" id="sMention">0</div><div class="lbl">Tag tôi</div></div>
+    <div class="stat-chip"><div class="num" style="color:var(--yellow)" id="sReply">0</div><div class="lbl">Trả lời</div></div>
+    <div class="stat-chip"><div class="num" style="color:var(--text)" id="sTotal">0</div><div class="lbl">Tổng</div></div>
+    <div style="margin-left:auto;font-size:10px;color:var(--text3);display:flex;align-items:center;" id="scanTime"></div>
+</div>
 
 <div class="main">
     <div class="sidebar">
         <div class="sidebar-header">
             <span class="sidebar-title">Hội thoại (<span id="chatCount">0</span>)</span>
             <div class="filter-chips">
-                <button class="filter-chip active" id="fRelevant" onclick="setFilter('relevant')">🎯 Liên quan</button>
-                <button class="filter-chip" id="fAll" onclick="setFilter('all')">📋 Tất cả</button>
+                <button class="chip active" data-filter="all" onclick="setFilter(this)">Tất cả</button>
+                <button class="chip" data-filter="dm" onclick="setFilter(this)">👤 DM</button>
+                <button class="chip" data-filter="mention" onclick="setFilter(this)">🏷️ Tag</button>
+                <button class="chip" data-filter="reply" onclick="setFilter(this)">↩️ Reply</button>
             </div>
         </div>
-        <div class="chat-list" id="chatList"></div>
+        <div class="chat-list" id="chatList">
+            <div class="empty"><div class="icon">⏳</div><p>Đang tải...</p></div>
+        </div>
     </div>
     <div class="detail" id="detailPanel">
         <div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện bên trái</p></div>
@@ -151,116 +214,189 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 </div>
 
 <script>
-// ===== SAMPLE DATA =====
-const ALL_CHATS = [
-    {
-        id:'dm_1', name:'Nguyễn Văn Minh (SCF)', type:'dm',
-        messages:[
-            { sender:'Nguyễn Văn Minh', text:'Anh ơi, bảng giá cước vận chuyển tháng 5 đã cập nhật chưa ạ?', date:'21/05 08:15', msgType:'dm' },
-            { sender:'Nguyễn Văn Minh', text:'Em cần gửi cho đối tác trước 12h trưa nay', date:'21/05 08:16', msgType:'dm' },
-        ]
-    },
-    {
-        id:'dm_2', name:'Trần Thị Hoa (Kho Q7)', type:'dm',
-        messages:[
-            { sender:'Trần Thị Hoa', text:'Anh Long ơi, kho Q7 hôm nay thiếu 15 rổ ABA đông lạnh, anh check giúp em với', date:'21/05 09:30', msgType:'dm' },
-        ]
-    },
-    {
-        id:'dm_3', name:'Lê Hoàng Phúc (IT)', type:'dm',
-        messages:[
-            { sender:'Lê Hoàng Phúc', text:'VPN đã setup xong cho anh rồi nhé, anh thử kết nối lại xem', date:'20/05 16:45', msgType:'dm' },
-            { sender:'Lê Hoàng Phúc', text:'Nếu có lỗi gì anh gửi screenshot em xử lý', date:'20/05 16:46', msgType:'dm' },
-        ]
-    },
-    {
-        id:'grp_1', name:'🏢 Nhóm Vận Hành KFM', type:'group',
-        messages:[
-            { sender:'Phan Thanh Tùng', text:'@Long xe DL-07 đã kiểm tra xong, OK giao chuyến chiều nay', date:'21/05 10:20', msgType:'mention', replyRef:null },
-            { sender:'Ngô Minh Đức', text:'@Long anh confirm giúp lịch thu hồi rổ tuần này', date:'21/05 11:05', msgType:'mention', replyRef:null },
-        ]
-    },
-    {
-        id:'grp_2', name:'🚛 Thu Hồi Rổ Tote', type:'group',
-        messages:[
-            { sender:'Võ Thị Mai', text:'Dạ em đã giao xong 150 rổ cho AIDI Q2, anh Long xác nhận giúp em', date:'21/05 07:50', msgType:'reply', replyRef:'Long: Sáng mai giao 150 rổ cho AIDI nhé' },
-            { sender:'Trần Quốc Bảo', text:'ST A113 báo tồn rổ 142/250, cần thu thêm không anh?', date:'21/05 09:10', msgType:'reply', replyRef:'Long: Check tồn rổ các ST tồn > 200' },
-        ]
-    },
-    {
-        id:'grp_3', name:'📊 Báo Cáo Hàng Ngày', type:'group',
-        messages:[
-            { sender:'Bot Báo Cáo', text:'Báo cáo OTD ngày 20/05: Tỉ lệ giao đúng hạn 94.2%, 3 đơn trễ tại Q12', date:'21/05 06:00', msgType:'general' },
-            { sender:'Lê Văn Hùng', text:'Số liệu Q12 cần kiểm tra lại, có 2 đơn giao sai địa chỉ', date:'21/05 06:30', msgType:'general' },
-        ]
-    },
-    {
-        id:'ch_1', name:'📢 Thông Báo Công Ty', type:'channel',
-        messages:[
-            { sender:'Admin', text:'Thông báo: Nghỉ lễ 2/9 từ 30/08 đến 03/09/2026', date:'20/05 15:00', msgType:'general' },
-        ]
-    },
-    {
-        id:'grp_4', name:'🔧 Hỗ Trợ Kỹ Thuật', type:'group',
-        messages:[
-            { sender:'Phạm Đình Khoa', text:'@Long dashboard rổ tote bị lỗi hiển thị biểu đồ, anh check lại giúp', date:'21/05 14:30', msgType:'mention', replyRef:null },
-        ]
-    },
-];
+// Auto-detect API: nếu trên GitHub Pages, thử kết nối server Thư Ký AI
+const _isGitHub = window.location.hostname.includes('github.io');
+const _serverUrl = 'http://localhost:8080';
+let API = _isGitHub ? _serverUrl + '/api' : window.location.origin + '/api';
+let _serverConnected = false;
+let allMentions = [];
+let currentFilter = 'all';
+let selectedGroup = null;
+let _loading = false;
+let _lastCount = 0;
+let _pollInterval = null;
+let _errorCount = 0;
 
-let currentFilter = 'relevant';
-let selectedChatId = null;
+function esc(s) { if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function toast(msg) {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
+}
 
-// ===== FILTER LOGIC =====
-function getFilteredChats() {
-    if (currentFilter === 'all') return ALL_CHATS;
-    return ALL_CHATS.filter(chat => {
-        if (chat.type === 'dm') return true;
-        // Group/channel: only keep if has reply or mention
-        const relevant = chat.messages.filter(m => m.msgType === 'reply' || m.msgType === 'mention');
-        return relevant.length > 0;
-    }).map(chat => {
-        if (chat.type === 'dm') return chat;
-        const filtered = chat.messages.filter(m => m.msgType === 'reply' || m.msgType === 'mention');
-        return { ...chat, messages: filtered };
-    });
+// ===== TYPE HELPERS =====
+function isDm(t) { return t === 'direct_message'; }
+function isReply(t) { return t === 'reply_to_me'; }
+function isMention(t) { return !isDm(t) && !isReply(t); }
+
+function getTypeInfo(t) {
+    if (isDm(t)) return { label:'DM', cls:'tag-dm', group:'dm', color:'var(--green)', icon:'👤' };
+    if (isReply(t)) return { label:'Reply', cls:'tag-reply', group:'reply', color:'var(--yellow)', icon:'↩️' };
+    return { label:'Tag', cls:'tag-mention', group:'mention', color:'var(--blue)', icon:'🏷️' };
+}
+
+// ===== LOAD MENTIONS =====
+async function loadMentions(force=false) {
+    if (_loading && !force) return;
+    _loading = true;
+    const indicator = document.getElementById('scanIndicator');
+    indicator.classList.add('active');
+
+    try {
+        const param = force ? '&force=1' : '';
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), force ? 120000 : 30000);
+        const r = await fetch(API + '/telegram/mentions?hours=48' + param, {signal: ctrl.signal});
+        clearTimeout(timer);
+        const data = await r.json();
+
+        if (!data.available) {
+            document.getElementById('chatList').innerHTML =
+                '<div class="empty"><div class="icon">🔐</div><p>'+esc(data.message||'Chưa cấu hình Telegram')+'</p></div>';
+            _loading = false;
+            indicator.classList.remove('active');
+            return;
+        }
+
+        const newMentions = data.mentions || [];
+        const hasNew = newMentions.length !== _lastCount;
+        allMentions = newMentions;
+        _lastCount = allMentions.length;
+        _errorCount = 0;
+
+        // Update stats
+        const dms = allMentions.filter(m => isDm(m.mention_type));
+        const mentions = allMentions.filter(m => isMention(m.mention_type));
+        const replies = allMentions.filter(m => isReply(m.mention_type));
+        document.getElementById('sDm').textContent = dms.length;
+        document.getElementById('sMention').textContent = mentions.length;
+        document.getElementById('sReply').textContent = replies.length;
+        document.getElementById('sTotal').textContent = allMentions.length;
+
+        const badge = document.getElementById('totalBadge');
+        badge.textContent = allMentions.length;
+        badge.classList.toggle('badge-pulse', allMentions.length > 0);
+
+        // Scan time
+        const now = new Date();
+        document.getElementById('scanTime').textContent = '🔄 ' + now.toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+        renderChatList();
+
+        // Re-select current chat if still exists
+        if (selectedGroup) {
+            const filtered = getFilteredMentions();
+            const groups = groupByChat(filtered);
+            if (groups[selectedGroup]) {
+                selectChat(selectedGroup, true); // silent re-render
+            }
+        }
+
+        if (force) toast('✅ Quét xong — ' + allMentions.length + ' tin nhắn');
+        if (hasNew && !force && allMentions.length > 0) {
+            // New messages arrived during poll
+            document.title = `(${allMentions.length}) 📬 Telegram Inbox`;
+        }
+    } catch(e) {
+        _errorCount++;
+        if (_errorCount <= 2) {
+            // Silent retry
+        } else {
+            toast('⚠️ ' + (e.name === 'AbortError' ? 'Timeout' : e.message));
+        }
+    } finally {
+        _loading = false;
+        indicator.classList.remove('active');
+    }
+}
+
+// ===== FILTER & GROUP =====
+function getFilteredMentions() {
+    if (currentFilter === 'all') return allMentions;
+    if (currentFilter === 'dm') return allMentions.filter(m => isDm(m.mention_type));
+    if (currentFilter === 'mention') return allMentions.filter(m => isMention(m.mention_type));
+    if (currentFilter === 'reply') return allMentions.filter(m => isReply(m.mention_type));
+    return allMentions;
+}
+
+function groupByChat(mentions) {
+    const groups = {};
+    for (const m of mentions) {
+        const key = m.group || m.chat_id || 'unknown';
+        if (!groups[key]) groups[key] = { name: m.group, chatId: m.chat_id, msgs: [], types: new Set(), latestDate: '' };
+        groups[key].msgs.push(m);
+        groups[key].types.add(m.mention_type);
+        if (m.date > groups[key].latestDate) groups[key].latestDate = m.date;
+    }
+    return groups;
 }
 
 // ===== RENDER CHAT LIST =====
 function renderChatList() {
-    const chats = getFilteredChats();
+    const filtered = getFilteredMentions();
+    const groups = groupByChat(filtered);
     const el = document.getElementById('chatList');
-    const totalMsgs = chats.reduce((s,c) => s + c.messages.length, 0);
 
-    document.getElementById('totalBadge').textContent = totalMsgs;
-    document.getElementById('chatCount').textContent = chats.length;
+    const chatKeys = Object.keys(groups);
+    document.getElementById('chatCount').textContent = chatKeys.length;
 
-    if (!chats.length) {
-        el.innerHTML = '<div class="empty"><div class="icon">✅</div><p>Không có tin nhắn mới</p></div>';
+    if (!chatKeys.length) {
+        el.innerHTML = '<div class="empty"><div class="icon">✅</div><p>Không có tin nhắn liên quan</p></div>';
         return;
     }
 
-    // Group by type
-    const groups = { dm:[], group:[], channel:[] };
-    chats.forEach(c => { (groups[c.type] || groups.group).push(c); });
+    // Sort by latest date desc
+    chatKeys.sort((a,b) => (groups[b].latestDate || '').localeCompare(groups[a].latestDate || ''));
 
-    const typeLabels = { dm:'👤 Tin nhắn riêng', group:'👥 Nhóm', channel:'📢 Kênh' };
-    const typeColors = { dm:'var(--green)', group:'var(--blue)', channel:'var(--purple)' };
+    // Group by type category
+    const byCategory = { dm:[], mention:[], reply:[] };
+    for (const key of chatKeys) {
+        const g = groups[key];
+        if (g.types.has('direct_message')) byCategory.dm.push(key);
+        else if (g.types.has('reply_to_me')) byCategory.reply.push(key);
+        else byCategory.mention.push(key);
+    }
+
+    const catConfig = {
+        dm: { label:'👤 Tin nhắn riêng', color:'var(--green)' },
+        mention: { label:'🏷️ Tag tôi', color:'var(--blue)' },
+        reply: { label:'↩️ Trả lời tôi', color:'var(--yellow)' },
+    };
 
     let html = '';
-    for (const [type, items] of Object.entries(groups)) {
-        if (!items.length) continue;
-        const total = items.reduce((s,c) => s + c.messages.length, 0);
-        html += `<div class="type-header" style="color:${typeColors[type]}">${typeLabels[type]} (${total})</div>`;
-        for (const chat of items) {
-            const last = chat.messages[chat.messages.length - 1];
-            const isActive = selectedChatId === chat.id;
-            html += `<div class="chat-item${isActive?' active':''}" onclick="selectChat('${chat.id}')" style="border-left-color:${typeColors[type]}">
-                <div class="chat-name">${chat.name}</div>
-                <div class="chat-preview">${last.sender}: ${last.text.slice(0,45)}${last.text.length>45?'...':''}</div>
+    for (const [cat, keys] of Object.entries(byCategory)) {
+        if (!keys.length) continue;
+        const totalMsgs = keys.reduce((s, k) => s + groups[k].msgs.length, 0);
+        html += `<div class="type-header" style="color:${catConfig[cat].color}">${catConfig[cat].label} <span class="type-count">${totalMsgs}</span></div>`;
+
+        for (const key of keys) {
+            const g = groups[key];
+            const last = g.msgs[0];
+            const isActive = selectedGroup === key;
+            const unreadCount = g.msgs.filter(m => !m.is_read).length;
+            const typeInfo = getTypeInfo(last.mention_type);
+            const badgeColor = unreadCount > 0 ? catConfig[cat].color : 'var(--text3)';
+
+            html += `<div class="chat-item${isActive?' active':''}" onclick="selectChat('${esc(key)}')" style="${isActive?'border-left-color:'+catConfig[cat].color:''}">
+                <div class="chat-name">${esc(g.name)} <span class="type-tag ${typeInfo.cls}">${typeInfo.label}</span></div>
+                <div class="chat-preview">${esc(last.sender)}: ${esc((last.text||'').slice(0,50))}</div>
                 <div class="chat-meta">
-                    <span class="chat-time">${last.date}</span>
-                    <span class="chat-badge">${chat.messages.length}</span>
+                    <span class="chat-time">${esc(last.date)}</span>
+                    <span class="chat-badge" style="background:${badgeColor}">${g.msgs.length}</span>
                 </div>
             </div>`;
         }
@@ -269,80 +405,208 @@ function renderChatList() {
 }
 
 // ===== SELECT CHAT =====
-function selectChat(chatId) {
-    selectedChatId = chatId;
-    renderChatList(); // update active state
+async function selectChat(groupKey, silent=false) {
+    selectedGroup = groupKey;
+    if (!silent) renderChatList(); // update active state
 
-    const chats = getFilteredChats();
-    const chat = chats.find(c => c.id === chatId);
-    if (!chat) return;
+    const filtered = getFilteredMentions();
+    const groups = groupByChat(filtered);
+    const g = groups[groupKey];
+    if (!g) return;
 
     const panel = document.getElementById('detailPanel');
-    const typeTag = { dm:'tag-dm', reply:'tag-reply', mention:'tag-mention' };
-    const typeLabel = { dm:'Nhắn riêng', reply:'Trả lời', mention:'Tag tôi', general:'Chung' };
+    const typeInfo = getTypeInfo(g.msgs[0].mention_type);
+    const unreadCount = g.msgs.filter(m => !m.is_read).length;
 
     let html = `<div class="detail-header">
         <div>
-            <h3>${chat.name}</h3>
-            <div class="sub">${chat.messages.length} tin nhắn</div>
+            <h3>${esc(g.name)}</h3>
+            <div class="sub">${g.msgs.length} tin nhắn${unreadCount > 0 ? ' · '+unreadCount+' chưa đọc' : ''}</div>
         </div>
         <div class="detail-actions">
-            <button class="action-btn btn-green" onclick="dismissChat('${chat.id}')">✅ Đã đọc</button>
+            <button class="btn btn-green" onclick="markRead('${g.chatId}')">✅ Đã đọc</button>
+            <button class="btn" onclick="loadContext('${g.chatId}', ${g.msgs.length})">💬 Xem context</button>
         </div>
     </div>
-    <div class="messages">`;
+    <div class="messages" id="msgContainer">`;
 
-    for (const m of chat.messages) {
-        const tag = typeTag[m.msgType] || '';
-        const label = typeLabel[m.msgType] || '';
-        html += `<div class="msg">
-            ${m.replyRef ? `<div class="msg-reply-ref">↩ ${m.replyRef}</div>` : ''}
+    // Render messages (newest first in data, show oldest first visually)
+    const sorted = [...g.msgs].reverse();
+    for (const m of sorted) {
+        const ti = getTypeInfo(m.mention_type);
+        const readIcon = m.is_read ? '<span class="msg-read-status">✓ đã đọc</span>' : '<span class="msg-read-status" style="color:var(--yellow)">● mới</span>';
+        html += `<div class="msg${!m.is_read?' new-msg':''}">
             <div class="msg-header">
-                <span class="msg-sender">${m.sender}</span>
-                <span class="msg-time">${m.date}</span>
-                ${tag ? `<span class="msg-type-tag ${tag}">${label}</span>` : ''}
+                <span class="msg-sender">${esc(m.sender)}</span>
+                <span class="msg-type-badge ${ti.cls}">${ti.label}</span>
+                <span class="msg-time">${esc(m.date)}</span>
+                ${readIcon}
             </div>
-            <div class="msg-text">${m.text}</div>
+            <div class="msg-text">${esc(m.text)}</div>
+            ${m.has_media ? '<div class="msg-media">📎 Media đính kèm</div>' : ''}
         </div>`;
     }
 
     html += '</div>';
     panel.innerHTML = html;
+
+    // Auto-scroll to bottom
+    const container = document.getElementById('msgContainer');
+    if (container) container.scrollTop = container.scrollHeight;
+
+    // Mark as read on Telegram (DMs only)
+    if (g.chatId && g.types.has('direct_message')) {
+        fetch(API + `/telegram/read/${g.chatId}`, {method:'POST'}).catch(()=>{});
+    }
 }
 
-// ===== DISMISS =====
-function dismissChat(chatId) {
-    const idx = ALL_CHATS.findIndex(c => c.id === chatId);
-    if (idx > -1) ALL_CHATS.splice(idx, 1);
-    selectedChatId = null;
-    document.getElementById('detailPanel').innerHTML = '<div class="empty"><div class="icon">✅</div><p>Đã đánh dấu đã đọc</p></div>';
-    showToast('✅ Đã đánh dấu đã đọc');
-    renderChatList();
+// ===== LOAD CONTEXT (older messages) =====
+async function loadContext(chatId, existingCount) {
+    if (!chatId) { toast('⚠️ Không có chat_id'); return; }
+    try {
+        const limit = Math.min(existingCount + 10, 30);
+        const r = await fetch(API + `/telegram/messages/${chatId}?limit=${limit}`);
+        const data = await r.json();
+        if (!data.available || !data.messages?.length) { toast('⚠️ Không tải được context'); return; }
+
+        const container = document.getElementById('msgContainer');
+        if (!container) return;
+
+        // Build context HTML (prepend before existing messages)
+        const existingMsgIds = new Set(allMentions.filter(m => String(m.chat_id) === String(chatId)).map(m => m.msg_id));
+        const contextMsgs = data.messages.filter(m => !existingMsgIds.has(m.id)).reverse();
+
+        if (!contextMsgs.length) { toast('📭 Không có tin nhắn context thêm'); return; }
+
+        let contextHtml = '<div class="context-divider">Tin nhắn trước đó</div>';
+        for (const m of contextMsgs) {
+            contextHtml += `<div class="msg msg-context">
+                <div class="msg-header">
+                    <span class="msg-sender">${esc(m.sender)}</span>
+                    <span class="msg-time">${esc(m.date)}</span>
+                </div>
+                <div class="msg-text">${esc(m.text || '(media/sticker)')}</div>
+                ${m.media ? '<div class="msg-media">📎 Media</div>' : ''}
+            </div>`;
+        }
+        contextHtml += '<div class="context-divider">Tin nhắn liên quan đến bạn</div>';
+
+        container.insertAdjacentHTML('afterbegin', contextHtml);
+        toast('📬 Đã tải ' + contextMsgs.length + ' tin context');
+    } catch(e) {
+        toast('❌ Lỗi: ' + e.message);
+    }
+}
+
+// ===== MARK AS READ =====
+async function markRead(chatId) {
+    if (!chatId) return;
+    try {
+        await fetch(API + `/telegram/read/${chatId}`, {method:'POST'});
+        // Mark locally
+        for (const m of allMentions) {
+            if (String(m.chat_id) === String(chatId)) m.is_read = true;
+        }
+        renderChatList();
+        if (selectedGroup) selectChat(selectedGroup, true);
+        toast('✅ Đã đánh dấu đã đọc');
+    } catch(e) {
+        toast('❌ ' + e.message);
+    }
 }
 
 // ===== FILTER =====
-function setFilter(mode) {
-    currentFilter = mode;
-    document.getElementById('fRelevant').classList.toggle('active', mode === 'relevant');
-    document.getElementById('fAll').classList.toggle('active', mode === 'all');
-    selectedChatId = null;
+function setFilter(el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = el.dataset.filter;
+    selectedGroup = null;
     document.getElementById('detailPanel').innerHTML = '<div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện bên trái</p></div>';
     renderChatList();
 }
 
-// ===== TOAST =====
-function showToast(msg) {
-    const old = document.querySelector('.toast');
-    if (old) old.remove();
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2500);
+// ===== REAL-TIME POLLING =====
+async function checkServer() {
+    try {
+        const ctrl = new AbortController();
+        setTimeout(() => ctrl.abort(), 3000);
+        const r = await fetch(API + '/telegram', { signal: ctrl.signal });
+        const data = await r.json();
+        _serverConnected = true;
+        return true;
+    } catch(e) {
+        _serverConnected = false;
+        return false;
+    }
+}
+
+function showOfflineScreen() {
+    document.getElementById('chatList').innerHTML = `
+        <div class="empty" style="padding:30px 20px;gap:12px;">
+            <div class="icon">🔌</div>
+            <p style="font-size:14px;font-weight:600;color:var(--text);">Chưa kết nối Server</p>
+            <p style="font-size:11px;text-align:center;line-height:1.6;">
+                Trang này cần server <b>Thư Ký AI</b> đang chạy.<br>
+                Mở terminal và chạy:
+            </p>
+            <code style="background:var(--bg3);padding:8px 16px;border-radius:8px;font-size:11px;color:var(--yellow);border:1px solid var(--border);">
+                python script_main_server.py
+            </code>
+            <p style="font-size:10px;color:var(--text3);margin-top:4px;">
+                Server: ${_serverUrl}<br>
+                Đang thử kết nối lại mỗi 5s...
+            </p>
+        </div>`;
+    document.getElementById('liveStatus').innerHTML = '<span style="color:var(--red);">⚫ Offline</span>';
+    document.getElementById('totalBadge').textContent = '--';
+}
+
+async function startPolling() {
+    // Check server connectivity
+    const connected = await checkServer();
+    if (!connected && _isGitHub) {
+        showOfflineScreen();
+        // Keep retrying every 5s
+        const retryInterval = setInterval(async () => {
+            const ok = await checkServer();
+            if (ok) {
+                clearInterval(retryInterval);
+                document.getElementById('liveStatus').innerHTML = '<span class="live-dot"></span> <span>Live 15s</span>';
+                loadMentions();
+                _pollInterval = setInterval(() => loadMentions(false), 15000);
+            }
+        }, 5000);
+        return;
+    }
+
+    // Initial load
+    loadMentions();
+
+    // Poll every 15 seconds for near real-time
+    _pollInterval = setInterval(() => {
+        loadMentions(false);
+    }, 15000);
+
+    // Also listen for page visibility changes
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            // Slow down when tab is hidden
+            clearInterval(_pollInterval);
+            _pollInterval = setInterval(() => loadMentions(false), 60000);
+            document.getElementById('liveStatus').textContent = 'Idle 60s';
+        } else {
+            // Speed up when tab is visible
+            clearInterval(_pollInterval);
+            loadMentions(false); // immediate refresh
+            _pollInterval = setInterval(() => loadMentions(false), 15000);
+            document.getElementById('liveStatus').textContent = 'Live 15s';
+            document.title = '📬 Telegram Inbox — Thư Ký AI';
+        }
+    });
 }
 
 // ===== INIT =====
-renderChatList();
+startPolling();
 </script>
 </body>
 </html>
