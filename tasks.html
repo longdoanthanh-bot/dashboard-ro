@@ -23,29 +23,32 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 
 /* ===== HEADER ===== */
 .page-header {
-    position:relative; z-index:1; padding:20px 36px; display:flex; align-items:center; justify-content:space-between;
+    position:relative; z-index:1; padding:10px 24px; display:flex; align-items:center; justify-content:space-between;
     border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8);
 }
-.page-header-left h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
-.page-header-left h1 .hicon { font-size:22px; }
-.page-header-sub { font-size:11px; color:var(--text3); margin-top:2px; }
-.header-actions { display:flex; gap:6px; }
+.page-header-left h1 { font-size:16px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.page-header-left h1 .hicon { font-size:18px; }
+.page-header-sub { font-size:10px; color:var(--text3); margin-top:1px; }
+.header-actions { display:flex; gap:4px; }
 .header-btn {
-    padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg3);
-    color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer;
-    display:flex; align-items:center; gap:5px; transition:all .2s;
+    padding:5px 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg3);
+    color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:4px; transition:all .2s;
 }
 .header-btn:hover { border-color:var(--blue); color:var(--text); }
 .header-btn.primary { background:var(--blue); color:#fff; border-color:var(--blue); }
 .header-btn.primary:hover { background:#5a7aee; }
 
 /* ===== CONTAINER ===== */
-.container { position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:16px 36px 24px; }
+.container { position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:8px 24px 16px; }
+
+/* ===== TOP ROW: FORM LEFT | STATS RIGHT ===== */
+.top-row { display:flex; gap:10px; margin-bottom:6px; align-items:stretch; }
 
 /* ===== ADD TASK FORM ===== */
 .add-form {
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:16px 20px; margin-bottom:14px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;
+    flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:8px 14px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
 }
 .add-form .form-title { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; margin-bottom:0; white-space:nowrap; }
 .form-group { display:flex; flex-direction:column; gap:3px; }
@@ -65,14 +68,51 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 }
 .btn-create:hover { background:#5a7aee; transform:translateY(-1px); }
 
+/* ===== STATS — RIGHT SIDE ===== */
+.stats-row { flex:0 0 auto; display:flex; gap:6px; align-items:stretch; }
+.stat-total-card {
+    flex:0 0 80px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+    padding:6px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    position:relative; overflow:hidden; transition:background .4s;
+}
+.stat-total-card .stat-num { font-size:20px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+.stat-total-card .stat-label { font-size:7px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.4px; margin-top:1px; position:relative; z-index:1; font-weight:700; }
+.stat-total-card .stat-pct { font-size:8px; color:rgba(255,255,255,0.9); font-weight:700; margin-top:2px; position:relative; z-index:1; }
+.stat-right-group {
+    flex:0 0 auto; display:flex; flex-direction:column; gap:3px;
+}
+.stat-card { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:2px 12px; display:flex; align-items:center; gap:6px; }
+.stat-card .stat-num { font-size:13px; font-weight:800; min-width:18px; text-align:right; }
+.stat-card .stat-label { font-size:7px; color:var(--text3); text-transform:uppercase; letter-spacing:.4px; white-space:nowrap; }
+.stat-card .stat-pct-detail { font-size:9px; font-weight:700; min-width:28px; text-align:right; }
+.stat-card.s-todo .stat-num { color:var(--orange); }
+.stat-card.s-todo .stat-pct-detail { color:var(--orange); }
+.stat-card.s-doing .stat-num { color:var(--yellow); }
+.stat-card.s-doing .stat-pct-detail { color:var(--yellow); }
+.stat-card.s-done .stat-num { color:var(--green); }
+.stat-card.s-done .stat-pct-detail { color:var(--green); }
+
 /* ===== FILTER TABS ===== */
-.filter-tabs { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
 .filter-tab {
-    padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:transparent;
-    color:var(--text2); font-size:11px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
+    padding:5px 12px; border-radius:16px; border:1px solid var(--border); background:transparent;
+    color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
 }
 .filter-tab:hover { border-color:var(--blue); color:var(--text); }
 .filter-tab.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+
+/* ===== CALENDAR SECTION ===== */
+.cal-section { margin-bottom:8px; background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:10px 14px; }
+.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; cursor:pointer; }
+.cal-header h3 { font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.cal-header .cal-toggle { font-size:10px; color:var(--text3); }
+.cal-events { display:flex; flex-direction:column; gap:4px; }
+.cal-event { display:flex; align-items:center; gap:10px; padding:6px 10px; background:var(--bg2); border-radius:8px; border-left:3px solid var(--blue); }
+.cal-event .cal-time { font-size:10px; font-weight:700; color:var(--blue); white-space:nowrap; min-width:90px; }
+.cal-event .cal-title { font-size:11px; font-weight:600; flex:1; }
+.cal-event .cal-loc { font-size:9px; color:var(--text3); }
+.cal-empty { font-size:11px; color:var(--text3); text-align:center; padding:8px; }
+.cal-loading { font-size:11px; color:var(--text3); text-align:center; padding:6px; }
 
 /* ===== KANBAN BOARD ===== */
 .kanban { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
@@ -104,18 +144,24 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .kanban-col.col-done .col-count { background:rgba(52,211,153,0.15); color:var(--green); }
 
 /* ===== TASK CARDS ===== */
-.col-cards { display:flex; flex-direction:column; gap:10px; flex:1; overflow-y:auto; max-height:calc(100vh - 320px); }
+.col-cards { display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto; max-height:calc(100vh - 240px); }
 
 .task-card {
-    background:var(--bg2); border:1px solid var(--border); border-radius:10px;
-    padding:14px; transition:all .2s; animation:fadeIn .3s ease;
+    background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+    padding:10px 12px; transition:all .2s; animation:fadeIn .3s ease;
 }
 .task-card:hover { border-color:rgba(108,140,255,0.2); }
-.task-card.is-done { opacity:0.65; }
+.task-card.is-done { opacity:0.55; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-/* Checkbox + title row */
-.task-title-row { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+/* Compact header row: checkbox + title + deadline + expand arrow */
+.task-header-row { display:flex; align-items:center; gap:6px; cursor:pointer; }
+.task-title-row { display:flex; align-items:center; gap:6px; flex:1; min-width:0; }
+.expand-arrow { font-size:10px; color:var(--text3); transition:transform .2s; cursor:pointer; user-select:none; padding:2px; }
+.task-card.expanded .expand-arrow { transform:rotate(90deg); color:var(--blue); }
+.task-card .card-body { display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); animation:fadeIn .2s; }
+.task-card.expanded .card-body { display:block; }
+.task-inline-meta { display:flex; align-items:center; gap:6px; flex-shrink:0; }
 .task-checkbox {
     appearance:none; -webkit-appearance:none; width:16px; height:16px; min-width:16px;
     border:2px solid var(--text3); border-radius:4px; background:transparent;
@@ -127,9 +173,9 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     font-size:12px; font-weight:700; color:#fff;
 }
 .task-checkbox:hover { border-color:var(--blue); }
-.task-title { font-size:13px; font-weight:600; color:var(--text); line-height:1.4; }
+.task-title { font-size:12px; font-weight:600; color:var(--text); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .task-title.done-title { text-decoration:line-through; color:var(--text3); }
-.task-desc { font-size:11px; color:var(--text3); line-height:1.5; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.task-desc { font-size:11px; color:var(--text3); line-height:1.5; margin-bottom:8px; }
 .task-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
 .task-tags { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 
@@ -187,6 +233,15 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     transform:translateY(-1px); box-shadow:0 3px 10px rgba(167,139,250,0.15);
 }
 
+/* ✏️ Chỉnh sửa */
+.task-btn.btn-edit {
+    background:rgba(251,191,36,0.1); color:var(--yellow); border-color:rgba(251,191,36,0.25);
+}
+.task-btn.btn-edit:hover {
+    background:rgba(251,191,36,0.25); border-color:var(--yellow);
+    transform:translateY(-1px); box-shadow:0 3px 10px rgba(251,191,36,0.15);
+}
+
 /* 🗑️ Xóa */
 .task-btn.btn-delete {
     background:rgba(248,113,113,0.08); color:var(--red); border-color:rgba(248,113,113,0.2);
@@ -214,6 +269,149 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .toast.t-red { border-color:rgba(248,113,113,0.3); }
 @keyframes toastIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
+/* ===== MODAL & CHECKLIST STYLES ===== */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(10, 11, 20, 0.85);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-overlay.active {
+    opacity: 1; pointer-events: auto;
+}
+.modal {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    width: 90%; max-width: 580px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; flex-direction: column;
+}
+.modal-overlay.active .modal {
+    transform: translateY(0) scale(1);
+}
+
+.modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title {
+    font-size: 16px; font-weight: 700; color: var(--text);
+}
+.modal-close {
+    background: transparent; border: none; color: var(--text2); font-size: 24px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s;
+}
+.modal-close:hover {
+    background: var(--bg3); color: var(--text);
+}
+
+.modal-body {
+    padding: 20px 24px; display: flex; flex-direction: column; gap: 18px;
+}
+
+.checklist-section {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.checklist-header {
+    display: flex; align-items: center; justify-content: space-between;
+}
+.checklist-title {
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2);
+}
+.checklist-progress-container {
+    display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 4px;
+}
+.checklist-progress-bar {
+    flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden;
+}
+.checklist-progress-fill {
+    height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue), var(--green));
+    border-radius: 3px; transition: width 0.3s ease;
+}
+.checklist-progress-text {
+    font-size: 11px; font-weight: 700; color: var(--green); min-width: 35px; text-align: right;
+}
+
+.checklist-items {
+    display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;
+}
+.checklist-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px;
+    background: rgba(255, 255, 255, 0.02); transition: all 0.2s;
+    border: 1px solid transparent;
+}
+.checklist-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.03);
+}
+.checklist-item-checkbox {
+    appearance: none; -webkit-appearance: none; width: 15px; height: 15px;
+    border: 2px solid var(--text3); border-radius: 4px; cursor: pointer;
+    position: relative; transition: all 0.2s;
+}
+.checklist-item-checkbox:checked {
+    background: var(--green); border-color: var(--green);
+}
+.checklist-item-checkbox:checked::after {
+    content: '✓'; position: absolute; top: -3px; left: 1px;
+    font-size: 11px; font-weight: 700; color: #fff;
+}
+.checklist-item-text {
+    font-size: 12px; color: var(--text2); flex: 1; transition: all 0.2s;
+}
+.checklist-item-text.done {
+    text-decoration: line-through; color: var(--text3);
+}
+.checklist-item-delete {
+    background: transparent; border: none; color: var(--text3); font-size: 14px;
+    cursor: pointer; opacity: 0; transition: all 0.2s; display: flex; align-items: center;
+}
+.checklist-item:hover .checklist-item-delete {
+    opacity: 1;
+}
+.checklist-item-delete:hover {
+    color: var(--red);
+}
+
+.checklist-add-form {
+    display: flex; gap: 8px; margin-top: 4px;
+}
+.checklist-add-input {
+    flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); padding: 7px 12px; font-size: 12px; font-family: inherit;
+}
+.checklist-add-input:focus {
+    outline: none; border-color: var(--blue);
+}
+.checklist-add-btn {
+    background: var(--blue); color: #fff; border: none; border-radius: 6px;
+    padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.checklist-add-btn:hover {
+    background: #5a7aee;
+}
+
+.modal-footer {
+    padding: 16px 24px 20px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 8px;
+}
+
+/* Card checklist inline */
+.card-checklist { margin:8px 0 4px; }
+.card-cl-progress { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+.card-cl-bar { flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+.card-cl-fill { height:100%; background:linear-gradient(90deg,var(--blue),var(--green)); border-radius:2px; transition:width .3s; }
+.card-cl-text { font-size:9px; color:var(--green); font-weight:700; white-space:nowrap; }
+.card-cl-items { display:flex; flex-direction:column; gap:2px; max-height:180px; overflow-y:auto; }
+.card-cl-item { display:flex; align-items:center; gap:6px; padding:3px 6px; border-radius:4px; cursor:pointer; transition:background .15s; }
+.card-cl-item:hover { background:rgba(255,255,255,0.04); }
+.card-cl-item input[type=checkbox] { accent-color:var(--green); cursor:pointer; width:13px; height:13px; min-width:13px; }
+.card-cl-label { font-size:11px; color:var(--text2); transition:all .2s; line-height:1.4; }
+.card-cl-item.cl-done .card-cl-label { text-decoration:line-through; color:var(--text3); }
+
 /* Responsive */
 @media (max-width:1000px) {
     .kanban { grid-template-columns:1fr; }
@@ -225,42 +423,50 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="page-header">
-    <div class="page-header-left">
-        <h1><span class="hicon">📋</span> Công Việc</h1>
-        <div class="page-header-sub">Thư Ký AI — Quản lý task</div>
-    </div>
-    <div class="header-actions">
-        <button class="header-btn" onclick="resetTasks()" title="Xóa dữ liệu đã lưu, khôi phục mặc định">🔄 Reset</button>
-        <button class="header-btn" onclick="exportExcel()">📥 Excel</button>
-        <button class="header-btn">← Dashboard</button>
-        <button class="header-btn">📬 Tele</button>
-    </div>
-</header>
+<div class="container" style="padding-top:12px;">
 
-<div class="container">
+    <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
+    <div class="top-row">
+        <!-- ADD TASK FORM -->
+        <div class="add-form">
+            <div class="form-title">➕ Thêm task mới</div>
+            <div class="form-group">
+                <label>Tiêu đề</label>
+                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+            </div>
+            <div class="form-group" style="flex:1;min-width:200px;">
+                <label>Nội dung</label>
+                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Deadline</label>
+                <input class="form-input" type="datetime-local" id="new-deadline">
+            </div>
+            <div class="form-group">
+                <label>Ưu tiên</label>
+                <select class="form-input" id="new-priority" style="min-width:90px;">
+                    <option value="3">🟢 P3</option>
+                    <option value="2">🟠 P2</option>
+                    <option value="1">🔴 P1</option>
+                </select>
+            </div>
+            <button class="btn-create" onclick="createTask()">Tạo</button>
+            <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
+        </div>
 
-    <!-- ADD TASK FORM -->
-    <div class="add-form">
-        <div class="form-title">➕ Thêm task mới</div>
-        <div class="form-group">
-            <label>Tiêu đề</label>
-            <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+        <!-- STATS — RIGHT SIDE -->
+        <div class="stats-row">
+            <div class="stat-total-card" id="stat-total-card">
+                <div class="stat-num" id="stat-total">0</div>
+                <div class="stat-label">Tổng</div>
+                <div class="stat-pct" id="stat-pct">0%</div>
+            </div>
+            <div class="stat-right-group">
+                <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
+                <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
+                <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Deadline</label>
-            <input class="form-input" type="datetime-local" id="new-deadline">
-        </div>
-        <div class="form-group">
-            <label>Ưu tiên</label>
-            <select class="form-input" id="new-priority" style="min-width:90px;">
-                <option value="3">🟢 P3</option>
-                <option value="2">🟠 P2</option>
-                <option value="1">🔴 P1</option>
-            </select>
-        </div>
-        <button class="btn-create" onclick="createTask()">Tạo</button>
     </div>
 
     <!-- FILTER TABS -->
@@ -297,7 +503,87 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     </div>
 </div>
 
+<!-- TASK DETAIL & EDIT MODAL -->
+<div class="modal-overlay" id="task-modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title-text">Chi tiết công việc</h3>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modal-task-id">
+            
+            <div class="form-group">
+                <label>Tiêu đề</label>
+                <input class="form-input" type="text" id="modal-title" placeholder="Nhập tiêu đề...">
+            </div>
+            
+            <div class="form-group">
+                <label>Mô tả chi tiết</label>
+                <textarea class="form-input" id="modal-desc" placeholder="Nhập mô tả chi tiết công việc..." style="min-height: 80px; resize: vertical; font-family: inherit;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 150px;">
+                    <label>Deadline</label>
+                    <input class="form-input" type="datetime-local" id="modal-deadline" style="width: 100%;">
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 100px;">
+                    <label>Mức độ ưu tiên</label>
+                    <select class="form-input" id="modal-priority" style="width: 100%;">
+                        <option value="3">🟢 P3 (Thấp)</option>
+                        <option value="2">🟠 P2 (Trung bình)</option>
+                        <option value="1">🔴 P1 (Khẩn cấp)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- CHECKLIST SECTION -->
+            <div class="checklist-section">
+                <div class="checklist-header">
+                    <span class="checklist-title">Task nhỏ (Checklist)</span>
+                </div>
+                <div class="checklist-progress-container">
+                    <div class="checklist-progress-bar">
+                        <div class="checklist-progress-fill" id="modal-checklist-fill"></div>
+                    </div>
+                    <span class="checklist-progress-text" id="modal-checklist-text">0%</span>
+                </div>
+                
+                <div class="checklist-items" id="modal-checklist-items">
+                    <!-- Dynamic Checklist Items -->
+                </div>
+                
+                <div class="checklist-add-form">
+                    <input type="text" class="checklist-add-input" id="modal-checklist-input" placeholder="Thêm task nhỏ mới..." onkeydown="if(event.key==='Enter') addChecklistItem()">
+                    <button class="checklist-add-btn" onclick="addChecklistItem()">Thêm</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="header-btn" onclick="closeModal()">Hủy</button>
+            <button class="btn-create" onclick="saveTaskModal()" style="margin-bottom: 0;">💾 Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
 <script>
+function goToTab(tabId) {
+    try {
+        if (window.parent && typeof window.parent.switchMain === 'function') {
+            window.parent.switchMain(tabId);
+            return;
+        }
+    } catch(e) {
+        console.warn('Cross-origin parent access failed, falling back to standalone navigation');
+    }
+    if (tabId === 'tonkho' || tabId === 'thuhoi' || tabId === 'storemap') {
+        location.href = './index.html';
+    } else {
+        location.href = tabId + '.html';
+    }
+}
+
 // ===== DEFAULT TASK DATA =====
 const DEFAULT_TASKS = [
     { id:1, title:'list giao việc', desc:'thiết kế list giao việc để kiểm soát tiến độ cv', priority:2, status:'todo', deadline:'2026-05-09T00:00' },
@@ -350,6 +636,17 @@ const savedData = loadTasks();
 let tasks = savedData ? savedData.tasks : JSON.parse(JSON.stringify(DEFAULT_TASKS));
 let nextId = savedData ? savedData.nextId : 22;
 let currentFilter = 'all';
+let expandedCards = new Set();
+
+function toggleExpand(id) {
+    if (expandedCards.has(id)) {
+        expandedCards.clear();
+    } else {
+        expandedCards.clear();
+        expandedCards.add(id);
+    }
+    renderBoard();
+}
 
 // ===== FORMAT DATE =====
 function fmtDate(d) {
@@ -383,6 +680,10 @@ function renderCard(t) {
     const cardCls = isDone ? 'task-card is-done' : 'task-card';
 
     // ===== NÚT HÀNH ĐỘNG VỚI ICON + TEXT =====
+    const editBtn = `
+            <button class="task-btn btn-edit" onclick="event.stopPropagation();openTaskModal(${t.id})" title="Chỉnh sửa nội dung">
+                <span class="btn-icon">✏️</span> Sửa
+            </button>`;
     let btns = '';
     if (t.status === 'todo') {
         btns = `
@@ -392,6 +693,7 @@ function renderCard(t) {
             <button class="task-btn btn-done" onclick="moveTask(${t.id},'done')" title="Đánh dấu hoàn thành">
                 <span class="btn-icon">✅</span> Hoàn thành
             </button>
+            ${editBtn}
             <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
                 <span class="btn-icon">🗑️</span> Xóa
             </button>`;
@@ -403,6 +705,7 @@ function renderCard(t) {
             <button class="task-btn btn-redo" onclick="moveTask(${t.id},'todo')" title="Chuyển về Chưa làm">
                 <span class="btn-icon">🔄</span> Quay lại
             </button>
+            ${editBtn}
             <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
                 <span class="btn-icon">🗑️</span> Xóa
             </button>`;
@@ -411,26 +714,57 @@ function renderCard(t) {
             <button class="task-btn btn-redo" onclick="moveTask(${t.id},'doing')" title="Mở lại công việc">
                 <span class="btn-icon">🔄</span> Làm lại
             </button>
+            ${editBtn}
             <button class="task-btn btn-delete" onclick="deleteTask(${t.id})" title="Xóa công việc">
                 <span class="btn-icon">🗑️</span> Xóa
             </button>`;
     }
 
+    let checklistHTML = '';
+    if (t.checklist && t.checklist.length > 0) {
+        const total = t.checklist.length;
+        const done = t.checklist.filter(item => item.done).length;
+        const pct = Math.round((done / total) * 100);
+        const itemsHTML = t.checklist.map(item => {
+            const cls = item.done ? ' cl-done' : '';
+            const chk = item.done ? 'checked' : '';
+            return `<label class="card-cl-item${cls}" onclick="event.stopPropagation()">
+                <input type="checkbox" ${chk} onchange="toggleCardCL(${t.id},${item.id},this.checked)">
+                <span class="card-cl-label">${escH(item.text)}</span>
+            </label>`;
+        }).join('');
+        checklistHTML = `
+            <div class="card-checklist">
+                <div class="card-cl-progress">
+                    <div class="card-cl-bar"><div class="card-cl-fill" style="width:${pct}%"></div></div>
+                    <span class="card-cl-text">${done}/${total}</span>
+                </div>
+                <div class="card-cl-items">${itemsHTML}</div>
+            </div>`;
+    }
+
+    const isExp = expandedCards.has(t.id);
+    const expCls = isExp ? ' expanded' : '';
+    const clSummary = (t.checklist && t.checklist.length > 0) ? ` <span class="card-cl-text" style="margin-left:4px;">${t.checklist.filter(i=>i.done).length}/${t.checklist.length}</span>` : '';
+
     return `
-    <div class="${cardCls}" data-id="${t.id}">
-        <div class="task-title-row">
-            <input type="checkbox" class="task-checkbox" ${checkedAttr} onchange="toggleTask(${t.id}, this.checked)" title="Đánh dấu hoàn thành">
-            <div class="${titleCls}">${t.title}</div>
-        </div>
-        ${t.desc ? `<div class="task-desc">${t.desc}</div>` : ''}
-        <div class="task-footer">
-            <div class="task-tags">
+    <div class="${cardCls}${expCls}" data-id="${t.id}">
+        <div class="task-header-row" onclick="toggleExpand(${t.id})">
+            <div class="task-title-row">
+                <input type="checkbox" class="task-checkbox" ${checkedAttr} onchange="event.stopPropagation();toggleTask(${t.id}, this.checked)" title="Đánh dấu hoàn thành">
+                <div class="${titleCls}">${t.title}</div>
+            </div>
+            <div class="task-inline-meta">
                 <span class="priority-badge ${pCls}">${pLabel}</span>
-                ${t.deadline ? `<span class="task-deadline ${dlCls}">📅 ${fmtDate(t.deadline)}</span>` : ''}
+                ${t.deadline ? `<span class="task-deadline ${dlCls}" style="font-size:9px;">📅 ${fmtDate(t.deadline)}</span>` : ''}
+                ${clSummary}
+                <span class="expand-arrow">▶</span>
             </div>
         </div>
-        <div class="task-actions">
-            ${btns}
+        <div class="card-body">
+            ${(t.desc && !(t.checklist && t.checklist.length > 0)) ? `<div class="task-desc">${escH(t.desc)}</div>` : ''}
+            ${checklistHTML}
+            <div class="task-actions">${btns}</div>
         </div>
     </div>`;
 }
@@ -471,6 +805,29 @@ function renderBoard() {
     document.getElementById('count-todo').textContent = todo.length;
     document.getElementById('count-doing').textContent = doing.length;
     document.getElementById('count-done').textContent = done.length;
+
+    // Update stats bar (always from ALL tasks, not filtered)
+    const allTodo = tasks.filter(t => t.status === 'todo').length;
+    const allDoing = tasks.filter(t => t.status === 'doing').length;
+    const allDone = tasks.filter(t => t.status === 'done').length;
+    const allTotal = tasks.length;
+    const rate = allTotal > 0 ? Math.round(allDone / allTotal * 100) : 0;
+    const pTodo = allTotal > 0 ? Math.round(allTodo / allTotal * 100) : 0;
+    const pDoing = allTotal > 0 ? Math.round(allDoing / allTotal * 100) : 0;
+    document.getElementById('stat-total').textContent = allTotal;
+    document.getElementById('stat-todo').textContent = allTodo;
+    document.getElementById('stat-doing').textContent = allDoing;
+    document.getElementById('stat-done').textContent = allDone;
+    document.getElementById('stat-pct').textContent = rate + '%';
+    document.getElementById('pct-todo').textContent = pTodo + '%';
+    document.getElementById('pct-doing').textContent = pDoing + '%';
+    document.getElementById('pct-done').textContent = rate + '%';
+    // Color the Tổng card based on completion rate
+    const totalCard = document.getElementById('stat-total-card');
+    if (rate <= 25) totalCard.style.background = 'linear-gradient(135deg, #dc2626, #b91c1c)';
+    else if (rate <= 50) totalCard.style.background = 'linear-gradient(135deg, #ea580c, #c2410c)';
+    else if (rate <= 75) totalCard.style.background = 'linear-gradient(135deg, #d97706, #b45309)';
+    else totalCard.style.background = 'linear-gradient(135deg, #059669, #047857)';
 }
 
 // ===== ACTIONS =====
@@ -515,8 +872,18 @@ function createTask() {
     if (!title) { document.getElementById('new-title').focus(); return; }
     const deadline = document.getElementById('new-deadline').value;
     const priority = +document.getElementById('new-priority').value;
-    tasks.unshift({ id:nextId++, title, desc:'', priority, status:'todo', deadline });
+    const desc = document.getElementById('new-desc').value.trim();
+    const task = { id:nextId++, title, desc:'', priority, status:'todo', deadline };
+    // Auto-create checklist from multi-line desc
+    const lines = desc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length >= 2) {
+        task.checklist = lines.map((text, i) => ({ id: i+1, text: text.replace(/^\d+\.\s*/, ''), done: false }));
+    } else {
+        task.desc = desc; // Single line or empty → keep as desc
+    }
+    tasks.unshift(task);
     document.getElementById('new-title').value = '';
+    document.getElementById('new-desc').value = '';
     showToast('➕ Đã tạo task mới', 't-green');
     saveTasks();
     renderBoard();
@@ -553,9 +920,249 @@ function showToast(msg, cls) {
     setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2500);
 }
 
+// ===== MODAL & CHECKLIST ACTIONS =====
+let currentModalTask = null;
+
+function openTaskModal(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    currentModalTask = JSON.parse(JSON.stringify(task)); // Deep clone for temporary changes
+    if (!currentModalTask.checklist) currentModalTask.checklist = [];
+    
+    document.getElementById('modal-task-id').value = task.id;
+    document.getElementById('modal-title').value = task.title || '';
+    // If task has checklist but no desc, reconstruct desc from checklist for editing
+    let modalDesc = task.desc || '';
+    if (!modalDesc && task.checklist && task.checklist.length > 0) {
+        modalDesc = task.checklist.map(item => item.text).join('\n');
+    }
+    document.getElementById('modal-desc').value = modalDesc;
+    document.getElementById('modal-deadline').value = task.deadline || '';
+    document.getElementById('modal-priority').value = task.priority || 3;
+    
+    // Clear checklist add input
+    document.getElementById('modal-checklist-input').value = '';
+    
+    renderModalChecklist();
+    document.getElementById('task-modal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('task-modal').classList.remove('active');
+    currentModalTask = null;
+}
+
+function renderModalChecklist() {
+    const list = document.getElementById('modal-checklist-items');
+    list.innerHTML = '';
+    
+    if (!currentModalTask || !currentModalTask.checklist) return;
+    
+    const checklist = currentModalTask.checklist;
+    checklist.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'checklist-item';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checklist-item-checkbox';
+        checkbox.checked = item.done;
+        checkbox.onchange = (e) => toggleChecklistItem(item.id, e.target.checked);
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = 'checklist-item-text' + (item.done ? ' done' : '');
+        textSpan.textContent = item.text;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'checklist-item-delete';
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.title = 'Xóa task nhỏ';
+        deleteBtn.onclick = () => deleteChecklistItem(item.id);
+        
+        itemDiv.appendChild(checkbox);
+        itemDiv.appendChild(textSpan);
+        itemDiv.appendChild(deleteBtn);
+        list.appendChild(itemDiv);
+    });
+    
+    // Update progress bar
+    const total = checklist.length;
+    const done = checklist.filter(item => item.done).length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    
+    document.getElementById('modal-checklist-fill').style.width = pct + '%';
+    document.getElementById('modal-checklist-text').textContent = pct + '%';
+}
+
+function _autoSaveChecklist() {
+    if (!currentModalTask) return;
+    const idx = tasks.findIndex(t => t.id === currentModalTask.id);
+    if (idx === -1) return;
+    tasks[idx].checklist = JSON.parse(JSON.stringify(currentModalTask.checklist || []));
+    saveTasks();
+    renderBoard();
+}
+
+function toggleChecklistItem(itemId, checked) {
+    if (!currentModalTask || !currentModalTask.checklist) return;
+    const item = currentModalTask.checklist.find(i => i.id === itemId);
+    if (item) {
+        item.done = checked;
+        renderModalChecklist();
+        _autoSaveChecklist();
+    }
+}
+
+function deleteChecklistItem(itemId) {
+    if (!currentModalTask || !currentModalTask.checklist) return;
+    currentModalTask.checklist = currentModalTask.checklist.filter(i => i.id !== itemId);
+    renderModalChecklist();
+    _autoSaveChecklist();
+}
+
+function addChecklistItem() {
+    const input = document.getElementById('modal-checklist-input');
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    
+    if (!currentModalTask.checklist) currentModalTask.checklist = [];
+    const nextItemId = currentModalTask.checklist.length > 0 
+        ? Math.max(...currentModalTask.checklist.map(i => i.id)) + 1 
+        : 1;
+        
+    currentModalTask.checklist.push({
+        id: nextItemId,
+        text: text,
+        done: false
+    });
+    
+    input.value = '';
+    renderModalChecklist();
+    _autoSaveChecklist();
+}
+
+function saveTaskModal() {
+    if (!currentModalTask) return;
+    
+    const taskIdx = tasks.findIndex(t => t.id === currentModalTask.id);
+    if (taskIdx === -1) return;
+    
+    const updatedTitle = document.getElementById('modal-title').value.trim();
+    if (!updatedTitle) { document.getElementById('modal-title').focus(); return; }
+    
+    const newDesc = document.getElementById('modal-desc').value.trim();
+    const descLines = newDesc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    
+    // Save modal edits back to the main task
+    tasks[taskIdx].title = updatedTitle;
+    tasks[taskIdx].deadline = document.getElementById('modal-deadline').value;
+    tasks[taskIdx].priority = +document.getElementById('modal-priority').value;
+    
+    // Sync desc ↔ checklist: multi-line desc → update checklist, clear desc
+    if (descLines.length >= 2) {
+        // Rebuild checklist from desc lines, preserving done state where text matches
+        const oldCL = currentModalTask.checklist || [];
+        const oldDone = {};
+        oldCL.forEach(item => { oldDone[item.text] = item.done; });
+        tasks[taskIdx].checklist = descLines.map((text, i) => {
+            const cleanText = text.replace(/^\d+\.\s*/, '');
+            return { id: i+1, text: cleanText, done: !!oldDone[cleanText] };
+        });
+        tasks[taskIdx].desc = ''; // Content lives in checklist
+    } else {
+        tasks[taskIdx].desc = newDesc;
+        tasks[taskIdx].checklist = currentModalTask.checklist;
+    }
+    
+    showToast('💾 Đã lưu thay đổi công việc!', 't-green');
+    saveTasks();
+    renderBoard();
+    closeModal();
+}
+
+// ===== HELPERS =====
+function escH(s) { if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function ensureChecklist(task) {
+    if (task.checklist && task.checklist.length > 0) return;
+    if (!task.desc) return;
+    const lines = task.desc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 2) return;
+    task.checklist = lines.map((text, i) => ({
+        id: i + 1,
+        text: text.replace(/^\d+\.\s*/, ''),
+        done: false
+    }));
+}
+
+function toggleCardCL(taskId, itemId, checked) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || !task.checklist) return;
+    const item = task.checklist.find(i => i.id === itemId);
+    if (!item) return;
+    item.done = checked;
+    saveTasks();
+    renderBoard();
+    const total = task.checklist.length;
+    const done = task.checklist.filter(i => i.done).length;
+    if (done === total && total > 0 && task.status !== 'done') {
+        task.status = 'done';
+        saveTasks();
+        renderBoard();
+        showToast('🎉 Tất cả task nhỏ hoàn thành — chuyển Done!', 't-green');
+    }
+}
+
+// ===== CALENDAR =====
+let calCollapsed = false;
+function toggleCal() {
+    calCollapsed = !calCollapsed;
+    document.getElementById('calEvents').style.display = calCollapsed ? 'none' : 'flex';
+    document.getElementById('calToggle').textContent = calCollapsed ? '▶' : '▼';
+}
+
+async function loadCalendar() {
+    const el = document.getElementById('calEvents');
+    try {
+        const resp = await fetch('http://localhost:8080/api/calendar/week?days=7', { signal: AbortSignal.timeout(5000) });
+        const data = await resp.json();
+        if (!data.available) {
+            el.innerHTML = '<div class="cal-empty">⚠️ Google Calendar chưa cấu hình</div>';
+            return;
+        }
+        if (!data.events || data.events.length === 0) {
+            el.innerHTML = '<div class="cal-empty">✅ Không có lịch họp tuần này</div>';
+            return;
+        }
+        let html = '';
+        for (const ev of data.events) {
+            const start = ev.start || '';
+            const title = ev.summary || ev.title || 'Không tiêu đề';
+            const loc = ev.location || '';
+            // Format time
+            let timeStr = start;
+            try {
+                const d = new Date(start);
+                timeStr = d.toLocaleDateString('vi-VN', {weekday:'short', day:'2-digit', month:'2-digit'}) + ' ' + d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+            } catch(e) {}
+            html += `<div class="cal-event">
+                <span class="cal-time">${timeStr}</span>
+                <span class="cal-title">${title}</span>
+                ${loc ? `<span class="cal-loc">📍 ${loc}</span>` : ''}
+            </div>`;
+        }
+        el.innerHTML = html;
+    } catch(e) {
+        el.innerHTML = '<div class="cal-empty">📴 Trợ Lý AI offline — không tải được lịch</div>';
+    }
+}
+loadCalendar();
+
 // ===== INIT =====
+tasks.forEach(ensureChecklist);
 renderBoard();
-saveTasks(); // persist defaults on first load
+saveTasks();
 </script>
 </body>
 </html>
