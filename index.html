@@ -46,6 +46,32 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 .main-panel.active { display:block; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
+/* Telegram Inbox */
+.tg-inbox { display:flex; flex-direction:column; gap:8px; max-height:calc(100vh - 200px); overflow-y:auto; }
+.tg-msg { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; gap:12px; align-items:flex-start; transition:all .2s; cursor:default; }
+.tg-msg:hover { border-color:var(--blue); background:rgba(108,140,255,0.04); }
+.tg-msg .tg-icon { font-size:20px; flex-shrink:0; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.tg-msg.type-dm .tg-icon { background:rgba(108,140,255,0.15); }
+.tg-msg.type-mention .tg-icon { background:rgba(255,171,64,0.15); }
+.tg-msg.type-reply .tg-icon { background:rgba(102,187,106,0.15); }
+.tg-msg .tg-body { flex:1; min-width:0; }
+.tg-msg .tg-header { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:4px; }
+.tg-msg .tg-sender { font-weight:600; font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
+.tg-msg .tg-chat { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px; }
+.tg-msg .tg-time { font-size:11px; color:var(--muted); white-space:nowrap; }
+.tg-msg .tg-text { font-size:13px; color:var(--text); line-height:1.4; word-break:break-word; }
+.tg-msg .tg-dismiss { opacity:0; background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; padding:2px 6px; border-radius:4px; transition:all .2s; flex-shrink:0; }
+.tg-msg:hover .tg-dismiss { opacity:1; }
+.tg-msg .tg-dismiss:hover { color:var(--red, #e57373); background:rgba(229,115,115,0.1); }
+.tg-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; }
+.tg-toolbar .tg-status { font-size:12px; color:var(--muted); }
+.tg-toolbar .tg-actions { display:flex; gap:8px; }
+.tg-toolbar button { padding:5px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg2); color:var(--muted); font-size:11px; cursor:pointer; transition:all .2s; }
+.tg-toolbar button:hover { border-color:var(--blue); color:var(--text); }
+.tg-empty { text-align:center; padding:60px 20px; color:var(--muted); }
+.tg-empty .tg-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.4; }
+.tg-badge { background:var(--red, #e57373); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px; margin-left:6px; }
+
 /* Section */
 .section { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; overflow:hidden; }
 .section-title { font-size:16px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
@@ -336,6 +362,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <button class="main-tab" onclick="switchMain('thuhoi',this)"><span class="tab-icon">🔄</span> Tiến Độ Thu Hồi</button>
     <button class="main-tab" onclick="switchMain('storemap',this)"><span class="tab-icon">🗺️</span> Sơ Đồ ST</button>
     <button class="main-tab" onclick="switchMain('tasks',this)"><span class="tab-icon">📋</span> Công Việc</button>
+    <button class="main-tab" onclick="switchMain('telegram',this)"><span class="tab-icon">💬</span> Telegram<span id="tg-badge" class="tg-badge" style="display:none"></span></button>
 
 </div>
 
@@ -793,6 +820,23 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <iframe id="iframe-tasks" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
 </div>
 
+<!-- PANEL 5: TELEGRAM INBOX -->
+<div class="main-panel" id="panel-telegram">
+    <div class="tg-toolbar">
+        <div>
+            <span style="font-weight:600;font-size:15px;">💬 Tin nhắn Telegram</span>
+            <span class="tg-status" id="tg-status">Đang kết nối...</span>
+        </div>
+        <div class="tg-actions">
+            <button onclick="tgRefresh()" title="Làm mới">🔄 Refresh</button>
+            <button onclick="tgClear()" title="Xóa tất cả">🗑️ Xóa hết</button>
+        </div>
+    </div>
+    <div id="tg-inbox" class="tg-inbox">
+        <div class="tg-empty"><div class="tg-empty-icon">💬</div>Đang tải...</div>
+    </div>
+</div>
+
 
 
 </div>
@@ -836,8 +880,89 @@ function switchMain(panel, btn) {
         const iframe = document.getElementById('iframe-tasks');
         if (iframe && !iframe.src) iframe.src = 'tasks.html';
     }
-
+    if (panel === 'telegram') {
+        tgRefresh();
+    }
 }
+
+/* ===== TELEGRAM INBOX ===== */
+const TG_API = (window.TG_API_BASE || 'http://localhost:8080') + '/api/telegram/my-inbox';
+let _tgTimer = null;
+let _tgCount = 0;
+
+async function tgRefresh() {
+    try {
+        const r = await fetch(TG_API).then(r => r.json());
+        _tgCount = r.count || 0;
+        tgUpdateBadge(_tgCount);
+        const el = document.getElementById('tg-inbox');
+        const st = document.getElementById('tg-status');
+        if (!r.available) { st.textContent = '⚠️ Telegram chưa kết nối'; return; }
+        st.textContent = r.last_update ? `Cập nhật: ${r.last_update}` : '✅ Sẵn sàng';
+        if (!r.messages || r.messages.length === 0) {
+            el.innerHTML = '<div class="tg-empty"><div class="tg-empty-icon">✅</div>Không có tin nhắn mới<br><small style="color:var(--muted)">DM, @mention, reply sẽ hiện ở đây tự động</small></div>';
+            return;
+        }
+        el.innerHTML = r.messages.map(m => {
+            const icon = m.type === 'dm' ? '👤' : m.type === 'mention' ? '🏷️' : '↩️';
+            const label = m.type === 'dm' ? 'Tin nhắn' : m.type === 'mention' ? 'Được tag' : 'Trả lời';
+            const chatInfo = m.type === 'dm' ? '' : `<span class="tg-chat">trong ${esc(m.chat_name)}</span>`;
+            return `<div class="tg-msg type-${m.type}">
+                <div class="tg-icon">${icon}</div>
+                <div class="tg-body">
+                    <div class="tg-header">
+                        <span class="tg-sender">${esc(m.sender)}</span>
+                        ${chatInfo}
+                        <span class="tg-time">${esc(m.date)}</span>
+                    </div>
+                    <div class="tg-text">${esc(m.text)}${m.has_media ? ' 📎' : ''}</div>
+                </div>
+                <button class="tg-dismiss" onclick="tgDismiss('${m.id}')" title="Bỏ qua">✕</button>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        const st = document.getElementById('tg-status');
+        if (st) st.textContent = '❌ Không kết nối được server';
+    }
+}
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function tgUpdateBadge(n) {
+    const b = document.getElementById('tg-badge');
+    if (!b) return;
+    if (n > 0) { b.textContent = n; b.style.display = 'inline'; }
+    else { b.style.display = 'none'; }
+}
+
+async function tgDismiss(id) {
+    try {
+        await fetch(TG_API + '/dismiss/' + id, {method:'POST'});
+        tgRefresh();
+    } catch(e) {}
+}
+async function tgClear() {
+    if (!confirm('Xóa tất cả tin nhắn?')) return;
+    try {
+        await fetch(TG_API + '/clear', {method:'POST'});
+        tgRefresh();
+    } catch(e) {}
+}
+
+// Auto-poll every 30s
+setInterval(() => {
+    fetch(TG_API).then(r => r.json()).then(r => {
+        const newCount = r.count || 0;
+        tgUpdateBadge(newCount);
+        if (newCount !== _tgCount) {
+            _tgCount = newCount;
+            const panel = document.getElementById('panel-telegram');
+            if (panel && panel.classList.contains('active')) tgRefresh();
+        }
+    }).catch(() => {});
+}, 30000);
+
+// Initial badge check
+fetch(TG_API).then(r => r.json()).then(r => tgUpdateBadge(r.count || 0)).catch(() => {});
 window.switchMain = switchMain;
 function toggleExpand(row) {
     const er = row.nextElementSibling;
