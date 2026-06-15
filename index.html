@@ -105,24 +105,6 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
     display:flex; align-items:center; gap:6px; white-space:nowrap; }
 .btn-export:hover { background:var(--blue); color:#fff; }
 
-/* Calendar */
-.cal-bar { margin-bottom:8px; }
-.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
-.cal-title { font-size:12px; font-weight:600; color:var(--text2); }
-.cal-grid { display:flex; gap:4px; flex-wrap:wrap; }
-.cal-day { width:52px; padding:4px 3px; border:2px solid var(--border); border-radius:8px; background:var(--bg3);
-    text-align:center; cursor:pointer; transition:all .2s; user-select:none; }
-.cal-day:hover { border-color:var(--blue); background:rgba(108,140,255,0.08); }
-.cal-day.active { border-width:2px; }
-.cal-day.cal-green { border-color:var(--green); }
-.cal-day.cal-green .cal-date { color:var(--green); }
-.cal-day.cal-green.active { background:rgba(52,211,153,0.15); }
-.cal-day.cal-red { border-color:var(--red); }
-.cal-day.cal-red .cal-date { color:var(--red); }
-.cal-day.cal-red.active { background:rgba(248,113,113,0.15); }
-.cal-day.out-range { opacity:0.3; pointer-events:none; }
-.cal-date { font-size:15px; font-weight:700; line-height:1.1; }
-.cal-badge { font-size:8px; color:var(--text3); margin-top:1px; display:flex; align-items:center; justify-content:center; gap:3px; }
 .tab-btn.active .badge-nr { background:rgba(255,255,255,0.2); color:#fff; }
 
 /* Tab summary */
@@ -323,8 +305,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <button class="main-tab" onclick="switchMain('thuhoi',this)"><span class="tab-icon">🔄</span> Tiến Độ Thu Hồi</button>
     <button class="main-tab" onclick="switchMain('storemap',this)"><span class="tab-icon">🗺️</span> Sơ Đồ ST</button>
     <button class="main-tab" onclick="switchMain('tasks',this)"><span class="tab-icon">📋</span> Công Việc</button>
-    <button class="main-tab" onclick="switchMain('calendar',this)"><span class="tab-icon">📅</span> Lịch họp</button>
-    <button class="main-tab" onclick="switchMain('tele',this)"><span class="tab-icon">📬</span> Telegram</button>
+
 </div>
 
 <!-- PANEL 1: TỒN KHO -->
@@ -783,15 +764,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <iframe id="iframe-tasks" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
 </div>
 
-<!-- PANEL 5: LỊCH HỌP (iframe lich_hop.html) -->
-<div class="main-panel" id="panel-calendar" style="height:calc(100vh - 150px);">
-    <iframe id="iframe-calendar" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
-</div>
 
-<!-- PANEL 6: TELEGRAM -->
-<div class="main-panel" id="panel-tele" style="height:calc(100vh - 150px);">
-    <iframe id="iframe-tele" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
-</div>
 
 </div>
 
@@ -834,14 +807,7 @@ function switchMain(panel, btn) {
         const iframe = document.getElementById('iframe-tasks');
         if (iframe && !iframe.src) iframe.src = 'tasks.html';
     }
-    if (panel === 'calendar') {
-        const iframe = document.getElementById('iframe-calendar');
-        if (iframe && !iframe.src) iframe.src = 'lich_hop.html';
-    }
-    if (panel === 'tele') {
-        const iframe = document.getElementById('iframe-tele');
-        if (iframe && !iframe.src) iframe.src = 'tele.html';
-    }
+
 }
 window.switchMain = switchMain;
 function toggleExpand(row) {
