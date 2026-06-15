@@ -886,9 +886,11 @@ function switchMain(panel, btn) {
 }
 
 /* ===== TELEGRAM INBOX ===== */
-const TG_API = (window.TG_API_BASE || 'http://localhost:8080') + '/api/telegram/my-inbox';
+const TG_BASE = window.TG_API_BASE || 'http://localhost:8080';
+const TG_API = TG_BASE + '/api/telegram/my-inbox';
 let _tgTimer = null;
 let _tgCount = 0;
+let _tgReadSent = false;
 
 async function tgRefresh() {
     try {
@@ -901,12 +903,18 @@ async function tgRefresh() {
         st.textContent = r.last_update ? `Cập nhật: ${r.last_update}` : '✅ Sẵn sàng';
         if (!r.messages || r.messages.length === 0) {
             el.innerHTML = '<div class="tg-empty"><div class="tg-empty-icon">✅</div>Không có tin nhắn mới<br><small style="color:var(--muted)">DM, @mention, reply sẽ hiện ở đây tự động</small></div>';
+            _tgReadSent = false;
             return;
         }
         el.innerHTML = r.messages.map(m => {
             const icon = m.type === 'dm' ? '👤' : m.type === 'mention' ? '🏷️' : '↩️';
-            const label = m.type === 'dm' ? 'Tin nhắn' : m.type === 'mention' ? 'Được tag' : 'Trả lời';
             const chatInfo = m.type === 'dm' ? '' : `<span class="tg-chat">trong ${esc(m.chat_name)}</span>`;
+            let mediaHtml = '';
+            if (m.has_media) {
+                const mediaUrl = `${TG_BASE}/api/telegram/media/${m.chat_id}/${m.msg_id}`;
+                mediaHtml = `<div class="tg-media"><img src="${mediaUrl}" alt="media" loading="lazy" onerror="this.parentElement.innerHTML='📎 <em>File đính kèm</em>'"></div>`;
+            }
+            const textContent = m.text === '(media/sticker)' ? '' : `<div class="tg-text">${esc(m.text)}</div>`;
             return `<div class="tg-msg type-${m.type}">
                 <div class="tg-icon">${icon}</div>
                 <div class="tg-body">
@@ -915,11 +923,17 @@ async function tgRefresh() {
                         ${chatInfo}
                         <span class="tg-time">${esc(m.date)}</span>
                     </div>
-                    <div class="tg-text">${esc(m.text)}${m.has_media ? ' 📎' : ''}</div>
+                    ${textContent}
+                    ${mediaHtml}
                 </div>
                 <button class="tg-dismiss" onclick="tgDismiss('${m.id}')" title="Bỏ qua">✕</button>
             </div>`;
         }).join('');
+        // Auto mark-as-read khi mở tab
+        if (!_tgReadSent && r.messages.length > 0) {
+            _tgReadSent = true;
+            fetch(TG_API + '/read-all', {method:'POST'}).catch(() => {});
+        }
     } catch(e) {
         const st = document.getElementById('tg-status');
         if (st) st.textContent = '❌ Không kết nối được server';
@@ -947,6 +961,12 @@ async function tgClear() {
         tgRefresh();
     } catch(e) {}
 }
+async function tgMarkRead() {
+    try {
+        await fetch(TG_API + '/read-all', {method:'POST'});
+        document.getElementById('tg-status').textContent = '✅ Đã đánh dấu đã đọc';
+    } catch(e) {}
+}
 
 // Auto-poll every 30s
 setInterval(() => {
@@ -955,6 +975,7 @@ setInterval(() => {
         tgUpdateBadge(newCount);
         if (newCount !== _tgCount) {
             _tgCount = newCount;
+            _tgReadSent = false;
             const panel = document.getElementById('panel-telegram');
             if (panel && panel.classList.contains('active')) tgRefresh();
         }
