@@ -105,6 +105,37 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
     display:flex; align-items:center; gap:6px; white-space:nowrap; }
 .btn-export:hover { background:var(--blue); color:#fff; }
 
+/* Calendar pills (Thu Hồi date picker) */
+.cal-bar { margin-bottom:6px; }
+.cal-title { font-size:11px; font-weight:600; color:var(--text2); white-space:nowrap; }
+.cal-grid { display:flex; gap:4px; flex-wrap:nowrap; }
+.cal-day { padding:4px 8px; border:2px solid var(--border); border-radius:8px; background:var(--bg3);
+    text-align:center; cursor:pointer; transition:all .2s; user-select:none; display:flex; align-items:center; gap:5px; white-space:nowrap; }
+.cal-day:hover { border-color:var(--blue); background:rgba(108,140,255,0.08); }
+.cal-day.active { border-color:var(--blue); background:rgba(108,140,255,0.12); }
+.cal-day.cal-green { border-color:var(--green); }
+.cal-day.cal-green .cal-date { color:var(--green); }
+.cal-day.cal-red { border-color:var(--red); }
+.cal-day.cal-red .cal-date { color:var(--red); }
+.cal-date { font-size:13px; font-weight:700; line-height:1; }
+.cal-badge { font-size:9px; color:var(--text3); display:flex; align-items:center; gap:3px; }
+
+/* Thu Hồi compact toolbar */
+.thuhoi-toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:6px; padding:8px 12px;
+    background:var(--bg2); border:1px solid var(--border); border-radius:10px; }
+.thuhoi-toolbar .stat-pill { display:flex; align-items:center; gap:4px; padding:4px 10px;
+    border-radius:6px; background:var(--bg3); border:1px solid var(--border); white-space:nowrap; }
+.thuhoi-toolbar .stat-pill .sp-num { font-size:15px; font-weight:800; }
+.thuhoi-toolbar .stat-pill .sp-label { font-size:8px; color:var(--text3); text-transform:uppercase; }
+.thuhoi-toolbar .stat-pill.red .sp-num { color:var(--red); }
+.thuhoi-toolbar .stat-pill.green .sp-num { color:var(--green); }
+.thuhoi-toolbar .stat-pill.blue .sp-num { color:var(--blue); }
+.thuhoi-toolbar .divider { width:1px; height:24px; background:var(--border); flex-shrink:0; }
+.thuhoi-toolbar .date-range { display:flex; gap:4px; align-items:center; }
+.thuhoi-toolbar .date-range label { color:var(--text3); font-size:10px; }
+.thuhoi-toolbar .date-range input { background:var(--bg3); border:1px solid var(--border); border-radius:5px;
+    color:var(--text); padding:3px 6px; font-size:11px; font-family:inherit; height:28px; box-sizing:border-box; }
+
 .tab-btn.active .badge-nr { background:rgba(255,255,255,0.2); color:#fff; }
 
 /* Tab summary */
@@ -583,40 +614,38 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 2: THU HỒI -->
 <div class="main-panel" id="panel-thuhoi">
-    <div class="stats-bar compact">
-        <div class="stat red"><div class="stat-num">73</div><div class="stat-label">Lượt chưa thu</div></div>
-        <div class="stat green"><div class="stat-num">689</div><div class="stat-label">Lượt đã thu</div></div>
-        <div class="stat blue"><div class="stat-num">75,895</div><div class="stat-label">Tổng SL Giao</div></div>
-        <div class="stat green"><div class="stat-num">74,362</div><div class="stat-label">Tổng SL Thu</div></div>
-        <button class="btn-export" onclick="exportThuHoi()" style="align-self:center;padding:5px 12px;font-size:11px;">📥 Excel</button>
-    </div>
-    <div class="cal-bar" id="trip-date-bar">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
-            <span class="cal-title">📅 Khoảng ngày</span>
-            <div style="display:flex;gap:6px;align-items:center;">
-                <label style="color:var(--text3);font-size:10px;">Từ</label>
-                <input type="date" id="date-from" value="2026-06-12" min="2026-06-12" max="2026-06-15" onchange="filterDateRange()" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:3px 6px;font-size:11px;font-family:inherit;">
-                <label style="color:var(--text3);font-size:10px;">Đến</label>
-                <input type="date" id="date-to" value="2026-06-15" min="2026-06-12" max="2026-06-15" onchange="filterDateRange()" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:3px 6px;font-size:11px;font-family:inherit;">
-            </div>
-            <div class="cal-grid">
-                <div class="cal-day " onclick="toggleDate('12/06/2026',this)" data-date="12/06/2026" data-iso="2026-06-12"><div class="cal-date">12</div><div class="cal-badge"><span class="badge-nr">21</span> chưa</div></div>
-<div class="cal-day " onclick="toggleDate('13/06/2026',this)" data-date="13/06/2026" data-iso="2026-06-13"><div class="cal-date">13</div><div class="cal-badge"><span class="badge-nr">22</span> chưa</div></div>
-<div class="cal-day " onclick="toggleDate('14/06/2026',this)" data-date="14/06/2026" data-iso="2026-06-14"><div class="cal-date">14</div><div class="cal-badge"><span class="badge-nr">10</span> chưa</div></div>
-<div class="cal-day active" onclick="toggleDate('15/06/2026',this)" data-date="15/06/2026" data-iso="2026-06-15"><div class="cal-date">15</div><div class="cal-badge"><span class="badge-nr">20</span> chưa</div></div>
-
-            </div>
+    <!-- Row 1: Stats + Date picker + Day pills — all horizontal -->
+    <div class="thuhoi-toolbar" id="trip-date-bar">
+        <div class="stat-pill red"><div class="sp-num">73</div><div class="sp-label">Chưa thu</div></div>
+        <div class="stat-pill green"><div class="sp-num">689</div><div class="sp-label">Đã thu</div></div>
+        <div class="stat-pill blue"><div class="sp-num">75,895</div><div class="sp-label">SL Giao</div></div>
+        <div class="stat-pill green"><div class="sp-num">74,362</div><div class="sp-label">SL Thu</div></div>
+        <div class="divider"></div>
+        <div class="date-range">
+            <label>Từ</label>
+            <input type="date" id="date-from" value="2026-06-12" min="2026-06-12" max="2026-06-15" onchange="filterDateRange()">
+            <label>Đến</label>
+            <input type="date" id="date-to" value="2026-06-15" min="2026-06-12" max="2026-06-15" onchange="filterDateRange()">
         </div>
+        <div class="divider"></div>
+        <div class="cal-grid">
+            <div class="cal-day " onclick="toggleDate('12/06/2026',this)" data-date="12/06/2026" data-iso="2026-06-12"><div class="cal-date">12</div><div class="cal-badge"><span class="badge-nr">21</span></div></div>
+            <div class="cal-day " onclick="toggleDate('13/06/2026',this)" data-date="13/06/2026" data-iso="2026-06-13"><div class="cal-date">13</div><div class="cal-badge"><span class="badge-nr">22</span></div></div>
+            <div class="cal-day " onclick="toggleDate('14/06/2026',this)" data-date="14/06/2026" data-iso="2026-06-14"><div class="cal-date">14</div><div class="cal-badge"><span class="badge-nr">10</span></div></div>
+            <div class="cal-day active" onclick="toggleDate('15/06/2026',this)" data-date="15/06/2026" data-iso="2026-06-15"><div class="cal-date">15</div><div class="cal-badge"><span class="badge-nr">20</span></div></div>
+        </div>
+        <div class="divider"></div>
+        <button class="btn-export" onclick="exportThuHoi()" style="padding:4px 10px;font-size:10px;">📥 Excel</button>
     </div>
+    <!-- Row 2: Filters — all horizontal -->
     <div class="filter-row">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
             <select class="filter-select" id="trip-wh-filter" onchange="filterTripWarehouse(this.value)">
                 <option value="">Tất cả</option>
-<option value="Khô">Khô</option>
-<option value="Rau">Rau</option>
-<option value="Đông Mát">Đông Mát</option>
-
+                <option value="Khô">Khô</option>
+                <option value="Rau">Rau</option>
+                <option value="Đông Mát">Đông Mát</option>
             </select>
         </div>
         <div class="filter-group">
@@ -659,13 +688,13 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                 <button class="search-clear" onclick="clearSearch('trip-store-search','filterTripStore')">&times;</button>
             </div>
         </div>
-    </div>
-    <div class="color-legend">
-        <span class="legend-title">Chênh lệch:</span>
-        <span class="legend-item"><span class="legend-dot ld-green"></span>0 (đủ)</span>
-        <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt; 10</span>
-        <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
-        <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
+        <div class="color-legend" style="margin-left:auto;margin-bottom:0;padding:3px 8px;">
+            <span class="legend-title">Chênh lệch:</span>
+            <span class="legend-item"><span class="legend-dot ld-green"></span>0</span>
+            <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt;10</span>
+            <span class="legend-item"><span class="legend-dot ld-orange"></span>10–30</span>
+            <span class="legend-item"><span class="legend-dot ld-red"></span>&gt;30</span>
+        </div>
     </div>
     <div style="max-height:calc(100vh - 280px); overflow-y:auto;">
         <table class="data-table" id="trip-table">
