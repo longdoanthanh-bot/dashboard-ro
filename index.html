@@ -74,6 +74,8 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 .tg-media { margin-top:8px; }
 .tg-media img { max-width:280px; max-height:200px; border-radius:8px; border:1px solid var(--border); object-fit:contain; cursor:pointer; transition:transform .2s; }
 .tg-media img:hover { transform:scale(1.02); }
+.tg-msg.unread { border-left:3px solid var(--blue); background:rgba(108,140,255,0.06); }
+.tg-msg.unread .tg-sender::after { content:'●'; color:var(--blue); font-size:8px; margin-left:6px; vertical-align:middle; }
 
 /* Section */
 .section { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; overflow:hidden; }
@@ -893,14 +895,14 @@ function switchMain(panel, btn) {
 const TG_BASE = window.TG_API_BASE || 'http://localhost:8080';
 const TG_API = TG_BASE + '/api/telegram/my-inbox';
 let _tgTimer = null;
-let _tgCount = 0;
+let _tgUnread = 0;
 let _tgReadSent = false;
 
 async function tgRefresh() {
     try {
         const r = await fetch(TG_API).then(r => r.json());
-        _tgCount = r.count || 0;
-        tgUpdateBadge(_tgCount);
+        _tgUnread = r.unread || 0;
+        tgUpdateBadge(_tgUnread);
         const el = document.getElementById('tg-inbox');
         const st = document.getElementById('tg-status');
         if (!r.available) { st.textContent = '⚠️ Telegram chưa kết nối'; return; }
@@ -913,13 +915,14 @@ async function tgRefresh() {
         el.innerHTML = r.messages.map(m => {
             const icon = m.type === 'dm' ? '👤' : m.type === 'mention' ? '🏷️' : '↩️';
             const chatInfo = m.type === 'dm' ? '' : `<span class="tg-chat">trong ${esc(m.chat_name)}</span>`;
+            const isUnread = !m.read;
             let mediaHtml = '';
             if (m.has_media) {
                 const mediaUrl = `${TG_BASE}/api/telegram/media/${m.chat_id}/${m.msg_id}`;
                 mediaHtml = `<div class="tg-media"><img src="${mediaUrl}" alt="media" loading="lazy" onerror="this.parentElement.innerHTML='📎 <em>File đính kèm</em>'"></div>`;
             }
             const textContent = m.text === '(media/sticker)' ? '' : `<div class="tg-text">${esc(m.text)}</div>`;
-            return `<div class="tg-msg type-${m.type}">
+            return `<div class="tg-msg type-${m.type}${isUnread ? ' unread' : ''}">
                 <div class="tg-icon">${icon}</div>
                 <div class="tg-body">
                     <div class="tg-header">
@@ -934,9 +937,12 @@ async function tgRefresh() {
             </div>`;
         }).join('');
         // Auto mark-as-read khi mở tab
-        if (!_tgReadSent && r.messages.length > 0) {
+        if (!_tgReadSent && _tgUnread > 0) {
             _tgReadSent = true;
-            fetch(TG_API + '/read-all', {method:'POST'}).catch(() => {});
+            fetch(TG_API + '/read-all', {method:'POST'}).then(() => {
+                _tgUnread = 0;
+                tgUpdateBadge(0);
+            }).catch(() => {});
         }
     } catch(e) {
         const st = document.getElementById('tg-status');
@@ -968,26 +974,30 @@ async function tgClear() {
 async function tgMarkRead() {
     try {
         await fetch(TG_API + '/read-all', {method:'POST'});
+        _tgUnread = 0;
+        tgUpdateBadge(0);
         document.getElementById('tg-status').textContent = '✅ Đã đánh dấu đã đọc';
+        tgRefresh();
     } catch(e) {}
 }
 
 // Auto-poll every 30s
 setInterval(() => {
     fetch(TG_API).then(r => r.json()).then(r => {
-        const newCount = r.count || 0;
-        tgUpdateBadge(newCount);
-        if (newCount !== _tgCount) {
-            _tgCount = newCount;
+        const newUnread = r.unread || 0;
+        tgUpdateBadge(newUnread);
+        if (newUnread > _tgUnread) {
+            _tgUnread = newUnread;
             _tgReadSent = false;
             const panel = document.getElementById('panel-telegram');
             if (panel && panel.classList.contains('active')) tgRefresh();
         }
+        _tgUnread = newUnread;
     }).catch(() => {});
 }, 30000);
 
 // Initial badge check
-fetch(TG_API).then(r => r.json()).then(r => tgUpdateBadge(r.count || 0)).catch(() => {});
+fetch(TG_API).then(r => r.json()).then(r => tgUpdateBadge(r.unread || 0)).catch(() => {});
 window.switchMain = switchMain;
 function toggleExpand(row) {
     const er = row.nextElementSibling;
