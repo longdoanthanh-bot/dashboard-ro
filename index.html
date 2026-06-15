@@ -696,7 +696,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <span class="legend-item"><span class="legend-dot ld-red"></span>&gt;30</span>
         </div>
     </div>
-    <div style="max-height:calc(100vh - 280px); overflow-y:auto;">
+    <div style="max-height:calc(100vh - 200px); overflow-y:auto;">
         <table class="data-table" id="trip-table">
             <thead>
                 <tr class="row-total trip-total"><td></td><td></td><td class="total-row-label">TỔNG</td><td class="num total-row" id="tt-giao">0</td><td class="num total-row" id="tt-thu">0</td><td class="num total-row" id="tt-cl">0</td><td></td></tr>
@@ -911,7 +911,7 @@ function renderTripTable() {
     stores.sort((a,b) => (b.fg-b.ft) - (a.fg-a.ft));
     let allNr=0, allRc=0, allG=0, allT=0;
     stores.forEach(s => { allG+=s.fg; allT+=s.ft; if(s.ft>=s.fg && s.fg>0) allRc++; else allNr++; });
-    const stats = document.querySelectorAll('#panel-thuhoi .stat-num');
+    const stats = document.querySelectorAll('#panel-thuhoi .sp-num');
     if(stats[0]) stats[0].textContent = fmt(allNr);
     if(stats[1]) stats[1].textContent = fmt(allRc);
     if(stats[2]) stats[2].textContent = fmt(allG);
