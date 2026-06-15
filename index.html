@@ -71,6 +71,9 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 .tg-empty { text-align:center; padding:60px 20px; color:var(--muted); }
 .tg-empty .tg-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.4; }
 .tg-badge { background:var(--red, #e57373); color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:10px; margin-left:6px; }
+.tg-media { margin-top:8px; }
+.tg-media img { max-width:280px; max-height:200px; border-radius:8px; border:1px solid var(--border); object-fit:contain; cursor:pointer; transition:transform .2s; }
+.tg-media img:hover { transform:scale(1.02); }
 
 /* Section */
 .section { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; overflow:hidden; }
@@ -829,6 +832,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         </div>
         <div class="tg-actions">
             <button onclick="tgRefresh()" title="Làm mới">🔄 Refresh</button>
+            <button onclick="tgMarkRead()" title="Đánh dấu đã đọc trên Telegram">✅ Đã đọc</button>
             <button onclick="tgClear()" title="Xóa tất cả">🗑️ Xóa hết</button>
         </div>
     </div>
