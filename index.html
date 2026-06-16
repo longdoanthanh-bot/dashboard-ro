@@ -323,7 +323,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <button class="main-tab" onclick="switchMain('thuhoi',this)"><span class="tab-icon">🔄</span> Tiến Độ Thu Hồi</button>
     <button class="main-tab" onclick="switchMain('storemap',this)"><span class="tab-icon">🗺️</span> Sơ Đồ ST</button>
     <button class="main-tab" onclick="switchMain('tasks',this)"><span class="tab-icon">📋</span> Công Việc</button>
-    <button class="main-tab" onclick="switchMain('calendar',this)"><span class="tab-icon">📅</span> Lịch họp</button>
 </div>
 
 <!-- PANEL 1: TỒN KHO -->
@@ -784,10 +783,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <iframe id="iframe-tasks" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
 </div>
 
-<!-- PANEL 5: LỊCH HỌP (iframe lich_hop.html) -->
-<div class="main-panel" id="panel-calendar" style="height:calc(100vh - 150px);">
-    <iframe id="iframe-calendar" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
-</div>
 
 
 </div>
@@ -830,10 +825,6 @@ function switchMain(panel, btn) {
     if (panel === 'tasks') {
         const iframe = document.getElementById('iframe-tasks');
         if (iframe && !iframe.src) iframe.src = 'tasks.html';
-    }
-    if (panel === 'calendar') {
-        const iframe = document.getElementById('iframe-calendar');
-        if (iframe && !iframe.src) iframe.src = 'lich_hop.html';
     }
 
 }
