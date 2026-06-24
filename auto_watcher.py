@@ -11,11 +11,19 @@ import shutil
 import subprocess
 from datetime import datetime
 
-# Fix Windows console encoding
-os.environ["PYTHONIOENCODING"] = "utf-8"
-if sys.stdout.encoding != 'utf-8':
-    sys.stdout.reconfigure(encoding='utf-8')
-    sys.stderr.reconfigure(encoding='utf-8')
+# Fix pythonw (headless): stdout/stderr là None → redirect sang log file
+LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "watcher.log")
+if sys.stdout is None or sys.stderr is None:
+    _log_file = open(LOG_PATH, "a", encoding="utf-8", buffering=1)
+    sys.stdout = _log_file
+    sys.stderr = _log_file
+else:
+    os.environ["PYTHONIOENCODING"] = "utf-8"
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
 
 # KI-14: Đường dẫn tương đối từ vị trí script
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
