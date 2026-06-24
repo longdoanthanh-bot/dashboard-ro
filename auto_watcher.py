@@ -160,17 +160,35 @@ def main():
     # Vòng lặp theo dõi
     print(f"[{time.strftime('%X')}] Đang theo dõi... (Ctrl+C để dừng)")
     while True:
-        time.sleep(3)  # Kiểm tra mỗi 3 giây
-        latest_f, latest_t = get_latest_json(watch_dir)
+        try:
+            time.sleep(3)  # Kiểm tra mỗi 3 giây
+            latest_f, latest_t = get_latest_json(watch_dir)
 
-        if latest_f and (latest_f != last_processed_file or latest_t > last_processed_time):
-            print(f"\n[{time.strftime('%X')}] ⚡ Phát hiện thay đổi dữ liệu!")
-            success = update_html_with_json(latest_f)
-            if success:
-                last_processed_file = latest_f
-                last_processed_time = latest_t
-                git_push_auto()
+            if latest_f and (latest_f != last_processed_file or latest_t > last_processed_time):
+                print(f"\n[{time.strftime('%X')}] Phát hiện thay đổi dữ liệu!")
+                success = update_html_with_json(latest_f)
+                if success:
+                    last_processed_file = latest_f
+                    last_processed_time = latest_t
+                    git_push_auto()
+        except KeyboardInterrupt:
+            print(f"[{time.strftime('%X')}] Dừng theo dõi.")
+            break
+        except Exception as e:
+            print(f"[{time.strftime('%X')}] Lỗi trong vòng lặp: {e}")
+            time.sleep(10)  # Chờ lâu hơn nếu có lỗi, tránh spam
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        # Ghi crash log cho pythonw (headless)
+        crash_log = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "watcher_crash.log"
+        )
+        with open(crash_log, "a", encoding="utf-8") as f:
+            f.write(f"[{datetime.now().isoformat()}] CRASH: {e}\n")
+            import traceback
+            traceback.print_exc(file=f)
+        raise
