@@ -1,49 +1,80 @@
+"""
+Auto Watcher: Theo dõi thư mục G: Drive, tự động cập nhật Dashboard Rổ.
+Khi phát hiện file JSON thay đổi → inject vào index.html → git commit + push.
+"""
 import os
+import sys
 import time
 import json
 import re
+import shutil
 import subprocess
+from datetime import datetime
+
+# Fix Windows console encoding
+os.environ["PYTHONIOENCODING"] = "utf-8"
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+
+# KI-14: Đường dẫn tương đối từ vị trí script
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 watch_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master"
-html_path = r"G:\My Drive\ANTIGRAVITY\Tro_Ly\dashboard-ro\index.html"
+html_path = os.path.join(PROJECT_DIR, "index.html")
+
+# Loại bỏ GITHUB_TOKEN nếu bị conflict (KI-9: fix root cause)
+if "GITHUB_TOKEN" in os.environ:
+    del os.environ["GITHUB_TOKEN"]
+
 
 def update_html_with_json(json_path):
-    print(f"[{time.strftime('%X')}] Dang xu ly file: {os.path.basename(json_path)}")
+    """Inject JSON data vào index.html + cập nhật timestamp."""
+    print(f"[{time.strftime('%X')}] Đang xử lý: {os.path.basename(json_path)}")
     try:
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        
-        # Kiem tra xem co phai json chua danh sach ST khong
+
         if not isinstance(data, dict):
+            print("  → Lỗi: JSON không phải dictionary.")
             return False
-            
+
         stores_list = list(data.values())
         stores_js = json.dumps(stores_list, ensure_ascii=False)
-        
+
         with open(html_path, 'r', encoding='utf-8') as f:
             html_content = f.read()
-            
+
         pattern = re.compile(r'(const\s+STORE_COORDS\s*=\s*)\[.*?\];', re.DOTALL)
         if not pattern.search(html_content):
-            print("-> Loi: Khong tim thay bien const STORE_COORDS trong html.")
+            print("  → Lỗi: Không tìm thấy biến STORE_COORDS trong index.html")
             return False
-            
+
         new_html_content = pattern.sub(r'\g<1>' + stores_js + ';', html_content)
-        
-        from datetime import datetime
+
         current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
         pattern_time = re.compile(r'<div>Cập nhật:.*?</div>')
         new_html_content = pattern_time.sub(f'<div>Cập nhật: {current_time}</div>', new_html_content)
+
+        # KI-3: Backup trước khi ghi đè
+        backup_path = html_path + ".bak"
+        try:
+            shutil.copy2(html_path, backup_path)
+        except Exception as e:
+            print(f"  → Cảnh báo: Không tạo được backup: {e}")
+
         with open(html_path, 'w', encoding='utf-8') as f:
             f.write(new_html_content)
-            
-        print(f"-> Thanh cong! Da tu dong nạp {len(stores_list)} ST va thoi gian ({current_time}) len Dashboard.")
+
+        print(f"  → OK: {len(stores_list)} cửa hàng + timestamp ({current_time})")
         return True
     except Exception as e:
-        print(f"-> Loi xu ly: {e}")
+        print(f"  → Lỗi xử lý: {e}")
         return False
 
+
 def get_latest_json(directory):
+    """Tìm file JSON mới nhất trong thư mục."""
     latest_file = None
     latest_time = 0
     try:
@@ -54,67 +85,84 @@ def get_latest_json(directory):
                 if mtime > latest_time:
                     latest_time = mtime
                     latest_file = full_path
-    except:
+    except Exception:
         pass
     return latest_file, latest_time
 
+
 def git_push_auto():
+    """Git add + commit + push lên cả master và main (KI-37)."""
     try:
-        from datetime import datetime
         current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
         commit_msg = f"Auto update {current_time}"
-        print("-> Dang tien hanh push tu dong len GitHub...")
-        cwd_path = r"G:\My Drive\ANTIGRAVITY\Tro_Ly\dashboard-ro"
-        
-        # Thêm file index.html
-        subprocess.run(["git", "add", "index.html"], cwd=cwd_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        
-        # Commit thay đổi
-        subprocess.run(["git", "commit", "-m", commit_msg], cwd=cwd_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        
-        # Push lên GitHub
-        subprocess.run(["git", "push", "origin", "master"], cwd=cwd_path, check=True)
-        print("-> THÀNH CÔNG: Đã tự động cập nhật web trên GitHub!")
+        print("  → Đang commit + push lên GitHub...")
+
+        # Git add
+        subprocess.run(
+            ["git", "add", "index.html"],
+            cwd=PROJECT_DIR, check=True,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+
+        # Git commit
+        result = subprocess.run(
+            ["git", "commit", "-m", commit_msg],
+            cwd=PROJECT_DIR, capture_output=True, text=True
+        )
+        if result.returncode != 0:
+            print("  → Không có thay đổi mới để commit.")
+            return
+
+        # KI-37: Push cả master và main
+        subprocess.run(
+            ["git", "push", "origin", "master"],
+            cwd=PROJECT_DIR, check=True
+        )
+        subprocess.run(
+            ["git", "push", "origin", "master:main"],
+            cwd=PROJECT_DIR,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        print(f"  → THÀNH CÔNG: Dashboard sẽ cập nhật trong 1-2 phút.")
     except subprocess.CalledProcessError as e:
-        print(f"-> LỖI KHI PUSH LÊN GITHUB. Vui lòng kiểm tra lại quyền truy cập hoặc push tay. Lỗi: {e}")
+        print(f"  → LỖI KHI PUSH: {e}")
     except Exception as e:
-        print(f"-> LỖI KHÔNG XÁC ĐỊNH KHI PUSH: {e}")
+        print(f"  → LỖI KHÔNG XÁC ĐỊNH: {e}")
+
 
 def main():
     print("=========================================================")
-    print("    AUTO UPDATE DASHBOARD THEO DOI THU MUC G: DRIVE")
+    print("    AUTO UPDATE DASHBOARD - THEO DÕI THƯ MỤC G: DRIVE")
     print("=========================================================")
-    print(f"Thu muc: {watch_dir}")
-    print("Huong dan: De cua so nay chay ngam (thu nho xuong). Bat cu khi nao")
-    print("co file .json moi hoac duoc sua, du lieu se TU DONG update.")
+    print(f"Thư mục theo dõi : {watch_dir}")
+    print(f"File HTML đích    : {html_path}")
+    print(f"Git repo          : {PROJECT_DIR}")
     print("---------------------------------------------------------")
-    
+
     last_processed_file = None
     last_processed_time = 0
-    
-    # Kiem tra ban dau
+
+    # Kiểm tra ban đầu
     latest_f, latest_t = get_latest_json(watch_dir)
     if latest_f:
-        print(f"[{time.strftime('%X')}] Da tim thay file hien tai: {os.path.basename(latest_f)}")
+        print(f"[{time.strftime('%X')}] File hiện tại: {os.path.basename(latest_f)}")
         last_processed_file = latest_f
         last_processed_time = latest_t
-        update_html_with_json(latest_f)
 
-    # Vong lap vo han de theo doi
+    # Vòng lặp theo dõi
+    print(f"[{time.strftime('%X')}] Đang theo dõi... (Ctrl+C để dừng)")
     while True:
-        time.sleep(3) # Kiem tra moi 3 giay
+        time.sleep(3)  # Kiểm tra mỗi 3 giây
         latest_f, latest_t = get_latest_json(watch_dir)
-        
-        # Neu co file moi, hoac file cu vua duoc cap nhat
+
         if latest_f and (latest_f != last_processed_file or latest_t > last_processed_time):
-            print(f"[{time.strftime('%X')}] Phat hien thay doi du lieu!")
+            print(f"\n[{time.strftime('%X')}] ⚡ Phát hiện thay đổi dữ liệu!")
             success = update_html_with_json(latest_f)
             if success:
                 last_processed_file = latest_f
                 last_processed_time = latest_t
-                
-                # Gọi hàm push tự động
                 git_push_auto()
+
 
 if __name__ == '__main__':
     main()
