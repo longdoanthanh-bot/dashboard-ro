@@ -44,13 +44,15 @@ def main():
         html_content = f.read()
 
     # 4. Thay thế mảng STORE_COORDS bằng Regex
-    pattern = re.compile(r'(const\s+STORE_COORDS\s*=\s*)\[.*?\];', re.DOTALL)
+    pattern = re.compile(r'(const\s+STORE_COORDS\s*=\s*)(\[.*?\]);', re.DOTALL)
 
-    if not pattern.search(html_content):
+    match = pattern.search(html_content)
+    if not match:
         print("[LỖI] Không tìm thấy biến 'const STORE_COORDS = [...];' trong index.html")
         sys.exit(1)
 
-    new_html_content = pattern.sub(r'\g<1>' + stores_js + ';', html_content)
+    # Dùng slicing để tránh lỗi escape characters của re.sub khi JSON có dấu \
+    new_html_content = html_content[:match.start(2)] + stores_js + html_content[match.end(2):]
 
     # Cập nhật timestamp
     current_time = datetime.now().strftime("%d/%m/%Y %H:%M")

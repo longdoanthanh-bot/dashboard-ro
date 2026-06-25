@@ -45,7 +45,7 @@ def update_html_with_json(json_path):
 
         if not isinstance(data, dict):
             print("  → Lỗi: JSON không phải dictionary.")
-            return False
+            return "ERROR"
 
         stores_list = list(data.values())
         stores_js = json.dumps(stores_list, ensure_ascii=False)
@@ -53,12 +53,18 @@ def update_html_with_json(json_path):
         with open(html_path, 'r', encoding='utf-8') as f:
             html_content = f.read()
 
-        pattern = re.compile(r'(const\s+STORE_COORDS\s*=\s*)\[.*?\];', re.DOTALL)
-        if not pattern.search(html_content):
+        pattern = re.compile(r'(const\s+STORE_COORDS\s*=\s*)(\[.*?\]);', re.DOTALL)
+        match = pattern.search(html_content)
+        if not match:
             print("  → Lỗi: Không tìm thấy biến STORE_COORDS trong index.html")
-            return False
+            return "ERROR"
 
-        new_html_content = pattern.sub(r'\g<1>' + stores_js + ';', html_content)
+        current_js = match.group(2)
+        if current_js == stores_js:
+            print("  → Dữ liệu không đổi so với hiện tại. Bỏ qua.")
+            return "IDENTICAL"
+
+        new_html_content = html_content[:match.start(2)] + stores_js + html_content[match.end(2):]
 
         current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
         pattern_time = re.compile(r'<div>Cập nhật:.*?</div>')
@@ -75,10 +81,10 @@ def update_html_with_json(json_path):
             f.write(new_html_content)
 
         print(f"  → OK: {len(stores_list)} cửa hàng + timestamp ({current_time})")
-        return True
+        return "UPDATED"
     except Exception as e:
         print(f"  → Lỗi xử lý: {e}")
-        return False
+        return "ERROR"
 
 
 def get_latest_json(directory):
@@ -154,8 +160,12 @@ def main():
     latest_f, latest_t = get_latest_json(watch_dir)
     if latest_f:
         print(f"[{time.strftime('%X')}] File hiện tại: {os.path.basename(latest_f)}")
-        last_processed_file = latest_f
-        last_processed_time = latest_t
+        status = update_html_with_json(latest_f)
+        if status in ("UPDATED", "IDENTICAL"):
+            last_processed_file = latest_f
+            last_processed_time = latest_t
+            if status == "UPDATED":
+                git_push_auto()
 
     # Vòng lặp theo dõi
     print(f"[{time.strftime('%X')}] Đang theo dõi... (Ctrl+C để dừng)")
@@ -166,11 +176,12 @@ def main():
 
             if latest_f and (latest_f != last_processed_file or latest_t > last_processed_time):
                 print(f"\n[{time.strftime('%X')}] Phát hiện thay đổi dữ liệu!")
-                success = update_html_with_json(latest_f)
-                if success:
+                status = update_html_with_json(latest_f)
+                if status in ("UPDATED", "IDENTICAL"):
                     last_processed_file = latest_f
                     last_processed_time = latest_t
-                    git_push_auto()
+                    if status == "UPDATED":
+                        git_push_auto()
         except KeyboardInterrupt:
             print(f"[{time.strftime('%X')}] Dừng theo dõi.")
             break
