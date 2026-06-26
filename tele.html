@@ -112,27 +112,97 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
     color:var(--blue); font-size:11px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s; white-space:nowrap; }
 .btn-reload:hover { background:var(--blue); color:#fff; }
 .btn-reload.loading { opacity:0.5; pointer-events:none; }
+
+/* Sidebar tabs */
+.sidebar-tabs { display:flex; border-bottom:2px solid var(--border); }
+.sidebar-tab {
+    flex:1; padding:10px 0; border:none; background:transparent; color:var(--text3); font-size:12px;
+    font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    border-bottom:2px solid transparent; margin-bottom:-2px;
+}
+.sidebar-tab:hover { color:var(--text); background:rgba(108,140,255,0.03); }
+.sidebar-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+.sidebar-tab .tab-count {
+    font-size:9px; font-weight:700; padding:1px 6px; border-radius:8px;
+    background:rgba(108,140,255,0.15); color:var(--blue); min-width:18px; text-align:center;
+}
+.sidebar-tab.active .tab-count { background:var(--blue); color:#fff; }
+.sidebar-panel { display:none; flex-direction:column; flex:1; overflow:hidden; }
+.sidebar-panel.active { display:flex; }
+
+/* Call items */
+.call-item {
+    padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:all .15s;
+    display:flex; align-items:center; gap:12px;
+}
+.call-item:hover { background:rgba(108,140,255,0.05); }
+.call-item.active { background:rgba(108,140,255,0.1); }
+.call-icon {
+    width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:16px; flex-shrink:0;
+}
+.call-icon.incoming { background:rgba(52,211,153,0.15); }
+.call-icon.outgoing { background:rgba(108,140,255,0.15); }
+.call-icon.missed { background:rgba(248,113,113,0.15); }
+.call-info { flex:1; min-width:0; }
+.call-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.call-detail { font-size:11px; color:var(--text3); display:flex; align-items:center; gap:4px; margin-top:2px; }
+.call-duration { font-size:10px; color:var(--text3); text-align:right; white-space:nowrap; }
+.call-date { font-size:10px; color:var(--text3); }
+.call-type-tag {
+    font-size:9px; font-weight:600; padding:1px 5px; border-radius:4px;
+}
+.call-type-tag.missed { background:rgba(248,113,113,0.15); color:var(--red); }
+.call-type-tag.incoming { background:rgba(52,211,153,0.15); color:var(--green); }
+.call-type-tag.outgoing { background:rgba(108,140,255,0.15); color:var(--blue); }
 </style>
 </head>
 <body>
 
-<div class="main" style="height:100vh;">
+<div class="page-header">
+    <div class="page-header-left">
+        <h1><span class="hicon">📬</span> Telegram Inbox</h1>
+        <div class="page-header-sub">Thư Ký AI — Tin nhắn liên quan</div>
+    </div>
+    <div class="header-actions">
+        <span class="badge" id="totalBadge">0</span>
+    </div>
+</div>
+<div class="main" style="height:calc(100vh - 65px);">
     <div class="sidebar">
-        <div class="sidebar-header">
-            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
-                <span class="sidebar-title">Hội thoại (<span id="chatCount">0</span>)</span>
-                <button class="btn-reload" id="btnReload" onclick="reloadTele()">🔄 Tải mới</button>
-            </div>
-            <div class="filter-chips">
-                <button class="filter-chip active" id="fRelevant" onclick="setFilter('relevant')">🎯 Liên quan</button>
-                <button class="filter-chip" id="fAll" onclick="setFilter('all')">📋 Tất cả</button>
-                <button class="filter-chip" id="fUnread" onclick="setFilter('unread')">🔴 Chưa đọc</button>
-            </div>
+        <div class="sidebar-tabs">
+            <button class="sidebar-tab active" id="tabMessages" onclick="switchSidebarTab('messages')">💬 Tin nhắn <span class="tab-count" id="tabMsgCount">0</span></button>
+            <button class="sidebar-tab" id="tabCalls" onclick="switchSidebarTab('calls')">📞 Cuộc gọi <span class="tab-count" id="tabCallCount">0</span></button>
         </div>
-        <div class="chat-list" id="chatList"></div>
+        <!-- Messages Panel -->
+        <div class="sidebar-panel active" id="panelMessages">
+            <div class="sidebar-header">
+                <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
+                    <span class="sidebar-title">Hội thoại (<span id="chatCount">0</span>)</span>
+                    <button class="btn-reload" id="btnReload" onclick="reloadTele()">🔄 Tải mới</button>
+                </div>
+                <div class="filter-chips">
+                    <button class="filter-chip active" id="fRelevant" onclick="setFilter('relevant')">🎯 Liên quan</button>
+                    <button class="filter-chip" id="fAll" onclick="setFilter('all')">📋 Tất cả</button>
+                    <button class="filter-chip" id="fUnread" onclick="setFilter('unread')">🔴 Chưa đọc</button>
+                </div>
+            </div>
+            <div class="chat-list" id="chatList"></div>
+        </div>
+        <!-- Calls Panel -->
+        <div class="sidebar-panel" id="panelCalls">
+            <div class="sidebar-header">
+                <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                    <span class="sidebar-title">Lịch sử cuộc gọi (<span id="callCount">0</span>)</span>
+                    <button class="btn-reload" onclick="reloadTele()">🔄 Tải mới</button>
+                </div>
+            </div>
+            <div class="chat-list" id="callList"></div>
+        </div>
     </div>
     <div class="detail" id="detailPanel">
-        <div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện bên trái</p></div>
+        <div class="empty"><div class="icon">👈</div><p>Chọn cuộc trò chuyện hoặc cuộc gọi bên trái</p></div>
     </div>
 </div>
 
@@ -185,7 +255,11 @@ let readChats = {};
 try { readChats = JSON.parse(localStorage.getItem(READ_KEY) || '{}'); } catch(e) {}
 
 function saveRead() { try { localStorage.setItem(READ_KEY, JSON.stringify(readChats)); } catch(e) {} }
-function isChatRead(chatId) { return !!readChats[chatId]; }
+function isChatRead(chatId) { 
+    if (readChats[chatId] !== undefined) return !!readChats[chatId];
+    const chat = ALL_CHATS.find(c => c.id === chatId);
+    return !!(chat && chat._archived);
+}
 function markRead(chatId) { readChats[chatId] = Date.now(); saveRead(); }
 
 let currentFilter = 'relevant';
@@ -220,8 +294,10 @@ function renderChatList() {
     const el = document.getElementById('chatList');
     const unreadCount = chats.reduce((s,c) => s + (isChatRead(c.id) ? 0 : c.messages.length), 0);
 
-    document.getElementById('totalBadge').textContent = unreadCount;
-    document.getElementById('chatCount').textContent = chats.length;
+    const totalBadgeEl = document.getElementById('totalBadge');
+    if (totalBadgeEl) totalBadgeEl.textContent = unreadCount;
+    const chatCountEl = document.getElementById('chatCount');
+    if (chatCountEl) chatCountEl.textContent = chats.length;
 
     if (!chats.length) {
         el.innerHTML = '<div class="empty"><div class="icon">✅</div><p>Không có tin nhắn mới</p></div>';
@@ -315,7 +391,7 @@ function dismissChat(chatId) {
 }
 
 function unreadChat(chatId) {
-    delete readChats[chatId];
+    readChats[chatId] = false;
     saveRead();
     showToast('🔔 Đã đánh dấu chưa đọc');
     renderChatList();
@@ -341,7 +417,121 @@ function showToast(msg) {
     setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2500);
 }
 
+// ===== CALLS DATA (injected by server, same pattern as ALL_CHATS) =====
+const ALL_CALLS = (typeof window._ALL_CALLS !== 'undefined') ? window._ALL_CALLS : [];
+
+let selectedCallId = null;
+
+function switchSidebarTab(tab) {
+    document.getElementById('tabMessages').classList.toggle('active', tab === 'messages');
+    document.getElementById('tabCalls').classList.toggle('active', tab === 'calls');
+    document.getElementById('panelMessages').classList.toggle('active', tab === 'messages');
+    document.getElementById('panelCalls').classList.toggle('active', tab === 'calls');
+    // Reset detail panel
+    selectedChatId = null;
+    selectedCallId = null;
+    document.getElementById('detailPanel').innerHTML = '<div class="empty"><div class="icon">👈</div><p>Chọn mục bên trái</p></div>';
+}
+
+function getCallIcon(type) {
+    if (type === 'missed') return '📵';
+    if (type === 'outgoing') return '📤';
+    return '📥';
+}
+
+function getCallTypeLabel(type) {
+    if (type === 'missed') return 'Nhỡ';
+    if (type === 'outgoing') return 'Đi';
+    return 'Đến';
+}
+
+function renderCallList() {
+    const el = document.getElementById('callList');
+    const countEl = document.getElementById('callCount');
+    const tabCountEl = document.getElementById('tabCallCount');
+    if (countEl) countEl.textContent = ALL_CALLS.length;
+    if (tabCountEl) tabCountEl.textContent = ALL_CALLS.length;
+
+    if (!ALL_CALLS.length) {
+        el.innerHTML = '<div class="empty" style="padding:40px 0;"><div class="icon">📞</div><p>Chưa có cuộc gọi nào</p></div>';
+        return;
+    }
+
+    let html = '';
+    for (const call of ALL_CALLS) {
+        const isActive = selectedCallId === call.id;
+        const callType = call.type || 'incoming';
+        html += `<div class="call-item${isActive ? ' active' : ''}" onclick="selectCall('${call.id}')">
+            <div class="call-icon ${callType}">${getCallIcon(callType)}</div>
+            <div class="call-info">
+                <div class="call-name">${escHtml(call.name || call.from || 'Không rõ')}</div>
+                <div class="call-detail">
+                    <span class="call-type-tag ${callType}">${getCallTypeLabel(callType)}</span>
+                    <span>${call.date || ''}</span>
+                </div>
+            </div>
+            <div class="call-duration">${call.duration || ''}</div>
+        </div>`;
+    }
+    el.innerHTML = html;
+}
+
+function selectCall(callId) {
+    selectedCallId = callId;
+    selectedChatId = null;
+    renderCallList();
+
+    const call = ALL_CALLS.find(c => c.id === callId);
+    if (!call) return;
+
+    const panel = document.getElementById('detailPanel');
+    const callType = call.type || 'incoming';
+    const isVideo = call.isVideo ? '🎥 Video' : '🎙️ Thoại';
+
+    let html = `<div class="detail-header">
+        <div>
+            <h3>${getCallIcon(callType)} ${escHtml(call.name || call.from || 'Không rõ')}</h3>
+            <div class="sub">${isVideo} · ${getCallTypeLabel(callType)} · ${call.date || ''}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+            <span class="call-type-tag ${callType}" style="font-size:11px;padding:4px 10px;">${getCallTypeLabel(callType)}</span>
+        </div>
+    </div>
+    <div class="messages" style="justify-content:center;align-items:center;">
+        <div style="text-align:center;">
+            <div style="font-size:48px;margin-bottom:16px;">${getCallIcon(callType)}</div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:4px;">${escHtml(call.name || call.from || 'Không rõ')}</div>
+            <div style="font-size:13px;color:var(--text3);margin-bottom:12px;">${call.chatName ? 'Trong nhóm: ' + escHtml(call.chatName) : 'Cuộc gọi riêng'}</div>
+            <div style="display:flex;gap:16px;justify-content:center;margin-bottom:16px;">
+                <div style="text-align:center;">
+                    <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">Loại</div>
+                    <div style="font-size:13px;font-weight:600;">${isVideo}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">Thời lượng</div>
+                    <div style="font-size:13px;font-weight:600;">${call.duration || 'N/A'}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">Thời gian</div>
+                    <div style="font-size:13px;font-weight:600;">${call.date || 'N/A'}</div>
+                </div>
+            </div>
+            ${call.reason ? '<div style="font-size:12px;color:var(--text3);padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:8px;max-width:300px;margin:0 auto;">💬 ' + escHtml(call.reason) + '</div>' : ''}
+        </div>
+    </div>`;
+    panel.innerHTML = html;
+}
+
+// Update tab message count
+function updateTabCounts() {
+    const msgCount = ALL_CHATS.reduce((s,c) => s + c.messages.length, 0);
+    const tabMsgEl = document.getElementById('tabMsgCount');
+    if (tabMsgEl) tabMsgEl.textContent = msgCount;
+}
+
 renderChatList();
+renderCallList();
+updateTabCounts();
 </script>
 </body>
 </html>

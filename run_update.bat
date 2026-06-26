@@ -24,7 +24,7 @@ echo.
 echo [2/3] Dang commit thay doi len Git...
 for /f "tokens=*" %%i in ('python -c "from datetime import datetime; print(datetime.now().strftime('%%d/%%m/%%Y %%H:%%M'))"') do set TIMESTAMP=%%i
 
-git add index.html
+git add index.html tele.html tasks.html
 if %ERRORLEVEL% NEQ 0 (
     echo [LOI] git add that bai!
     pause

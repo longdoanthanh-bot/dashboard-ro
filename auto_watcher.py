@@ -111,9 +111,9 @@ def git_push_auto():
         commit_msg = f"Auto update {current_time}"
         print("  → Đang commit + push lên GitHub...")
 
-        # Git add
+        # Git add (cả index, tele, tasks nếu có thay đổi)
         subprocess.run(
-            ["git", "add", "index.html"],
+            ["git", "add", "index.html", "tele.html", "tasks.html"],
             cwd=PROJECT_DIR, check=True,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
