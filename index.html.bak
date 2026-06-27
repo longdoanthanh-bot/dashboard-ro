@@ -314,7 +314,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <h1>🤖 Trợ lý — KingFoodmart</h1>
     </div>
     <div class="header-right">
-        <div>Cập nhật: 27/06/2026 17:04</div>
+        <div>Cập nhật: 27/06/2026 17:21</div>
     </div>
 </header>
 
@@ -1203,6 +1203,28 @@ let _lastMatchedStores = [];
 let _nearbyGenId = 0;
 function initMap() {
     if(window._map) return;
+
+    // Add jitter to stores with identical coordinates
+    const _coordMap = {};
+    window.STORE_COORDS.forEach(s => {
+        if(!s.lat || !s.lng) return;
+        const k = s.lat + '_' + s.lng;
+        if(!_coordMap[k]) _coordMap[k] = [];
+        _coordMap[k].push(s);
+    });
+    for(const k in _coordMap) {
+        const list = _coordMap[k];
+        if(list.length > 1) {
+            const radius = 0.00004 + 0.000015 * list.length;
+            list.forEach((s, idx) => {
+                if(idx === 0) return;
+                const ang = (idx / (list.length - 1)) * Math.PI * 2;
+                s.lat += radius * Math.cos(ang);
+                s.lng += radius * Math.sin(ang);
+            });
+        }
+    }
+
     const map = L.map('store-map', {
         zoomControl: true,
         attributionControl: false,

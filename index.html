@@ -1206,7 +1206,7 @@ function initMap() {
 
     // Add jitter to stores with identical coordinates
     const _coordMap = {};
-    window.STORE_COORDS.forEach(s => {
+    STORE_COORDS.forEach(s => {
         if(!s.lat || !s.lng) return;
         const k = s.lat + '_' + s.lng;
         if(!_coordMap[k]) _coordMap[k] = [];
