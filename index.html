@@ -1364,7 +1364,6 @@ function filterMap() {
     let total=0, mart=0, mini=0;
     let matchedStores = [];
     STORE_COORDS.forEach(s => {
-        if(!s.lat || !s.lng) return;
         if(locF && (s.location_type||'') !== locF) return;
         if(revF && !(s.revenue||'').startsWith(revF)) return;
         let isMatch;
@@ -1380,29 +1379,34 @@ function filterMap() {
         const shortName = (s.name||'').split(' - ').slice(1).join(' - ');
         const tooltipLabel = shortName ? s.abbr + ' - ' + shortName : s.abbr;
         const pinColor = getPinColor(s.store_type);
-        let marker;
-        if(isMart) {
-            const pinHtml = `<div class="map-pin${isMatch?'':' dimmed'}"><div class="map-pin-inner" style="background:${pinColor}"></div></div>`;
-            marker = L.marker([s.lat, s.lng], {
-                icon: L.divIcon({ className:'', html:pinHtml, iconSize:[28,36], iconAnchor:[14,36], popupAnchor:[0,-36] }),
-                zIndexOffset: isMatch ? 100 : 0,
-            }).addTo(map);
-        } else {
-            const dotHtml = `<div class="map-pin${isMatch?'':' dimmed'}"><div class="map-pin-mini" style="background:${pinColor}"></div></div>`;
-            marker = L.marker([s.lat, s.lng], {
-                icon: L.divIcon({ className:'', html:dotHtml, iconSize:[16,16], iconAnchor:[8,8], popupAnchor:[0,-10] }),
-                zIndexOffset: isMatch ? 50 : 0,
-            }).addTo(map);
+        
+        if(s.lat && s.lng) {
+            let marker;
+            if(isMart) {
+                const pinHtml = `<div class="map-pin${isMatch?'':' dimmed'}"><div class="map-pin-inner" style="background:${pinColor}"></div></div>`;
+                marker = L.marker([s.lat, s.lng], {
+                    icon: L.divIcon({ className:'', html:pinHtml, iconSize:[28,36], iconAnchor:[14,36], popupAnchor:[0,-36] }),
+                    zIndexOffset: isMatch ? 100 : 0,
+                }).addTo(map);
+            } else {
+                const dotHtml = `<div class="map-pin${isMatch?'':' dimmed'}"><div class="map-pin-mini" style="background:${pinColor}"></div></div>`;
+                marker = L.marker([s.lat, s.lng], {
+                    icon: L.divIcon({ className:'', html:dotHtml, iconSize:[16,16], iconAnchor:[8,8], popupAnchor:[0,-10] }),
+                    zIndexOffset: isMatch ? 50 : 0,
+                }).addTo(map);
+            }
+            marker._storeData = s;
+            marker._isMatch = isMatch;
+            marker.bindPopup(`<div class="popup-title">${s.abbr} - ${shortName||s.name}</div><div class="popup-addr">${s.address||''}</div><div class="popup-tags"><span class="popup-tag revenue-${revLabel.toLowerCase()}">${s.revenue||'N/A'}</span><span class="popup-tag">${s.store_type||'N/A'}</span><span class="popup-tag">${s.location_type||''}</span></div>`, {maxWidth:320});
+            marker.bindTooltip(tooltipLabel, {permanent:false, direction:'top', offset:[0,-20], className:'store-tooltip'});
+            _mapMarkers.push(marker);
         }
-        marker._storeData = s;
-        marker._isMatch = isMatch;
-        marker.bindPopup(`<div class="popup-title">${s.abbr} - ${shortName||s.name}</div><div class="popup-addr">${s.address||''}</div><div class="popup-tags"><span class="popup-tag revenue-${revLabel.toLowerCase()}">${s.revenue||'N/A'}</span><span class="popup-tag">${s.store_type||'N/A'}</span><span class="popup-tag">${s.location_type||''}</span></div>`, {maxWidth:320});
-        marker.bindTooltip(tooltipLabel, {permanent:false, direction:'top', offset:[0,-20], className:'store-tooltip'});
+        
         if(isMatch) {
             matchedStores.push(s);
+            total++; 
+            if(isMart) mart++; else mini++;
         }
-        _mapMarkers.push(marker);
-        if(isMatch) { total++; if(isMart) mart++; else mini++; }
     });
     _lastMatchedStores = matchedStores;
     document.getElementById('map-total').textContent = total;
