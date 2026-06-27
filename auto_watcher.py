@@ -1,13 +1,10 @@
 """
 Auto Watcher: Theo dõi thư mục G: Drive, tự động cập nhật Dashboard Rổ.
-Khi phát hiện file JSON thay đổi → inject vào index.html → git commit + push.
+Khi phát hiện file JSON hoặc Excel thay đổi → chạy các script update → git commit + push.
 """
 import os
 import sys
 import time
-import json
-import re
-import shutil
 import subprocess
 from datetime import datetime
 
@@ -25,93 +22,41 @@ else:
     except Exception:
         pass
 
-# KI-14: Đường dẫn tương đối từ vị trí script
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-watch_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master"
-html_path = os.path.join(PROJECT_DIR, "index.html")
+# Thư mục cần theo dõi
+watch_dirs = {
+    "master": (r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master", ".json"),
+    "xnt": (r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Tồn kho Rổ", ".xlsx"),
+    "trip": (r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Trip", ".xlsx")
+}
 
-# Loại bỏ GITHUB_TOKEN nếu bị conflict (KI-9: fix root cause)
+# Loại bỏ GITHUB_TOKEN nếu bị conflict
 if "GITHUB_TOKEN" in os.environ:
     del os.environ["GITHUB_TOKEN"]
 
-
-def update_html_with_json(json_path):
-    """Inject JSON data vào index.html + cập nhật timestamp."""
-    print(f"[{time.strftime('%X')}] Đang xử lý: {os.path.basename(json_path)}")
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-
-        if not isinstance(data, dict):
-            print("  → Lỗi: JSON không phải dictionary.")
-            return "ERROR"
-
-        stores_list = list(data.values())
-        stores_js = json.dumps(stores_list, ensure_ascii=False)
-
-        with open(html_path, 'r', encoding='utf-8') as f:
-            html_content = f.read()
-
-        pattern = re.compile(r'(const\s+STORE_COORDS\s*=\s*)(\[.*?\]);', re.DOTALL)
-        match = pattern.search(html_content)
-        if not match:
-            print("  → Lỗi: Không tìm thấy biến STORE_COORDS trong index.html")
-            return "ERROR"
-
-        current_js = match.group(2)
-        if current_js == stores_js:
-            print("  → Dữ liệu không đổi so với hiện tại. Bỏ qua.")
-            return "IDENTICAL"
-
-        new_html_content = html_content[:match.start(2)] + stores_js + html_content[match.end(2):]
-
-        current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
-        pattern_time = re.compile(r'<div>Cập nhật:.*?</div>')
-        new_html_content = pattern_time.sub(f'<div>Cập nhật: {current_time}</div>', new_html_content)
-
-        # KI-3: Backup trước khi ghi đè
-        backup_path = html_path + ".bak"
+def get_latest_state():
+    """Lấy tổng hợp thời gian sửa đổi mới nhất của các file trong các thư mục."""
+    state = []
+    for key, (directory, ext) in watch_dirs.items():
         try:
-            shutil.copy2(html_path, backup_path)
-        except Exception as e:
-            print(f"  → Cảnh báo: Không tạo được backup: {e}")
-
-        with open(html_path, 'w', encoding='utf-8') as f:
-            f.write(new_html_content)
-
-        print(f"  → OK: {len(stores_list)} cửa hàng + timestamp ({current_time})")
-        return "UPDATED"
-    except Exception as e:
-        print(f"  → Lỗi xử lý: {e}")
-        return "ERROR"
-
-
-def get_latest_json(directory):
-    """Tìm file JSON mới nhất trong thư mục."""
-    latest_file = None
-    latest_time = 0
-    try:
-        for f in os.listdir(directory):
-            if f.lower().endswith('.json'):
-                full_path = os.path.join(directory, f)
-                mtime = os.path.getmtime(full_path)
-                if mtime > latest_time:
-                    latest_time = mtime
-                    latest_file = full_path
-    except Exception:
-        pass
-    return latest_file, latest_time
-
+            files = [os.path.join(directory, f) for f in os.listdir(directory) if f.lower().endswith(ext) and not f.startswith("~$")]
+            if files:
+                state.append(str(max(os.path.getmtime(f) for f in files)))
+            else:
+                state.append("0")
+        except Exception:
+            state.append("0")
+    return "_".join(state)
 
 def git_push_auto():
-    """Git add + commit + push lên cả master và main (KI-37)."""
+    """Git add + commit + push lên cả master và main."""
     try:
         current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
         commit_msg = f"Auto update {current_time}"
         print("  → Đang commit + push lên GitHub...")
 
-        # Git add (cả index, tele, tasks nếu có thay đổi)
+        # Git add
         subprocess.run(
             ["git", "add", "index.html", "tele.html", "tasks.html"],
             cwd=PROJECT_DIR, check=True,
@@ -127,7 +72,7 @@ def git_push_auto():
             print("  → Không có thay đổi mới để commit.")
             return
 
-        # KI-37: Push cả master và main
+        # Push master
         subprocess.run(
             ["git", "push", "origin", "master"],
             cwd=PROJECT_DIR, check=True
@@ -143,58 +88,55 @@ def git_push_auto():
     except Exception as e:
         print(f"  → LỖI KHÔNG XÁC ĐỊNH: {e}")
 
-
 def main():
     print("=========================================================")
     print("    AUTO UPDATE DASHBOARD - THEO DÕI THƯ MỤC G: DRIVE")
     print("=========================================================")
-    print(f"Thư mục theo dõi : {watch_dir}")
-    print(f"File HTML đích    : {html_path}")
-    print(f"Git repo          : {PROJECT_DIR}")
+    for k, (v, ext) in watch_dirs.items():
+        print(f"Theo dõi [{ext}] tại: {v}")
     print("---------------------------------------------------------")
 
-    last_processed_file = None
-    last_processed_time = 0
+    last_state = get_latest_state()
+    print(f"[{time.strftime('%X')}] Trạng thái ban đầu: {last_state}")
 
-    # Kiểm tra ban đầu
-    latest_f, latest_t = get_latest_json(watch_dir)
-    if latest_f:
-        print(f"[{time.strftime('%X')}] File hiện tại: {os.path.basename(latest_f)}")
-        status = update_html_with_json(latest_f)
-        if status in ("UPDATED", "IDENTICAL"):
-            last_processed_file = latest_f
-            last_processed_time = latest_t
-            if status == "UPDATED":
-                git_push_auto()
+    # Chạy cập nhật 1 lần lúc khởi động nếu cần, nhưng tạm thời chỉ log
+    # Nếu muốn tự động cập nhật ngay khi bật watcher thì bỏ comment:
+    # print(f"[{time.strftime('%X')}] Đang cập nhật lần đầu...")
+    # subprocess.run(["python", "update_store_data.py"], cwd=PROJECT_DIR)
+    # subprocess.run(["python", "update_excel_data.py"], cwd=PROJECT_DIR)
+    # git_push_auto()
 
-    # Vòng lặp theo dõi
     print(f"[{time.strftime('%X')}] Đang theo dõi... (Ctrl+C để dừng)")
     while True:
         try:
             time.sleep(3)  # Kiểm tra mỗi 3 giây
-            latest_f, latest_t = get_latest_json(watch_dir)
+            current_state = get_latest_state()
 
-            if latest_f and (latest_f != last_processed_file or latest_t > last_processed_time):
+            if current_state != last_state:
                 print(f"\n[{time.strftime('%X')}] Phát hiện thay đổi dữ liệu!")
-                status = update_html_with_json(latest_f)
-                if status in ("UPDATED", "IDENTICAL"):
-                    last_processed_file = latest_f
-                    last_processed_time = latest_t
-                    if status == "UPDATED":
-                        git_push_auto()
+                
+                # Gọi scripts update
+                print("  → Cập nhật Store Data...")
+                subprocess.run(["python", "update_store_data.py"], cwd=PROJECT_DIR)
+                
+                print("  → Cập nhật Excel Data...")
+                subprocess.run(["python", "update_excel_data.py"], cwd=PROJECT_DIR)
+                
+                git_push_auto()
+                last_state = current_state
+                
         except KeyboardInterrupt:
             print(f"[{time.strftime('%X')}] Dừng theo dõi.")
             break
         except Exception as e:
             print(f"[{time.strftime('%X')}] Lỗi trong vòng lặp: {e}")
-            time.sleep(10)  # Chờ lâu hơn nếu có lỗi, tránh spam
-
+            time.sleep(10)
 
 if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        # Ghi crash log cho pythonw (headless)
+        # Ghi crash log
         crash_log = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "watcher_crash.log"
         )
