@@ -13,6 +13,7 @@ echo.
 echo [0/3] Dang quet thay doi dia chi...
 python check_khuvuc.py
 python check_st.py
+python geocode.py
 
 :: === BUOC 1: Cap nhat du lieu JSON vao index.html ===
 echo [1/3] Dang cap nhat du lieu tu G: Drive vao index.html...
