@@ -314,7 +314,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <h1>🤖 Trợ lý — KingFoodmart</h1>
     </div>
     <div class="header-right">
-        <div>Cập nhật: 27/06/2026 16:52</div>
+        <div>Cập nhật: 27/06/2026 17:04</div>
     </div>
 </header>
 
@@ -756,8 +756,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             </select>
         </div>
         <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:flex-end;">&#x1F4E5; Xuất Excel</button>
-        <button class="btn-export" id="btn-edit-coords" onclick="toggleMapEditMode()" style="padding:6px 14px;font-size:11px;align-self:flex-end;background:var(--blue);color:#fff;border-color:var(--blue);margin-left:auto;">&#x270E; Sửa Tọa Độ</button>
-        <button class="btn-export" id="btn-download-coords" onclick="downloadMapJSON()" style="padding:6px 14px;font-size:11px;align-self:flex-end;background:var(--green);color:#fff;border-color:var(--green);display:none;">&#x1F4BE; Tải JSON Mới</button>
     </div>
     <div class="filter-row" style="margin-bottom:4px;">
         <div class="filter-group">
@@ -1389,14 +1387,14 @@ function filterMap() {
                 marker = L.marker([s.lat, s.lng], {
                     icon: L.divIcon({ className:'', html:pinHtml, iconSize:[28,36], iconAnchor:[14,36], popupAnchor:[0,-36] }),
                     zIndexOffset: isMatch ? 100 : 0,
-                    draggable: window._isMapEditMode || false
+                    
                 }).addTo(map);
             } else {
                 const dotHtml = `<div class="map-pin${isMatch?'':' dimmed'}"><div class="map-pin-mini" style="background:${pinColor}"></div></div>`;
                 marker = L.marker([s.lat, s.lng], {
                     icon: L.divIcon({ className:'', html:dotHtml, iconSize:[16,16], iconAnchor:[8,8], popupAnchor:[0,-10] }),
                     zIndexOffset: isMatch ? 50 : 0,
-                    draggable: window._isMapEditMode || false
+                    
                 }).addTo(map);
             }
             marker.on('dragend', function(e) {
@@ -1570,40 +1568,7 @@ function saveXLSX(wb, filename) {
     setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
 }
 
-window._isMapEditMode = false;
-function toggleMapEditMode() {
-    window._isMapEditMode = !window._isMapEditMode;
-    const btnEdit = document.getElementById('btn-edit-coords');
-    const btnDown = document.getElementById('btn-download-coords');
-    if(window._isMapEditMode) {
-        btnEdit.innerHTML = '&#x2716; Hủy Sửa';
-        btnEdit.style.background = 'var(--red)';
-        btnEdit.style.borderColor = 'var(--red)';
-        btnDown.style.display = 'inline-block';
-        showToast('Đã BẬT chế độ chỉnh sửa. Kéo thả các điểm siêu thị để sửa tọa độ.', 'success');
-    } else {
-        btnEdit.innerHTML = '&#x270E; Sửa Tọa Độ';
-        btnEdit.style.background = 'var(--blue)';
-        btnEdit.style.borderColor = 'var(--blue)';
-        btnDown.style.display = 'none';
-        showToast('Đã TẮT chế độ chỉnh sửa.', 'info');
-    }
-    filterMap(); // Redraw markers with/without draggable
-}
 
-function downloadMapJSON() {
-    if(!window.STORE_COORDS) return;
-    const dict = {};
-    window.STORE_COORDS.forEach(s => {
-        dict[s.code] = s;
-    });
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dict, null, 2));
-    const dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute("download", "store_coordinates.json");
-    dlAnchorElem.click();
-    showToast('Đã tải xuống store_coordinates.json. Hãy lưu đè lên file trong G: Drive!', 'success');
-}
 
 function exportMapExcel() {
     try {
