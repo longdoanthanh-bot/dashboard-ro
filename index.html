@@ -41,13 +41,13 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 .container { position:relative; z-index:1; max-width:1400px; margin:0 auto; padding:0 36px 24px; }
 
 /* Main tabs */
-.main-tabs { display:flex; gap:0; border-bottom:2px solid var(--border); }
-.main-tab { padding:14px 32px; border:none; background:transparent; color:var(--text3); font-size:14px;
-    font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s;
-    display:flex; align-items:center; gap:8px; border-bottom:3px solid transparent; margin-bottom:-2px; }
-.main-tab:hover { color:var(--text); background:rgba(108,140,255,0.03); }
-.main-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
-.main-tab .tab-icon { font-size:18px; }
+.tab-dropdown-container { margin-bottom: 20px; }
+.tab-dropdown-container select {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 16px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+    cursor: pointer; outline: none; transition: border-color 0.2s; font-family: inherit; width: 250px;
+}
+.tab-dropdown-container select:hover { border-color: var(--blue); }
 .main-panel { display:none; padding-top:16px; animation:fadeIn .3s; }
 .main-panel.active { display:block; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
@@ -330,7 +330,15 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <header class="header">
     <div>
-        <h1>🤖 Trợ lý — KingFoodmart</h1>
+        <h1 style="color: #f97316; display: flex; align-items: center; gap: 10px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"></path>
+                <path d="M9 16a5 5 0 0 1 6 0"></path>
+                <line x1="9" y1="12" x2="9.01" y2="12"></line>
+                <line x1="15" y1="12" x2="15.01" y2="12"></line>
+            </svg>
+            Trợ lý — KingFoodmart
+        </h1>
     </div>
     <div class="header-right">
         <div>Cập nhật: 30/06/2026 22:08</div>
@@ -340,11 +348,13 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <div class="container">
 
 <!-- MAIN TABS -->
-<div class="main-tabs">
-    <button class="main-tab active" onclick="switchMain('tonkho',this)"><span class="tab-icon">📊</span> Tồn Rổ tại Siêu Thị</button>
-    <button class="main-tab" onclick="switchMain('thuhoi',this)"><span class="tab-icon">🔄</span> Tiến Độ Thu Hồi</button>
-    <button class="main-tab" onclick="switchMain('storemap',this)"><span class="tab-icon">🗺️</span> Sơ Đồ ST</button>
-    <button class="main-tab" onclick="switchMain('tasks',this)"><span class="tab-icon">📋</span> Công Việc</button>
+<div class="tab-dropdown-container">
+    <select id="mainTabSelect" onchange="switchMainBySelect(this.value)">
+        <option value="tonkho">📊 Tồn Rổ tại Siêu Thị</option>
+        <option value="thuhoi">🔄 Tiến Độ Thu Hồi</option>
+        <option value="storemap">🗺️ Sơ Đồ ST</option>
+        <option value="tasks">📋 Công Việc</option>
+    </select>
 </div>
 
 <!-- PANEL 1: TỒN KHO -->
@@ -830,6 +840,10 @@ function clearSearch(inputId, fnName) {
     el.value = '';
     if(fnName==='filterTripStore') renderTripTable();
     else if(fnName==='filterStore') filterStore();
+}
+function switchMainBySelect(val) {
+    document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + val).classList.add('active');
 }
 function switchMain(panel, btn) {
     document.querySelectorAll('.main-panel').forEach(el => el.classList.remove('active'));
