@@ -995,10 +995,10 @@ function renderTripTable() {
         allG = 0; allT = 0; allNr = 0; allRc = 0;
         stores.forEach(s => {
             const item = s.items[window.activeMissingFilter];
-            if (item && item[0] > 0) {
+            if (item && item[0] > 0 && item[1] === 0) {
                 allG += item[0];
                 allT += item[1];
-                if (item[1] >= item[0]) allRc++; else allNr++;
+                allNr++;
             }
         });
     }
@@ -1013,7 +1013,7 @@ function renderTripTable() {
     if (window.activeMissingFilter) {
         renderStores = renderStores.filter(s => {
             const item = s.items[window.activeMissingFilter];
-            return item && (item[0] > item[1]);
+            return item && (item[0] > 0 && item[1] === 0);
         });
     }
     
