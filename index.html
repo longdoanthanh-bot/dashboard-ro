@@ -896,6 +896,17 @@ function getActiveBaskets() {
     if(a && a.checked) return null;
     return Array.from(p.querySelectorAll('input[data-basket]:checked')).map(c => c.dataset.basket);
 }
+
+window.activeMissingFilter = null;
+function toggleMissingFilter(ic) {
+    if (window.activeMissingFilter === ic) {
+        window.activeMissingFilter = null;
+    } else {
+        window.activeMissingFilter = ic;
+    }
+    renderTripTable();
+}
+
 function renderTripTable() {
     const selectedDates = getSelectedDates();
     const activeCodes = getActiveBaskets();
@@ -964,7 +975,10 @@ function renderTripTable() {
             bSumPanel.style.display = 'block';
             bSumContent.innerHTML = mKeys.map(ic => {
                 const bName = BASKET_NAMES[ic] || ic;
-                return `<div style="background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:var(--red); padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px;">
+                const isActive = (window.activeMissingFilter === ic);
+                const bg = isActive ? 'var(--red)' : 'rgba(248,113,113,0.1)';
+                const color = isActive ? '#fff' : 'var(--red)';
+                return `<div onclick="toggleMissingFilter('${ic}')" title="Click để lọc các ST có thu hồi loại rổ này = 0" style="cursor:pointer; background:${bg}; border:1px solid rgba(248,113,113,0.3); color:${color}; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px; transition:all 0.2s;">
                     ${bName}: <span style="font-size:13px; font-weight:800;">${fmt(missingBaskets[ic])}</span>
                 </div>`;
             }).join('');
@@ -978,7 +992,19 @@ function renderTripTable() {
     if(stats[1]) stats[1].textContent = fmt(allRc);
     if(stats[2]) stats[2].textContent = fmt(allG);
     if(stats[3]) stats[3].textContent = fmt(allT);
-    const displayStores = stores.slice(0, tripTopN);
+    
+    if (window.activeMissingFilter && !missingBaskets[window.activeMissingFilter]) {
+        window.activeMissingFilter = null;
+    }
+    let renderStores = stores;
+    if (window.activeMissingFilter) {
+        renderStores = renderStores.filter(s => {
+            const item = s.items[window.activeMissingFilter];
+            return item && (item[0] > 0 && item[1] === 0);
+        });
+    }
+    
+    const displayStores = renderStores.slice(0, tripTopN);
     const tbody = document.getElementById('trip-tbody');
     tbody.innerHTML = '';
     let tG=0, tT=0;
