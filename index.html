@@ -30,7 +30,7 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
                 radial-gradient(ellipse at 70% 20%, rgba(167,139,250,0.04) 0%, transparent 50%);
     z-index:0; }
 
-.header { position:relative; z-index:1; padding:24px 36px; display:flex; align-items:center; justify-content:space-between;
+.header { position:relative; z-index:9999; padding:24px 36px; display:flex; align-items:center; justify-content:space-between;
     border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8); }
 .header h1 { font-size:24px; font-weight:800; display:flex; align-items:center; gap:12px; margin:0; }
 
@@ -349,24 +349,13 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <body>
 
 <header class="header">
-    <div style="position: relative;" id="navMenuContainer">
-        <h1 style="display: flex; align-items: center; gap: 10px; margin: 0; cursor: pointer; user-select: none;" onclick="toggleNavMenu()">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="url(#ai-grad)" stroke="none">
-                <defs>
-                    <linearGradient id="ai-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#f97316"/>
-                        <stop offset="100%" stop-color="#f59e0b"/>
-                    </linearGradient>
-                </defs>
-                <path d="M12 24C12 17.5 17.5 12 24 12C17.5 12 12 6.5 12 0C12 6.5 6.5 12 0 12C6.5 12 12 17.5 12 24Z" />
-            </svg>
-            <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" id="navTitleText">Trợ lý — KingFoodmart</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f97316; margin-left: -2px;">
-                <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
+    <div style="position: relative; display: flex; align-items: center; gap: 12px;" id="navMenuContainer">
+        <img src="./avatar.png" width="46" height="46" style="border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); border: 2px solid #f97316; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="toggleNavMenu()" alt="Trợ lý">
+        <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
+            <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trợ lý — KingFoodmart</span>
         </h1>
         
-        <div id="navMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 999;">
+        <div id="navMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999;">
             <div class="nav-menu-item active" onclick="selectNavMenu(event, 'tonkho', 'Trợ lý — KingFoodmart')">📊 Tồn Rổ tại Siêu Thị</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'thuhoi', 'Trợ lý — KingFoodmart')">🔄 Tiến Độ Thu Hồi</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'storemap', 'Trợ lý — KingFoodmart')">🗺️ Sơ Đồ ST</div>
