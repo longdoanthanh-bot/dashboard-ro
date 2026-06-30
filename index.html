@@ -1009,7 +1009,12 @@ function renderTripTable() {
     tbody.innerHTML = '';
     let tG=0, tT=0;
     displayStores.forEach((s,i) => {
-        const g=s.fg, t=s.ft, diff=g-t;
+        let g=s.fg, t=s.ft;
+        if (window.activeMissingFilter) {
+            const item = s.items[window.activeMissingFilter];
+            if (item) { g = item[0]; t = item[1]; }
+        }
+        const diff=g-t;
         tG+=g; tT+=t;
         let rowCls,statusCls,statusLabel;
         if(s.status==='none') { rowCls='row-status-none'; statusCls='status-none'; statusLabel='✗ Không thu'; }
