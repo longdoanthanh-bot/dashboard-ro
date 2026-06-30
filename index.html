@@ -1255,8 +1255,9 @@ function exportTonKho() {
 function exportThuHoi() {
     const wb = XLSX.utils.book_new();
     // === Sheet 1: Tổng hợp ===
+    const filterName = window.activeMissingFilter ? (BASKET_NAMES[window.activeMissingFilter] || window.activeMissingFilter) : 'Tất cả các loại rổ';
     const h1 = ['Mã ST', 'Tên siêu thị', 'SL Giao', 'SL Thu hồi', 'Chênh lệch', 'Trạng thái'];
-    const d1 = [h1];
+    const d1 = [['BÁO CÁO TIẾN ĐỘ THU HỒI'], ['Bộ lọc: ' + filterName], [], h1];
     document.querySelectorAll('#trip-tbody tr.trip-row').forEach(r => {
         if(r.style.display === 'none') return;
         const g = pn(r.cells[3].textContent)||0, t = pn(r.cells[4].textContent)||0, cl = pn(r.cells[5].textContent)||0;
