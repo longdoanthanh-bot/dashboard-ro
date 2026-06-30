@@ -960,8 +960,7 @@ function renderTripTable() {
             const useAllLocal = (activeCodes === null);
             if(!useAllLocal && activeCodes && !activeCodes.includes(ic)) continue;
             if(activeWh && (BASKET_WAREHOUSE[ic]||'') !== activeWh) continue;
-            const diff = ig - it;
-            if (diff > 0) {
+            if (ig > 0 && it === 0) {
                 missingBaskets[ic] = (missingBaskets[ic] || 0) + diff;
             }
         }
@@ -1029,9 +1028,15 @@ function renderTripTable() {
         }
         const diff=g-t;
         tG+=g; tT+=t;
+        let itemStatus = s.status;
+        if (window.activeMissingFilter) {
+            if (t === 0 && g > 0) itemStatus = 'none';
+            else if (t < g && g > 0) itemStatus = 'partial';
+            else itemStatus = 'full';
+        }
         let rowCls,statusCls,statusLabel;
-        if(s.status==='none') { rowCls='row-status-none'; statusCls='status-none'; statusLabel='✗ Không thu'; }
-        else if(s.status==='partial') { rowCls='row-status-partial'; statusCls=diff>30?'status-partial-high':diff>=10?'status-partial-mid':'status-partial-low'; statusLabel='⚠ Thu 1 phần'; }
+        if(itemStatus==='none') { rowCls='row-status-none'; statusCls='status-none'; statusLabel='✗ Không thu'; }
+        else if(itemStatus==='partial') { rowCls='row-status-partial'; statusCls=diff>30?'status-partial-high':diff>=10?'status-partial-mid':'status-partial-low'; statusLabel='⚠ Thu 1 phần'; }
         else { rowCls='row-status-full'; statusCls='status-full'; statusLabel='✓ Đã thu hết'; }
         const diffCls = diff>0 ? 'num high' : 'num';
         const thuCls = t===0 ? 'num zero' : 'num';
