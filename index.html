@@ -961,7 +961,7 @@ function renderTripTable() {
             if(!useAllLocal && activeCodes && !activeCodes.includes(ic)) continue;
             if(activeWh && (BASKET_WAREHOUSE[ic]||'') !== activeWh) continue;
             if (ig > 0 && it === 0) {
-                missingBaskets[ic] = (missingBaskets[ic] || 0) + diff;
+                missingBaskets[ic] = (missingBaskets[ic] || 0) + ig;
             }
         }
     });
