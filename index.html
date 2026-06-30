@@ -1024,11 +1024,14 @@ function renderTripTable() {
         const thuCls = t===0 ? 'num zero' : 'num';
         let dr = '';
         const detailWh = document.getElementById('trip-wh-filter')?.value || '';
-        const detailItems = Object.entries(s.items)
+        let detailItems = Object.entries(s.items)
             .filter(([ic,[g,t]]) => COUNTABLE_CODES.has(ic) && !(g===0 && t===0))
             .filter(([ic]) => useAll || !activeCodes || activeCodes.includes(ic))
-            .filter(([ic]) => !detailWh || (BASKET_WAREHOUSE[ic]||'') === detailWh)
-            .sort((a,b) => (b[1][0]-b[1][1]) - (a[1][0]-a[1][1]));
+            .filter(([ic]) => !detailWh || (BASKET_WAREHOUSE[ic]||'') === detailWh);
+        if (window.activeMissingFilter) {
+            detailItems = detailItems.filter(([ic]) => ic === window.activeMissingFilter);
+        }
+        detailItems.sort((a,b) => (b[1][0]-b[1][1]) - (a[1][0]-a[1][1]));
         for(const [ic, it] of detailItems) {
             const cl=it[0]-it[1], clC=cl>0?'high':'';
             let itemWarn = '';
