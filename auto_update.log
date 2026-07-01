@@ -1,0 +1,32 @@
+============================================ 
+[01-Jul-26 12:00:08.36] Bat dau cap nhat tu dong 
+[OK] Đã cập nhật 335 cửa hàng + timestamp (01/07/2026 12:00) vào index.html
+python: can't open file 'G:\\My Drive\\ANTIGRAVITY\\Tro_Ly\\dashboard-ro\\update_excel_data.py': [Errno 2] No such file or directory
+[master c5879b2] Auto update 01/07/2026 12:00
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To https://github.com/longdoanthanh-bot/dashboard-ro.git
+ ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to 'https://github.com/longdoanthanh-bot/dashboard-ro.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+[01-Jul-26 12:00:11.88] Hoan tat 
+============================================ 
+============================================ 
+[01-Jul-26 16:00:11.31] Bat dau cap nhat tu dong 
+[OK] Đã cập nhật 335 cửa hàng + timestamp (01/07/2026 16:00) vào index.html
+python: can't open file 'G:\\My Drive\\ANTIGRAVITY\\Tro_Ly\\dashboard-ro\\update_excel_data.py': [Errno 2] No such file or directory
+[master 83542c7] Auto update 01/07/2026 16:00
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To https://github.com/longdoanthanh-bot/dashboard-ro.git
+ ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to 'https://github.com/longdoanthanh-bot/dashboard-ro.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+[01-Jul-26 16:00:15.11] Hoan tat 
+============================================ 

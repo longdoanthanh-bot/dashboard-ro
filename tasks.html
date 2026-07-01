@@ -44,7 +44,6 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 
 /* ===== TOP ROW: FORM LEFT | STATS RIGHT ===== */
 .top-row { display:flex; flex-direction:column; gap:10px; margin-bottom:6px; align-items:stretch; }
-.stats-row { order: 1; }
 .add-form { order: 2; }
 
 /* ===== ADD TASK FORM ===== */
@@ -70,8 +69,8 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 }
 .btn-create:hover { background:#5a7aee; transform:translateY(-1px); }
 
-/* ===== STATS — RIGHT SIDE ===== */
-.stats-row { flex:0 0 auto; display:flex; gap:6px; align-items:stretch; }
+/* ===== STATS — RIGHT SIDE (order:1 = above add-form) ===== */
+.stats-row { order:1; flex:0 0 auto; display:flex; gap:6px; align-items:stretch; }
 .stat-total-card {
     flex:0 0 80px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
     padding:6px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center;
