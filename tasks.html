@@ -1,7 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Công Việc — Thư Ký AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -47,12 +48,11 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 
 /* ===== ADD TASK FORM ===== */
 .add-form {
-    flex:1; background:transparent; padding:0; display:flex; align-items:flex-end; gap:12px; flex-wrap:nowrap; overflow-x:auto;
+    flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:8px 14px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
 }
-.add-form .form-title { white-space:nowrap; margin-right:8px; }
-.add-form .form-group { white-space:nowrap; }
 .add-form .form-title { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; margin-bottom:0; white-space:nowrap; }
-.form-group { display:flex; flex-direction:column; gap:3px; }
+.form-group { display:flex; flex-direction:row; gap:3px; }
 .form-group label { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
 .form-input {
     background:var(--bg3); border:1px solid var(--border); border-radius:8px; color:var(--text);
@@ -73,14 +73,14 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .stats-row { flex:0 0 auto; display:flex; gap:6px; align-items:stretch; }
 .stat-total-card {
     flex:0 0 80px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
-    padding:6px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:6px 8px; display:flex; flex-direction:row; align-items:center; justify-content:center;
     position:relative; overflow:hidden; transition:background .4s;
 }
 .stat-total-card .stat-num { font-size:20px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
 .stat-total-card .stat-label { font-size:7px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.4px; margin-top:1px; position:relative; z-index:1; font-weight:700; }
 .stat-total-card .stat-pct { font-size:8px; color:rgba(255,255,255,0.9); font-weight:700; margin-top:2px; position:relative; z-index:1; }
 .stat-right-group {
-    flex:0 0 auto; display:flex; flex-direction:column; gap:3px;
+    flex:0 0 auto; display:flex; flex-direction:row; gap:3px;
 }
 .stat-card { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:2px 12px; display:flex; align-items:center; gap:6px; }
 .stat-card .stat-num { font-size:13px; font-weight:800; min-width:18px; text-align:right; }
@@ -107,7 +107,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; cursor:pointer; }
 .cal-header h3 { font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; }
 .cal-header .cal-toggle { font-size:10px; color:var(--text3); }
-.cal-events { display:flex; flex-direction:column; gap:4px; }
+.cal-events { display:flex; flex-direction:row; gap:4px; }
 .cal-event { display:flex; align-items:center; gap:10px; padding:6px 10px; background:var(--bg2); border-radius:8px; border-left:3px solid var(--blue); }
 .cal-event .cal-time { font-size:10px; font-weight:700; color:var(--blue); white-space:nowrap; min-width:90px; }
 .cal-event .cal-title { font-size:11px; font-weight:600; flex:1; }
@@ -120,7 +120,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 
 .kanban-col {
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:14px; min-height:300px; display:flex; flex-direction:column;
+    padding:14px; min-height:300px; display:flex; flex-direction:row;
 }
 .col-header {
     display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
@@ -145,7 +145,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .kanban-col.col-done .col-count { background:rgba(52,211,153,0.15); color:var(--green); }
 
 /* ===== TASK CARDS ===== */
-.col-cards { display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto; max-height:calc(100vh - 240px); }
+.col-cards { display:flex; flex-direction:row; gap:6px; flex:1; overflow-y:auto; max-height:calc(100vh - 240px); }
 
 .task-card {
     background:var(--bg2); border:1px solid var(--border); border-radius:8px;
@@ -406,7 +406,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .card-cl-bar { flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
 .card-cl-fill { height:100%; background:linear-gradient(90deg,var(--blue),var(--green)); border-radius:2px; transition:width .3s; }
 .card-cl-text { font-size:9px; color:var(--green); font-weight:700; white-space:nowrap; }
-.card-cl-items { display:flex; flex-direction:column; gap:2px; max-height:180px; overflow-y:auto; }
+.card-cl-items { display:flex; flex-direction:row; gap:2px; max-height:180px; overflow-y:auto; }
 .card-cl-item { display:flex; align-items:center; gap:6px; padding:3px 6px; border-radius:4px; cursor:pointer; transition:background .15s; }
 .card-cl-item:hover { background:rgba(255,255,255,0.04); }
 .card-cl-item input[type=checkbox] { accent-color:var(--green); cursor:pointer; width:13px; height:13px; min-width:13px; }
@@ -418,7 +418,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
     .kanban { grid-template-columns:1fr; }
     .container { padding:16px; }
     .page-header { padding:16px; flex-wrap:wrap; gap:10px; }
-    .add-form { flex-direction:column; align-items:stretch; }
+    .add-form { flex-direction:row; align-items:stretch; }
 }
 </style>
 </head>
@@ -427,52 +427,9 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 <div class="container" style="padding-top:12px;">
 
     <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
-    <div class="top-row" style="justify-content: flex-end;">
-        <div class="add-form">
-            <div class="form-title">➕ Thêm task mới</div>
-            <div class="form-group">
-                <label>Tiêu đề</label>
-                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
-            </div>
-            <div class="form-group" style="flex:1;min-width:200px;">
-                <label>Nội dung</label>
-                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Deadline</label>
-                <input class="form-input" type="datetime-local" id="new-deadline">
-            </div>
-            <div class="form-group">
-                <label>Ưu tiên</label>
-                <select class="form-input" id="new-priority" style="min-width:90px;">
-                    <option value="3">🟢 P3</option>
-                    <option value="2">🟠 P2</option>
-                    <option value="1">🔴 P1</option>
-                </select>
-            </div>
-            <button class="btn-create" onclick="createTask()">Tạo</button>
-            <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
-        </div>
-</div>
+    <div class="top-row">
         <!-- ADD TASK FORM -->
-        
-
-        <!-- STATS — RIGHT SIDE -->
-        <div class="stats-row">
-            <div class="stat-total-card" id="stat-total-card">
-                <div class="stat-num" id="stat-total">0</div>
-                <div class="stat-label">Tổng</div>
-                <div class="stat-pct" id="stat-pct">0%</div>
-            </div>
-            <div class="stat-right-group">
-                <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
-                <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
-                <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FILTER TABS -->
+       TABS -->
     <div class="filter-tabs">
         <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
         <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
@@ -571,13 +528,13 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 </div>
 
 <script>
-
-const P_DOC = window.parent.document;
-function getEl(id) {
-    let el = document.getElementById(id);
-    if (!el && P_DOC) el = P_DOC.getElementById(id);
-    return el;
-}
+  // Redirect element lookup to parent document if it exists there
+  function getEl(id) {
+      if (window.parent && window.parent.document && window.parent.document.getElementById(id)) {
+          return window.parent.document.getElementById(id);
+      }
+      return document.getElementById(id);
+  }
 
 function goToTab(tabId) {
     try {
@@ -825,14 +782,14 @@ function renderBoard() {
     const rate = allTotal > 0 ? Math.round(allDone / allTotal * 100) : 0;
     const pTodo = allTotal > 0 ? Math.round(allTodo / allTotal * 100) : 0;
     const pDoing = allTotal > 0 ? Math.round(allDoing / allTotal * 100) : 0;
-    document.getElementById('stat-total').textContent = allTotal;
-    document.getElementById('stat-todo').textContent = allTodo;
-    document.getElementById('stat-doing').textContent = allDoing;
-    document.getElementById('stat-done').textContent = allDone;
-    document.getElementById('stat-pct').textContent = rate + '%';
-    document.getElementById('pct-todo').textContent = pTodo + '%';
-    document.getElementById('pct-doing').textContent = pDoing + '%';
-    document.getElementById('pct-done').textContent = rate + '%';
+    getEl('stat-total').textContent = allTotal;
+    getEl('stat-todo').textContent = allTodo;
+    getEl('stat-doing').textContent = allDoing;
+    getEl('stat-done').textContent = allDone;
+    getEl('stat-pct').textContent = rate + '%';
+    getEl('pct-todo').textContent = pTodo + '%';
+    getEl('pct-doing').textContent = pDoing + '%';
+    getEl('pct-done').textContent = rate + '%';
     // Color the Tổng card based on completion rate
     const totalCard = document.getElementById('stat-total-card');
     if (rate <= 25) totalCard.style.background = 'linear-gradient(135deg, #dc2626, #b91c1c)';
