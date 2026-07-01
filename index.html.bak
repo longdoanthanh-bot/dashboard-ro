@@ -31,7 +31,7 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
                 radial-gradient(ellipse at 70% 20%, rgba(167,139,250,0.04) 0%, transparent 50%);
     z-index:0; }
 
-.header { position:relative; z-index:9999; padding:24px 36px; display:flex; align-items:center; justify-content:space-between;
+.header { position:relative; z-index:9999; padding:12px 24px; display:flex; align-items:center; justify-content:space-between;
     border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8); }
 .header h1 { font-size:24px; font-weight:800; display:flex; align-items:center; gap:12px; margin:0; }
 
@@ -351,7 +351,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <header class="header">
     <div style="position: relative; display: flex; align-items: center; gap: 14px;" id="navMenuContainer">
-        <img src="./avatar.png?v=4" width="60" height="60" style="border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 4px 18px rgba(249, 115, 22, 0.6); border: 2px solid #f97316; transition: transform 0.2s; filter: contrast(1.15) saturate(1.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="toggleNavMenu()" alt="Trợ lý">
+        <img src="./avatar.png?v=4" width="44" height="44" style="border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 4px 18px rgba(249, 115, 22, 0.6); border: 2px solid #f97316; transition: transform 0.2s; filter: contrast(1.15) saturate(1.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="toggleNavMenu()" alt="Trợ lý">
         <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
             <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trợ lý — KingFoodmart</span>
         </h1>
@@ -367,7 +367,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
             <span id="themeIcon">☀️</span> Giao diện
         </button>
-        <div>Cập nhật: 01/07/2026 22:17</div>
+        <div>Cập nhật: 01/07/2026 22:27</div>
     </div>
 </header>
 
