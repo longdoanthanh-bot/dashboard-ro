@@ -347,12 +347,15 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 .top-controls-wrapper { display:flex; flex-direction:column; gap:4px; margin-left:30px; align-items:flex-start; }
 .top-controls-wrapper .filter-row { gap:10px; margin-bottom:0; }
 .top-controls-wrapper .color-legend { font-size:11px; padding:2px 0; }
+
+
+
 </style>
 </head>
 <body>
 
 <header class="header">
-    <div style="position: relative; display: flex; align-items: center; gap: 14px;" id="navMenuContainer">
+    <div style="position: relative; display: flex; align-items: center; gap: 14px; flex-shrink: 0;" id="navMenuContainer">
         <img src="./avatar.png?v=4" width="60" height="60" style="border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 4px 18px rgba(249, 115, 22, 0.6); border: 2px solid #f97316; transition: transform 0.2s; filter: contrast(1.15) saturate(1.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="toggleNavMenu()" alt="Trợ lý">
         <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
             <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
@@ -426,8 +429,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
         </div>
     </div>
-    <div id="thuhoi-header-filters" class="header-filters top-controls-wrapper" style="flex: 1; display: none; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 8px;">
-        <div class="cal-bar" id="trip-date-bar" style="margin-left: auto; margin-bottom: 0; padding: 0; background: transparent; box-shadow: none;">
+    <div id="thuhoi-header-filters" class="header-filters top-controls-wrapper" style="flex: 1; display: none; flex-direction: row; justify-content: flex-end; align-items: center; gap: 20px;">
+        <div class="cal-bar" id="trip-date-bar" style="margin-bottom: 0; padding: 0; background: transparent; box-shadow: none;">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:0;flex-wrap:wrap;">
                 <span class="cal-title" style="margin-bottom:4px;">📅 Khoảng ngày</span>
                 <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
@@ -445,7 +448,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                 </div>
             </div>
         </div>
-        <div class="filter-row" style="flex-wrap: nowrap; margin-bottom: 0;">
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+<div class="filter-row" style="flex-wrap: nowrap; margin-bottom: 2px;">
             <div class="filter-group">
                 <span class="filter-label">Kho</span>
                 <select class="filter-select" id="trip-wh-filter" onchange="filterTripWarehouse(this.value)">
@@ -505,7 +509,83 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
         </div>
     </div>
-    </header>
+</div>
+    <div id="storemap-header-filters" class="header-filters" style="flex: 1; display: none; flex-direction: row; align-items: center; justify-content: flex-end;">
+<div class="map-controls">
+        <div class="map-stats">
+            <div class="map-stat"><div class="map-stat-num" style="color:var(--blue)" id="map-total">0</div><div class="map-stat-label">Tổng ST</div></div>
+            <div class="map-stat"><div class="map-stat-num" style="color:var(--green)" id="map-mart">0</div><div class="map-stat-label">Mart</div></div>
+            <div class="map-stat"><div class="map-stat-num" style="color:var(--purple)" id="map-mini">0</div><div class="map-stat-label">Mini</div></div>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Location Type</span>
+            <select class="filter-select" id="map-loc-filter" onchange="filterMap()">
+                <option value="">Tất cả</option>
+                <option value="STREAM">STREAM</option>
+                <option value="LAKE">LAKE</option>
+                <option value="RIVER">RIVER</option>
+                <option value="LAKE-S">LAKE-S</option>
+                <option value="LAKE-M">LAKE-M</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Doanh thu</span>
+            <select class="filter-select" id="map-rev-filter" onchange="filterMap()">
+                <option value="">Tất cả</option>
+                <option value="A">A (>4B)</option>
+                <option value="B">B (2-4B)</option>
+                <option value="C">C (<2B)</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Tìm kiếm ST <span class="tag-counter" id="tag-counter"></span></span>
+            <div class="tag-input-wrap">
+                <div class="tag-input-box" id="tag-box" onclick="document.getElementById('tag-input').focus()">
+                    <input type="text" id="tag-input" placeholder="Gõ mã ST, Enter để thêm (tối đa 10)" autocomplete="off"
+                        oninput="this.value=this.value.toUpperCase();tagSuggest()" onkeydown="tagKeydown(event)" onfocus="tagSuggest()">
+                </div>
+                <div class="tag-suggest" id="tag-suggest-list"></div>
+            </div>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Lân cận</span>
+            <select class="filter-select" id="map-nearby-n" onchange="filterMap()">
+                <option value="0">Chỉ ST</option>
+                <option value="5" selected>Top 5</option>
+                <option value="10">Top 10</option>
+            </select>
+        </div>
+        <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:flex-end;">&#x1F4E5; Xuất Excel</button>
+    </div>
+</div>
+<div id="tasks-header-filters" class="header-filters" style="flex: 1; display: none; flex-direction: row; align-items: center; justify-content: flex-end;">
+<div class="add-form">
+            <div class="form-title">➕ Thêm task mới</div>
+            <div class="form-group">
+                <label>Tiêu đề</label>
+                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+            </div>
+            <div class="form-group" style="flex:1;min-width:200px;">
+                <label>Nội dung</label>
+                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Deadline</label>
+                <input class="form-input" type="datetime-local" id="new-deadline">
+            </div>
+            <div class="form-group">
+                <label>Ưu tiên</label>
+                <select class="form-input" id="new-priority" style="min-width:90px;">
+                    <option value="3">🟢 P3</option>
+                    <option value="2">🟠 P2</option>
+                    <option value="1">🔴 P1</option>
+                </select>
+            </div>
+            <button class="btn-create" onclick="document.getElementById('iframe-tasks').contentWindow.createTask()">Tạo</button>
+            <button class="header-btn" onclick="document.getElementById('iframe-tasks').contentWindow.exportExcel()" style="margin-left:4px;">📥 Excel</button>
+        </div>
+</div>
+</header>
 
 <div class="container">
 
@@ -765,52 +845,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 3: SƠ ĐỒ ST -->
 <div class="main-panel" id="panel-storemap">
-    <div class="map-controls">
-        <div class="map-stats">
-            <div class="map-stat"><div class="map-stat-num" style="color:var(--blue)" id="map-total">0</div><div class="map-stat-label">Tổng ST</div></div>
-            <div class="map-stat"><div class="map-stat-num" style="color:var(--green)" id="map-mart">0</div><div class="map-stat-label">Mart</div></div>
-            <div class="map-stat"><div class="map-stat-num" style="color:var(--purple)" id="map-mini">0</div><div class="map-stat-label">Mini</div></div>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Location Type</span>
-            <select class="filter-select" id="map-loc-filter" onchange="filterMap()">
-                <option value="">Tất cả</option>
-                <option value="STREAM">STREAM</option>
-                <option value="LAKE">LAKE</option>
-                <option value="RIVER">RIVER</option>
-                <option value="LAKE-S">LAKE-S</option>
-                <option value="LAKE-M">LAKE-M</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Doanh thu</span>
-            <select class="filter-select" id="map-rev-filter" onchange="filterMap()">
-                <option value="">Tất cả</option>
-                <option value="A">A (>4B)</option>
-                <option value="B">B (2-4B)</option>
-                <option value="C">C (<2B)</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Tìm kiếm ST <span class="tag-counter" id="tag-counter"></span></span>
-            <div class="tag-input-wrap">
-                <div class="tag-input-box" id="tag-box" onclick="document.getElementById('tag-input').focus()">
-                    <input type="text" id="tag-input" placeholder="Gõ mã ST, Enter để thêm (tối đa 10)" autocomplete="off"
-                        oninput="this.value=this.value.toUpperCase();tagSuggest()" onkeydown="tagKeydown(event)" onfocus="tagSuggest()">
-                </div>
-                <div class="tag-suggest" id="tag-suggest-list"></div>
-            </div>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Lân cận</span>
-            <select class="filter-select" id="map-nearby-n" onchange="filterMap()">
-                <option value="0">Chỉ ST</option>
-                <option value="5" selected>Top 5</option>
-                <option value="10">Top 10</option>
-            </select>
-        </div>
-        <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:flex-end;">&#x1F4E5; Xuất Excel</button>
-    </div>
+    
     <div class="filter-row" style="margin-bottom:4px;">
         <div class="filter-group">
             <span class="filter-label">Đo KC: Điểm A</span>

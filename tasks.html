@@ -426,33 +426,9 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 <div class="container" style="padding-top:12px;">
 
     <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
-    <div class="top-row">
+    <div class="top-row" style="justify-content: flex-end;">
         <!-- ADD TASK FORM -->
-        <div class="add-form">
-            <div class="form-title">➕ Thêm task mới</div>
-            <div class="form-group">
-                <label>Tiêu đề</label>
-                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
-            </div>
-            <div class="form-group" style="flex:1;min-width:200px;">
-                <label>Nội dung</label>
-                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Deadline</label>
-                <input class="form-input" type="datetime-local" id="new-deadline">
-            </div>
-            <div class="form-group">
-                <label>Ưu tiên</label>
-                <select class="form-input" id="new-priority" style="min-width:90px;">
-                    <option value="3">🟢 P3</option>
-                    <option value="2">🟠 P2</option>
-                    <option value="1">🔴 P1</option>
-                </select>
-            </div>
-            <button class="btn-create" onclick="createTask()">Tạo</button>
-            <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
-        </div>
+        
 
         <!-- STATS — RIGHT SIDE -->
         <div class="stats-row">
@@ -568,6 +544,14 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 </div>
 
 <script>
+
+const P_DOC = window.parent.document;
+function getEl(id) {
+    let el = document.getElementById(id);
+    if (!el && P_DOC) el = P_DOC.getElementById(id);
+    return el;
+}
+
 function goToTab(tabId) {
     try {
         if (window.parent && typeof window.parent.switchMain === 'function') {
@@ -868,11 +852,11 @@ function deleteTask(id) {
 }
 
 function createTask() {
-    const title = document.getElementById('new-title').value.trim();
-    if (!title) { document.getElementById('new-title').focus(); return; }
-    const deadline = document.getElementById('new-deadline').value;
-    const priority = +document.getElementById('new-priority').value;
-    const desc = document.getElementById('new-desc').value.trim();
+    const title = getEl('new-title').value.trim();
+    if (!title) { getEl('new-title').focus(); return; }
+    const deadline = getEl('new-deadline').value;
+    const priority = +getEl('new-priority').value;
+    const desc = getEl('new-desc').value.trim();
     const task = { id:nextId++, title, desc:'', priority, status:'todo', deadline };
     // Auto-create checklist from multi-line desc
     const lines = desc.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -882,8 +866,8 @@ function createTask() {
         task.desc = desc; // Single line or empty → keep as desc
     }
     tasks.unshift(task);
-    document.getElementById('new-title').value = '';
-    document.getElementById('new-desc').value = '';
+    getEl('new-title').value = '';
+    getEl('new-desc').value = '';
     showToast('➕ Đã tạo task mới', 't-green');
     saveTasks();
     renderBoard();
