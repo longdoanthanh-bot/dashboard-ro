@@ -344,6 +344,9 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     border-radius:8px; max-height:200px; overflow-y:auto; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,.6); }
 .tag-suggest.open { display:block; }
 .tag-suggest .combo-item.selected { background:var(--bg3); }
+.top-controls-wrapper { position:fixed; top:12px; left:410px; z-index:1005; display:flex; flex-direction:column; gap:4px; }
+.top-controls-wrapper .filter-row { gap:10px; margin-bottom:0; }
+.top-controls-wrapper .color-legend { font-size:11px; padding:2px 0; }
 </style>
 </head>
 <body>
@@ -376,6 +379,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 1: TỒN KHO -->
 <div class="main-panel active" id="panel-tonkho">
+    <div class="top-controls-wrapper">
     <div class="filter-row">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
@@ -427,7 +431,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
         <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
     </div>
-    <div class="stats-bar" style="margin-top:10px;">
+    </div>
+    <div class="stats-bar compact">
         <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
         <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
         <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
