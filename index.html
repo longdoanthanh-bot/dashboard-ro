@@ -354,15 +354,16 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <header class="header">
     <div style="position: relative; display: flex; align-items: center; gap: 14px;" id="navMenuContainer">
         <img src="./avatar.png?v=4" width="60" height="60" style="border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 4px 18px rgba(249, 115, 22, 0.6); border: 2px solid #f97316; transition: transform 0.2s; filter: contrast(1.15) saturate(1.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="toggleNavMenu()" alt="Trợ lý">
-        <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
             <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trợ lý — KingFoodmart</span>
         </h1>
-        
-        <div class="header-right" style="display: flex; align-items: center; gap: 20px; margin-left: 20px;">
-            <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
-                <span id="themeIcon">☀️</span> Giao diện
-            </button>
-            <div>Cập nhật: 01/07/2026 14:15</div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 16px; margin-left: 0;">
+                <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                    <span id="themeIcon">☀️</span> Giao diện
+                </button>
+                <div style="font-size: 12px; color: var(--text3); font-weight: 500;">Cập nhật: 01/07/2026 14:49</div>
+            </div>
         </div>
 
         <div id="navMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999;">
