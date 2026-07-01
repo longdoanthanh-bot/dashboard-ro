@@ -256,3 +256,9 @@ Theo dõi [.xlsx] tại: G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Trip
 ---------------------------------------------------------
 [11:05:35] Trạng thái ban đầu: 1782878416.632_1782694494.241_1782694569.678
 [11:05:35] Đang theo dõi... (Ctrl+C để dừng)
+
+[21:28:03] Phát hiện thay đổi dữ liệu!
+  → Cập nhật Store Data...
+  → Cập nhật Excel Data...
+  → Đang commit + push lên GitHub...
+  → LỖI KHI PUSH: Command '['git', 'push', 'origin', 'master']' returned non-zero exit status 1.
