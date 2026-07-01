@@ -376,12 +376,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 1: TỒN KHO -->
 <div class="main-panel active" id="panel-tonkho">
-    <div class="stats-bar">
-        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
-        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
-        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
-        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
-    </div>
     <div class="filter-row">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
@@ -432,6 +426,12 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
         <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
         <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
+    </div>
+    <div class="stats-bar" style="margin-top:10px;">
+        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
+        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
+        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
+        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
     </div>
     <div class="table-wrap" style="max-height:calc(100vh - 320px); overflow-y:auto;">
         <table class="data-table" id="tonkho-table">
