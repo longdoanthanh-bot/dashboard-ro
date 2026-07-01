@@ -47,9 +47,10 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 
 /* ===== ADD TASK FORM ===== */
 .add-form {
-    flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px;
-    padding:8px 14px; display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;
+    flex:1; background:transparent; padding:0; display:flex; align-items:flex-end; gap:12px; flex-wrap:nowrap; overflow-x:auto;
 }
+.add-form .form-title { white-space:nowrap; margin-right:8px; }
+.add-form .form-group { white-space:nowrap; }
 .add-form .form-title { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; margin-bottom:0; white-space:nowrap; }
 .form-group { display:flex; flex-direction:column; gap:3px; }
 .form-group label { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
@@ -427,6 +428,32 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 
     <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
     <div class="top-row" style="justify-content: flex-end;">
+        <div class="add-form">
+            <div class="form-title">➕ Thêm task mới</div>
+            <div class="form-group">
+                <label>Tiêu đề</label>
+                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+            </div>
+            <div class="form-group" style="flex:1;min-width:200px;">
+                <label>Nội dung</label>
+                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Deadline</label>
+                <input class="form-input" type="datetime-local" id="new-deadline">
+            </div>
+            <div class="form-group">
+                <label>Ưu tiên</label>
+                <select class="form-input" id="new-priority" style="min-width:90px;">
+                    <option value="3">🟢 P3</option>
+                    <option value="2">🟠 P2</option>
+                    <option value="1">🔴 P1</option>
+                </select>
+            </div>
+            <button class="btn-create" onclick="createTask()">Tạo</button>
+            <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
+        </div>
+</div>
         <!-- ADD TASK FORM -->
         
 
