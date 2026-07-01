@@ -58,7 +58,7 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 .header-right { font-size:12px; color:var(--text3); text-align:right; }
 .header-right div { margin-bottom:2px; }
 
-.container { position:relative; z-index:1; max-width:1400px; margin:0 auto; padding:0 36px 24px; }
+.container { position:relative; z-index:1; max-width:98%; margin:0 auto; padding:0 36px 24px; }
 
 /* Main tabs */
 .tab-dropdown-container { margin-bottom: 20px; }
@@ -344,7 +344,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     border-radius:8px; max-height:200px; overflow-y:auto; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,.6); }
 .tag-suggest.open { display:block; }
 .tag-suggest .combo-item.selected { background:var(--bg3); }
-.top-controls-wrapper { position:fixed; top:12px; left:410px; z-index:1005; display:flex; flex-direction:column; gap:4px; }
+.top-controls-wrapper { display:flex; flex-direction:column; gap:4px; margin-left:30px; }
 .top-controls-wrapper .filter-row { gap:10px; margin-bottom:0; }
 .top-controls-wrapper .color-legend { font-size:11px; padding:2px 0; }
 </style>
@@ -365,6 +365,59 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'tasks', 'Trợ lý — KingFoodmart')">📋 Công Việc</div>
         </div>
     </div>
+    <div id="tonkho-header-filters" class="header-filters top-controls-wrapper" style="flex: 1; display: flex;">
+        <div class="filter-row">
+            <div class="filter-group">
+                <span class="filter-label">Kho</span>
+                <select class="filter-select" id="tonkho-wh-filter" onchange="filterWarehouse(this.value)">
+                    <option value="">Tất cả</option>
+    <option value="Khô">Khô</option>
+    <option value="Rau">Rau</option>
+    <option value="Đông Mát">Đông Mát</option>
+    
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Hiển thị</span>
+                <select class="filter-select" id="tonkho-top-filter" onchange="filterTop(+this.value)">
+                    <option value="10">Top 10</option><option value="20">Top 20</option>
+                    <option value="50">Top 50</option><option value="100">Top 100</option>
+                    <option value="9999" selected>Tất cả</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Lọc rổ</span>
+                <div class="dropdown-wrap" id="col-filters">
+                    <button class="filter-select dropdown-btn" type="button" onclick="toggleDD('col-dd')">Tất cả</button>
+                    <div class="dropdown-panel" id="col-dd"><label class="dd-item"><input type="checkbox" checked onchange="toggleColCheck(-1,this)"> Tất cả</label>
+    <label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="0" data-warehouse="Đông Mát" onchange="toggleColCheck(0,this)"> ITL Thùng tote xanh dương</label>
+    <label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-col="1" data-warehouse="Rau" onchange="toggleColCheck(1,this)"> Rổ nhựa đen/xanh lá kho r</label>
+    <label class="dd-item" data-warehouse="Khô"><input type="checkbox" checked data-col="2" data-warehouse="Khô" onchange="toggleColCheck(2,this)"> Seedlog - Thùng tote xanh</label>
+    <label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-col="3" data-warehouse="Rau" onchange="toggleColCheck(3,this)"> Rổ đen xếp chồng quai đỏ</label>
+    <label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="4" data-warehouse="Đông Mát" onchange="toggleColCheck(4,this)"> Rổ nhựa đỏ kích thước 60x</label>
+    <label class="dd-item" data-warehouse=""><input type="checkbox" checked data-col="5" data-warehouse="" onchange="toggleColCheck(5,this)"> Rổ cam xếp chồng quai đỏ </label>
+    <label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="6" data-warehouse="Đông Mát" onchange="toggleColCheck(6,this)"> Rổ ABA đông mát</label>
+    <label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="7" data-warehouse="Đông Mát" onchange="toggleColCheck(7,this)"> Tote ABA đông mát</label>
+    <label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-col="8" data-warehouse="Rau" onchange="toggleColCheck(8,this)"> Tote đỏ bánh tươi</label>
+    </div>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Tìm kiếm</span>
+                <div class="search-wrap">
+                    <input class="filter-select search-upper" type="text" id="store-search" placeholder="Mã ST hoặc tên..." oninput="this.value=this.value.toUpperCase();filterStore()">
+                    <button class="search-clear" onclick="clearSearch('store-search','filterStore')">&times;</button>
+                </div>
+            </div>
+        </div>
+        <div class="color-legend">
+            <span class="legend-title">Tồn kho:</span>
+            <span class="legend-item"><span class="legend-dot ld-green"></span>&lt; 30</span>
+            <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
+            <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
+            <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
+        </div>
+    </div>
     <div class="header-right" style="display: flex; align-items: center; gap: 20px;">
         <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
             <span id="themeIcon">☀️</span> Giao diện
@@ -379,59 +432,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 1: TỒN KHO -->
 <div class="main-panel active" id="panel-tonkho">
-    <div class="top-controls-wrapper">
-    <div class="filter-row">
-        <div class="filter-group">
-            <span class="filter-label">Kho</span>
-            <select class="filter-select" id="tonkho-wh-filter" onchange="filterWarehouse(this.value)">
-                <option value="">Tất cả</option>
-<option value="Khô">Khô</option>
-<option value="Rau">Rau</option>
-<option value="Đông Mát">Đông Mát</option>
-
-            </select>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Hiển thị</span>
-            <select class="filter-select" id="tonkho-top-filter" onchange="filterTop(+this.value)">
-                <option value="10">Top 10</option><option value="20">Top 20</option>
-                <option value="50">Top 50</option><option value="100">Top 100</option>
-                <option value="9999" selected>Tất cả</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Lọc rổ</span>
-            <div class="dropdown-wrap" id="col-filters">
-                <button class="filter-select dropdown-btn" type="button" onclick="toggleDD('col-dd')">Tất cả</button>
-                <div class="dropdown-panel" id="col-dd"><label class="dd-item"><input type="checkbox" checked onchange="toggleColCheck(-1,this)"> Tất cả</label>
-<label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="0" data-warehouse="Đông Mát" onchange="toggleColCheck(0,this)"> ITL Thùng tote xanh dương</label>
-<label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-col="1" data-warehouse="Rau" onchange="toggleColCheck(1,this)"> Rổ nhựa đen/xanh lá kho r</label>
-<label class="dd-item" data-warehouse="Khô"><input type="checkbox" checked data-col="2" data-warehouse="Khô" onchange="toggleColCheck(2,this)"> Seedlog - Thùng tote xanh</label>
-<label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-col="3" data-warehouse="Rau" onchange="toggleColCheck(3,this)"> Rổ đen xếp chồng quai đỏ</label>
-<label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="4" data-warehouse="Đông Mát" onchange="toggleColCheck(4,this)"> Rổ nhựa đỏ kích thước 60x</label>
-<label class="dd-item" data-warehouse=""><input type="checkbox" checked data-col="5" data-warehouse="" onchange="toggleColCheck(5,this)"> Rổ cam xếp chồng quai đỏ </label>
-<label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="6" data-warehouse="Đông Mát" onchange="toggleColCheck(6,this)"> Rổ ABA đông mát</label>
-<label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-col="7" data-warehouse="Đông Mát" onchange="toggleColCheck(7,this)"> Tote ABA đông mát</label>
-<label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-col="8" data-warehouse="Rau" onchange="toggleColCheck(8,this)"> Tote đỏ bánh tươi</label>
-</div>
-            </div>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Tìm kiếm</span>
-            <div class="search-wrap">
-                <input class="filter-select search-upper" type="text" id="store-search" placeholder="Mã ST hoặc tên..." oninput="this.value=this.value.toUpperCase();filterStore()">
-                <button class="search-clear" onclick="clearSearch('store-search','filterStore')">&times;</button>
-            </div>
-        </div>
-    </div>
-    <div class="color-legend">
-        <span class="legend-title">Tồn kho:</span>
-        <span class="legend-item"><span class="legend-dot ld-green"></span>&lt; 30</span>
-        <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
-        <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
-        <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
-    </div>
-    </div>
     <div class="stats-bar compact">
         <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
         <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
@@ -910,6 +910,11 @@ function clearSearch(inputId, fnName) {
 function switchMainBySelect(val) {
     document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-' + val).classList.add('active');
+    
+    document.querySelectorAll('.header-filters').forEach(el => el.style.display = 'none');
+    if (document.getElementById('tonkho-header-filters')) {
+        document.getElementById('tonkho-header-filters').style.display = (val === 'tonkho') ? 'flex' : 'none';
+    }
 }
 function switchMain(panel, btn) {
     document.querySelectorAll('.main-panel').forEach(el => el.classList.remove('active'));
@@ -926,6 +931,11 @@ function switchMain(panel, btn) {
     }
     
     document.getElementById('panel-' + panel).classList.add('active');
+    
+    document.querySelectorAll('.header-filters').forEach(el => el.style.display = 'none');
+    if (document.getElementById('tonkho-header-filters')) {
+        document.getElementById('tonkho-header-filters').style.display = (panel === 'tonkho') ? 'flex' : 'none';
+    }
     
     if (panel === 'thuhoi') renderTripTable();
     if (panel === 'storemap') {
