@@ -418,6 +418,67 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
         </div>
     </div>
+    <div id="thuhoi-header-filters" class="header-filters top-controls-wrapper" style="flex: 1; display: none;">
+        <div class="filter-row">
+            <div class="filter-group">
+                <span class="filter-label">Kho</span>
+                <select class="filter-select" id="trip-wh-filter" onchange="filterTripWarehouse(this.value)">
+                    <option value="">Tất cả</option>
+    <option value="Khô">Khô</option>
+    <option value="Rau">Rau</option>
+    <option value="Đông Mát">Đông Mát</option>
+    
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Trạng thái</span>
+                <div class="dropdown-wrap" id="status-filter">
+                    <button class="filter-select dropdown-btn" type="button" onclick="toggleDD('status-dd')">Tất cả</button>
+                    <div class="dropdown-panel" id="status-dd">
+                        <label class="dd-item"><input type="checkbox" checked onchange="toggleStatusCheck(null,this)"> Tất cả</label>
+                        <label class="dd-item"><input type="checkbox" checked data-status="none" onchange="toggleStatusCheck('none',this)"> ✗ Không thu</label>
+                        <label class="dd-item"><input type="checkbox" checked data-status="partial" onchange="toggleStatusCheck('partial',this)"> ⚠ Thu 1 phần</label>
+                        <label class="dd-item"><input type="checkbox" checked data-status="full" onchange="toggleStatusCheck('full',this)"> ✓ Đã thu hết</label>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Hiển thị</span>
+                <select class="filter-select" onchange="filterTopTrip(+this.value)">
+                    <option value="10">Top 10</option><option value="20">Top 20</option>
+                    <option value="50">Top 50</option><option value="9999" selected>Tất cả</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Loại rổ</span>
+                <div class="dropdown-wrap" id="basket-filter">
+                    <button class="filter-select dropdown-btn" type="button" onclick="toggleDD('basket-dd')">Tất cả</button>
+                    <div class="dropdown-panel" id="basket-dd"><label class="dd-item"><input type="checkbox" checked onchange="toggleBasketCheck(null,this)"> Tất cả</label>
+    <label class="dd-item" data-warehouse="Khô"><input type="checkbox" checked data-basket="B0001" data-warehouse="Khô" onchange="toggleBasketCheck('B0001',this)">Seedlog - Thùng tote xanh</label>
+    <label class="dd-item" data-warehouse=""><input type="checkbox" checked data-basket="B0002" data-warehouse="" onchange="toggleBasketCheck('B0002',this)">Thùng Carton, Bịch nguyên</label>
+    <label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-basket="B0012" data-warehouse="Rau" onchange="toggleBasketCheck('B0012',this)">KRC Rổ nhựa đen xếp chồng</label>
+    <label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-basket="B0015" data-warehouse="Đông Mát" onchange="toggleBasketCheck('B0015',this)">Rổ ABA đông mát</label>
+    <label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-basket="B0016" data-warehouse="Đông Mát" onchange="toggleBasketCheck('B0016',this)">Tote ABA đông mát</label>
+    <label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-basket="B0017" data-warehouse="Rau" onchange="toggleBasketCheck('B0017',this)">Tote đỏ bánh tươi</label>
+    </div>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Tìm kiếm</span>
+                <div class="search-wrap">
+                    <input class="filter-select search-upper" type="text" id="trip-store-search" placeholder="Mã ST hoặc tên..." oninput="this.value=this.value.toUpperCase();filterTripStore()">
+                    <button class="search-clear" onclick="clearSearch('trip-store-search','filterTripStore')">&times;</button>
+                </div>
+            </div>
+        </div>
+        <div class="color-legend">
+            <span class="legend-title">Chênh lệch:</span>
+            <span class="legend-item"><span class="legend-dot ld-green"></span>0 (đủ)</span>
+            <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt; 10</span>
+            <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
+            <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
+        </div>
+    </div>
     <div class="header-right" style="display: flex; align-items: center; gap: 20px;">
         <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
             <span id="themeIcon">☀️</span> Giao diện
@@ -666,89 +727,32 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <div class="stat green"><div class="stat-num">109,262</div><div class="stat-label">Tổng SL Thu</div></div>
         <button class="btn-export" onclick="exportThuHoi()" style="align-self:center;padding:5px 12px;font-size:11px;">📥 Excel</button>
     </div>
-    <div class="basket-summary-panel" id="basket-summary" style="display:none; background:var(--bg); border:1px dashed var(--red); border-radius:8px; padding:10px 14px; margin-bottom:10px;">
-        <div style="font-size:11px; font-weight:700; color:var(--text2); margin-bottom:8px; text-transform:uppercase;">Chi tiết các loại rổ chưa thu (tổng quan)</div>
-        <div id="basket-summary-content" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-    </div>
-    <div class="cal-bar" id="trip-date-bar">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
-            <span class="cal-title">📅 Khoảng ngày</span>
-            <div style="display:flex;gap:6px;align-items:center;">
-                <label style="color:var(--text3);font-size:10px;">Từ</label>
-                <input type="date" id="date-from" value="2026-06-24" min="2026-06-24" max="2026-06-29" onchange="filterDateRange()" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:3px 6px;font-size:11px;font-family:inherit;">
-                <label style="color:var(--text3);font-size:10px;">Đến</label>
-                <input type="date" id="date-to" value="2026-06-29" min="2026-06-24" max="2026-06-29" onchange="filterDateRange()" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:3px 6px;font-size:11px;font-family:inherit;">
-            </div>
-            <div class="cal-grid">
-                <div class="cal-day " onclick="toggleDate('24/06/2026',this)" data-date="24/06/2026" data-iso="2026-06-24"><div class="cal-date">24</div><div class="cal-badge"><span class="badge-nr">28</span> chưa</div></div>
-<div class="cal-day " onclick="toggleDate('25/06/2026',this)" data-date="25/06/2026" data-iso="2026-06-25"><div class="cal-date">25</div><div class="cal-badge"><span class="badge-nr">26</span> chưa</div></div>
-<div class="cal-day " onclick="toggleDate('26/06/2026',this)" data-date="26/06/2026" data-iso="2026-06-26"><div class="cal-date">26</div><div class="cal-badge"><span class="badge-nr">15</span> chưa</div></div>
-<div class="cal-day " onclick="toggleDate('27/06/2026',this)" data-date="27/06/2026" data-iso="2026-06-27"><div class="cal-date">27</div><div class="cal-badge"><span class="badge-nr">32</span> chưa</div></div>
-<div class="cal-day active" onclick="toggleDate('28/06/2026',this)" data-date="28/06/2026" data-iso="2026-06-28"><div class="cal-date">28</div><div class="cal-badge"><span class="badge-nr">12</span> chưa</div></div>
-
-            </div>
+    <div style="display: flex; gap: 20px; align-items: flex-start; justify-content: flex-end; margin-bottom: 10px;">
+        <div class="basket-summary-panel" id="basket-summary" style="display:none; flex: 1; background:var(--bg); border:1px dashed var(--red); border-radius:8px; padding:10px 14px;">
+            <div style="font-size:11px; font-weight:700; color:var(--text2); margin-bottom:8px; text-transform:uppercase;">Chi tiết các loại rổ chưa thu (tổng quan)</div>
+            <div id="basket-summary-content" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
         </div>
-    </div>
-    <div class="filter-row">
-        <div class="filter-group">
-            <span class="filter-label">Kho</span>
-            <select class="filter-select" id="trip-wh-filter" onchange="filterTripWarehouse(this.value)">
-                <option value="">Tất cả</option>
-<option value="Khô">Khô</option>
-<option value="Rau">Rau</option>
-<option value="Đông Mát">Đông Mát</option>
-
-            </select>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Trạng thái</span>
-            <div class="dropdown-wrap" id="status-filter">
-                <button class="filter-select dropdown-btn" type="button" onclick="toggleDD('status-dd')">Tất cả</button>
-                <div class="dropdown-panel" id="status-dd">
-                    <label class="dd-item"><input type="checkbox" checked onchange="toggleStatusCheck(null,this)"> Tất cả</label>
-                    <label class="dd-item"><input type="checkbox" checked data-status="none" onchange="toggleStatusCheck('none',this)"> ✗ Không thu</label>
-                    <label class="dd-item"><input type="checkbox" checked data-status="partial" onchange="toggleStatusCheck('partial',this)"> ⚠ Thu 1 phần</label>
-                    <label class="dd-item"><input type="checkbox" checked data-status="full" onchange="toggleStatusCheck('full',this)"> ✓ Đã thu hết</label>
+        <div class="cal-bar" id="trip-date-bar" style="margin-left: auto; margin-bottom: 0;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0;flex-wrap:wrap;">
+                <span class="cal-title" style="margin-bottom:4px;">📅 Khoảng ngày</span>
+                <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+                    <label style="color:var(--text3);font-size:10px;">Từ</label>
+                    <input type="date" id="date-from" value="2026-06-24" min="2026-06-24" max="2026-06-29" onchange="filterDateRange()" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:3px 6px;font-size:11px;font-family:inherit;">
+                    <label style="color:var(--text3);font-size:10px;">Đến</label>
+                    <input type="date" id="date-to" value="2026-06-29" min="2026-06-24" max="2026-06-29" onchange="filterDateRange()" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:3px 6px;font-size:11px;font-family:inherit;">
+                </div>
+                <div class="cal-grid">
+                    <div class="cal-day " onclick="toggleDate('24/06/2026',this)" data-date="24/06/2026" data-iso="2026-06-24"><div class="cal-date">24</div><div class="cal-badge"><span class="badge-nr">28</span> chưa</div></div>
+    <div class="cal-day " onclick="toggleDate('25/06/2026',this)" data-date="25/06/2026" data-iso="2026-06-25"><div class="cal-date">25</div><div class="cal-badge"><span class="badge-nr">26</span> chưa</div></div>
+    <div class="cal-day " onclick="toggleDate('26/06/2026',this)" data-date="26/06/2026" data-iso="2026-06-26"><div class="cal-date">26</div><div class="cal-badge"><span class="badge-nr">15</span> chưa</div></div>
+    <div class="cal-day " onclick="toggleDate('27/06/2026',this)" data-date="27/06/2026" data-iso="2026-06-27"><div class="cal-date">27</div><div class="cal-badge"><span class="badge-nr">32</span> chưa</div></div>
+    <div class="cal-day active" onclick="toggleDate('28/06/2026',this)" data-date="28/06/2026" data-iso="2026-06-28"><div class="cal-date">28</div><div class="cal-badge"><span class="badge-nr">12</span> chưa</div></div>
+    
                 </div>
             </div>
         </div>
-        <div class="filter-group">
-            <span class="filter-label">Hiển thị</span>
-            <select class="filter-select" onchange="filterTopTrip(+this.value)">
-                <option value="10">Top 10</option><option value="20">Top 20</option>
-                <option value="50">Top 50</option><option value="9999" selected>Tất cả</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Loại rổ</span>
-            <div class="dropdown-wrap" id="basket-filter">
-                <button class="filter-select dropdown-btn" type="button" onclick="toggleDD('basket-dd')">Tất cả</button>
-                <div class="dropdown-panel" id="basket-dd"><label class="dd-item"><input type="checkbox" checked onchange="toggleBasketCheck(null,this)"> Tất cả</label>
-<label class="dd-item" data-warehouse="Khô"><input type="checkbox" checked data-basket="B0001" data-warehouse="Khô" onchange="toggleBasketCheck('B0001',this)">Seedlog - Thùng tote xanh</label>
-<label class="dd-item" data-warehouse=""><input type="checkbox" checked data-basket="B0002" data-warehouse="" onchange="toggleBasketCheck('B0002',this)">Thùng Carton, Bịch nguyên</label>
-<label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-basket="B0012" data-warehouse="Rau" onchange="toggleBasketCheck('B0012',this)">KRC Rổ nhựa đen xếp chồng</label>
-<label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-basket="B0015" data-warehouse="Đông Mát" onchange="toggleBasketCheck('B0015',this)">Rổ ABA đông mát</label>
-<label class="dd-item" data-warehouse="Đông Mát"><input type="checkbox" checked data-basket="B0016" data-warehouse="Đông Mát" onchange="toggleBasketCheck('B0016',this)">Tote ABA đông mát</label>
-<label class="dd-item" data-warehouse="Rau"><input type="checkbox" checked data-basket="B0017" data-warehouse="Rau" onchange="toggleBasketCheck('B0017',this)">Tote đỏ bánh tươi</label>
-</div>
-            </div>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Tìm kiếm</span>
-            <div class="search-wrap">
-                <input class="filter-select search-upper" type="text" id="trip-store-search" placeholder="Mã ST hoặc tên..." oninput="this.value=this.value.toUpperCase();filterTripStore()">
-                <button class="search-clear" onclick="clearSearch('trip-store-search','filterTripStore')">&times;</button>
-            </div>
-        </div>
     </div>
-    <div class="color-legend">
-        <span class="legend-title">Chênh lệch:</span>
-        <span class="legend-item"><span class="legend-dot ld-green"></span>0 (đủ)</span>
-        <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt; 10</span>
-        <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
-        <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
-    </div>
-    <div style="max-height:calc(100vh - 230px); overflow-y:auto;">
+    <div style="max-height:calc(100vh - 220px); overflow-y:auto;">
         <table class="data-table" id="trip-table">
             <thead>
                 <tr class="row-total trip-total"><td></td><td></td><td class="total-row-label">TỔNG</td><td class="num total-row" id="tt-giao">0</td><td class="num total-row" id="tt-thu">0</td><td class="num total-row" id="tt-cl">0</td><td></td></tr>
