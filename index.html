@@ -344,7 +344,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     border-radius:8px; max-height:200px; overflow-y:auto; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,.6); }
 .tag-suggest.open { display:block; }
 .tag-suggest .combo-item.selected { background:var(--bg3); }
-.top-controls-wrapper { display:flex; flex-direction:column; gap:4px; margin-left:30px; }
+.top-controls-wrapper { display:flex; flex-direction:column; gap:4px; margin-left:30px; align-items:flex-start; }
 .top-controls-wrapper .filter-row { gap:10px; margin-bottom:0; }
 .top-controls-wrapper .color-legend { font-size:11px; padding:2px 0; }
 </style>
@@ -438,7 +438,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
         <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
     </div>
-    <div class="table-wrap" style="max-height:calc(100vh - 320px); overflow-y:auto;">
+    <div class="table-wrap" style="max-height:calc(100vh - 160px); overflow-y:auto;">
         <table class="data-table" id="tonkho-table">
             <thead><tr class="row-total"><td></td><td class="total-row-label" colspan="2">TỔNG</td><td class="num total-row">25,487</td><td class="num total-row bc-col" data-col="0" data-warehouse="Đông Mát">12</td><td class="num total-row bc-col" data-col="1" data-warehouse="Rau">544</td><td class="num total-row bc-col" data-col="2" data-warehouse="Khô">6,195</td><td class="num total-row bc-col" data-col="3" data-warehouse="Rau">11,675</td><td class="num total-row bc-col" data-col="4" data-warehouse="Đông Mát">28</td><td class="num total-row bc-col" data-col="5" data-warehouse="">4,618</td><td class="num total-row bc-col" data-col="6" data-warehouse="Đông Mát">589</td><td class="num total-row bc-col" data-col="7" data-warehouse="Đông Mát">1,303</td><td class="num total-row bc-col" data-col="8" data-warehouse="Rau">523</td></tr>
 <tr>
@@ -748,7 +748,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
         <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
     </div>
-    <div style="max-height:calc(100vh - 280px); overflow-y:auto;">
+    <div style="max-height:calc(100vh - 230px); overflow-y:auto;">
         <table class="data-table" id="trip-table">
             <thead>
                 <tr class="row-total trip-total"><td></td><td></td><td class="total-row-label">TỔNG</td><td class="num total-row" id="tt-giao">0</td><td class="num total-row" id="tt-thu">0</td><td class="num total-row" id="tt-cl">0</td><td></td></tr>
