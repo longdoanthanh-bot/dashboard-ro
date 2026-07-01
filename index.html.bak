@@ -350,15 +350,11 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <body>
 
 <header class="header">
-    <div style="position: relative; display: flex; align-items: center; gap: 14px; flex-wrap:wrap;" id="navMenuContainer">
+    <div style="position: relative; display: flex; align-items: center; gap: 14px;" id="navMenuContainer">
         <img src="./avatar.png?v=4" width="60" height="60" style="border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 4px 18px rgba(249, 115, 22, 0.6); border: 2px solid #f97316; transition: transform 0.2s; filter: contrast(1.15) saturate(1.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="toggleNavMenu()" alt="Trợ lý">
         <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
             <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trợ lý — KingFoodmart</span>
         </h1>
-        <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
-            <span id="themeIcon">☀️</span> Giao diện
-        </button>
-        <div style="font-size:11px; color:var(--text3);">Cập nhật: 01/07/2026 21:57</div>
         
         <div id="navMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999;">
             <div class="nav-menu-item active" onclick="selectNavMenu(event, 'tonkho', 'Trợ lý — KingFoodmart')">📊 Tồn Rổ tại Siêu Thị</div>
@@ -366,6 +362,12 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'storemap', 'Trợ lý — KingFoodmart')">🗺️ Sơ Đồ ST</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'tasks', 'Trợ lý — KingFoodmart')">📋 Công Việc</div>
         </div>
+    </div>
+    <div class="header-right" style="display: flex; align-items: center; gap: 20px;">
+        <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+            <span id="themeIcon">☀️</span> Giao diện
+        </button>
+        <div>Cập nhật: 01/07/2026 22:43</div>
     </div>
 </header>
 
@@ -375,6 +377,12 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 1: TỒN KHO -->
 <div class="main-panel active" id="panel-tonkho">
+    <div class="stats-bar">
+        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
+        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
+        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
+        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
+    </div>
     <div class="filter-row">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
@@ -425,12 +433,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
         <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
         <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
-    </div>
-    <div class="stats-bar">
-        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
-        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
-        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
-        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
     </div>
     <div class="table-wrap" style="max-height:calc(100vh - 320px); overflow-y:auto;">
         <table class="data-table" id="tonkho-table">
@@ -660,6 +662,10 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <div class="stat green"><div class="stat-num">109,262</div><div class="stat-label">Tổng SL Thu</div></div>
         <button class="btn-export" onclick="exportThuHoi()" style="align-self:center;padding:5px 12px;font-size:11px;">📥 Excel</button>
     </div>
+    <div class="basket-summary-panel" id="basket-summary" style="display:none; background:var(--bg); border:1px dashed var(--red); border-radius:8px; padding:10px 14px; margin-bottom:10px;">
+        <div style="font-size:11px; font-weight:700; color:var(--text2); margin-bottom:8px; text-transform:uppercase;">Chi tiết các loại rổ chưa thu (tổng quan)</div>
+        <div id="basket-summary-content" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+    </div>
     <div class="cal-bar" id="trip-date-bar">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
             <span class="cal-title">📅 Khoảng ngày</span>
@@ -738,10 +744,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
         <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
     </div>
-    <div class="basket-summary-panel" id="basket-summary" style="display:none; background:var(--bg); border:1px dashed var(--red); border-radius:8px; padding:10px 14px; margin-bottom:10px;">
-        <div style="font-size:11px; font-weight:700; color:var(--text2); margin-bottom:8px; text-transform:uppercase;">Chi tiết các loại rổ chưa thu (tổng quan)</div>
-        <div id="basket-summary-content" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-    </div>
     <div style="max-height:calc(100vh - 280px); overflow-y:auto;">
         <table class="data-table" id="trip-table">
             <thead>
@@ -801,6 +803,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             </select>
         </div>
         <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:flex-end;">&#x1F4E5; Xuất Excel</button>
+    </div>
+    <div class="filter-row" style="margin-bottom:4px;">
         <div class="filter-group">
             <span class="filter-label">Đo KC: Điểm A</span>
             <div class="combo-wrap">
