@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -69,8 +69,8 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
     cursor: pointer; outline: none; transition: border-color 0.2s; font-family: inherit; width: 250px;
 }
 .tab-dropdown-container select:hover { border-color: var(--blue); }
-.main-panel { display:none; padding-top:16px; animation:fadeIn .3s; }
-.main-panel.active { display:block; }
+.main-panel { display:none; padding-top:8px; animation:fadeIn .3s; flex-direction:column; }
+.main-panel.active { display:flex; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
 /* Section */
@@ -79,7 +79,16 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 .section-title .icon { font-size:20px; }
 
 /* Stats bar */
-.stats-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.stats-bar { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; order:2; }
+#panel-tonkho > .filter-row { order:1; }
+#panel-tonkho > .color-legend { order:1; }
+#panel-tonkho > .table-wrap { order:3; }
+#panel-thuhoi > .stats-bar { order:1; }
+#panel-thuhoi > .cal-bar { order:2; }
+#panel-thuhoi > .basket-summary-panel { order:3; }
+#panel-thuhoi > .filter-row { order:4; }
+#panel-thuhoi > .color-legend { order:5; }
+#panel-thuhoi > div[style*="max-height"] { order:6; }
 .stat { background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:12px 16px; min-width:100px; text-align:center; flex:1; }
 .stat-num { font-size:22px; font-weight:800; }
 .stat-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
@@ -350,24 +359,21 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <body>
 
 <header class="header">
-    <div style="position: relative; display: flex; align-items: center; gap: 14px;" id="navMenuContainer">
+    <div style="position: relative; display: flex; align-items: center; gap: 14px; flex:1;" id="navMenuContainer">
         <img src="./avatar.png?v=4" width="44" height="44" style="border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 4px 18px rgba(249, 115, 22, 0.6); border: 2px solid #f97316; transition: transform 0.2s; filter: contrast(1.15) saturate(1.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="toggleNavMenu()" alt="Trợ lý">
         <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
             <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trợ lý — KingFoodmart</span>
         </h1>
-        
+        <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: all 0.2s; margin-left:16px;">
+            <span id="themeIcon">☀️</span> Giao diện
+        </button>
+        <div style="font-size:11px; color:var(--text3);">Cập nhật: 01/07/2026 22:27</div>
         <div id="navMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999;">
             <div class="nav-menu-item active" onclick="selectNavMenu(event, 'tonkho', 'Trợ lý — KingFoodmart')">📊 Tồn Rổ tại Siêu Thị</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'thuhoi', 'Trợ lý — KingFoodmart')">🔄 Tiến Độ Thu Hồi</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'storemap', 'Trợ lý — KingFoodmart')">🗺️ Sơ Đồ ST</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'tasks', 'Trợ lý — KingFoodmart')">📋 Công Việc</div>
         </div>
-    </div>
-    <div class="header-right" style="display: flex; align-items: center; gap: 20px;">
-        <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
-            <span id="themeIcon">☀️</span> Giao diện
-        </button>
-        <div>Cập nhật: 01/07/2026 22:27</div>
     </div>
 </header>
 
