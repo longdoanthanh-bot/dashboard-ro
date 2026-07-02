@@ -381,7 +381,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
     <div class="top-controls" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch; position: relative; z-index: 10; width: 100%;">
         
-        <!-- ROW 1: Logo Spacer + Filters -->
+        <!-- ROW 1: Logo Spacer + Filters + Legend + Excel -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
             <div style="width: 420px; flex-shrink: 0; min-height: 60px;"></div>
             
@@ -428,29 +428,29 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                         <button class="search-clear" onclick="clearSearch('store-search','filterStore')">&times;</button>
                     </div>
                 </div>
+                
+                <div style="flex-grow: 1;"></div>
+                
+                <div class="color-legend" style="margin-bottom: 0;">
+                    <span class="legend-title">Tồn kho:</span>
+                    <span class="legend-item"><span class="legend-dot ld-green"></span>&lt; 30</span>
+                    <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
+                    <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
+                    <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
+                </div>
+                <button class="btn-export" onclick="exportTonKho()" style="padding:5px 12px;font-size:11px;">📥 Tải Excel</button>
             </div>
         </div>
 
-        <!-- ROW 2: Giao dien Spacer + Stats + Legend -->
+        <!-- ROW 2: Giao dien Spacer + Stats -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
-            <div style="width: 310px; flex-shrink: 0; min-height: 32px;"></div>
+            <div style="width: 420px; flex-shrink: 0; min-height: 32px;"></div>
             
-            <div class="stats-bar" style="margin: 0; justify-content: flex-start; gap: 8px;">
+            <div class="stats-bar" style="flex: 1; margin: 0; justify-content: flex-start; gap: 8px;">
                 <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
                 <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
                 <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
             </div>
-            
-            <div style="flex-grow: 1;"></div>
-            
-            <div class="color-legend" style="margin: 0;">
-                <span class="legend-title">Tồn kho:</span>
-                <span class="legend-item"><span class="legend-dot ld-green"></span>&lt; 30</span>
-                <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
-                <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
-                <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
-            </div>
-            <button class="btn-export" onclick="exportTonKho()" style="padding:5px 12px;font-size:11px;">📥 Tải Excel</button>
         </div>
     </div>
 <div class="table-wrap" style="max-height:calc(100vh - 160px); overflow-y:auto;">
@@ -685,7 +685,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
     <div class="top-controls-thuhoi" id="thuhoi-controls" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch; position: relative; z-index: 10; width: 100%;">
         
-        <!-- ROW 1: Logo Spacer + Filters -->
+        <!-- ROW 1: Logo Spacer + Filters + Legend + Excel -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
             <div style="width: 420px; flex-shrink: 0; min-height: 60px;"></div>
             
@@ -763,30 +763,30 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                         <button class="search-clear" onclick="clearSearch('trip-store-search','filterTripStore')">&times;</button>
                     </div>
                 </div>
+                
+                <div style="flex-grow: 1;"></div>
+                
+                <div class="color-legend" style="margin-bottom: 0;">
+                    <span class="legend-title">Chênh lệch:</span>
+                    <span class="legend-item"><span class="legend-dot ld-green"></span>0 (đủ)</span>
+                    <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt; 10</span>
+                    <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
+                    <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
+                </div>
+                <button class="btn-export" onclick="exportThuHoi()" style="padding:5px 12px;font-size:11px;">📥 Excel</button>
             </div>
         </div>
 
-        <!-- ROW 2: Giao dien Spacer + Stats Block + Legend -->
+        <!-- ROW 2: Giao dien Spacer + Stats -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
-            <div style="width: 310px; flex-shrink: 0; min-height: 32px;"></div>
+            <div style="width: 420px; flex-shrink: 0; min-height: 32px;"></div>
             
-            <div class="stats-bar compact" style="margin: 0; justify-content: flex-start; gap: 8px;">
+            <div class="stats-bar compact" style="flex: 1; margin: 0; justify-content: flex-start; gap: 8px;">
                 <div class="stat red"><div class="stat-num">113</div><div class="stat-label">Lượt chưa thu</div></div>
                 <div class="stat green"><div class="stat-num">865</div><div class="stat-label">Lượt đã thu</div></div>
                 <div class="stat blue"><div class="stat-num">111,940</div><div class="stat-label">Tổng SL Giao</div></div>
                 <div class="stat green"><div class="stat-num">109,262</div><div class="stat-label">Tổng SL Thu</div></div>
             </div>
-            
-            <div style="flex-grow: 1;"></div>
-            
-            <div class="color-legend" style="margin: 0;">
-                <span class="legend-title">Chênh lệch:</span>
-                <span class="legend-item"><span class="legend-dot ld-green"></span>0 (đủ)</span>
-                <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt; 10</span>
-                <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
-                <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
-            </div>
-            <button class="btn-export" onclick="exportThuHoi()" style="padding:5px 12px;font-size:11px;">📥 Excel</button>
         </div>
     </div>
 <div class="basket-summary-panel" id="basket-summary" style="display:none; background:var(--bg); border:1px dashed var(--red); border-radius:8px; padding:10px 14px; margin-bottom:10px;">
@@ -810,7 +810,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
     <div class="map-controls" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch; position: relative; z-index: 10; width: 100%;">
         
-        <!-- ROW 1: Logo Spacer + Filters -->
+        <!-- ROW 1: Logo Spacer + Filters + Legend + Excel -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
             <div style="width: 420px; flex-shrink: 0; min-height: 60px;"></div>
             
@@ -853,12 +853,26 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                         <option value="10">Top 10</option>
                     </select>
                 </div>
+                
+                <div style="flex-grow: 1;"></div>
+                
+                <div class="map-legend" style="margin-bottom: 0;">
+                    <span class="map-legend-title">Doanh thu:</span>
+                    <span class="ml-item"><span class="ml-dot" style="background:#34d399"></span> A</span>
+                    <span class="ml-item"><span class="ml-dot" style="background:#6c8cff"></span> B</span>
+                    <span class="ml-item"><span class="ml-dot" style="background:#9898b0"></span> C</span>
+                    <span style="color:var(--border)">|</span>
+                    <span class="map-legend-title">Loại:</span>
+                    <span class="ml-item"><span class="ml-dot lg" style="background:#fb923c"></span> Mart</span>
+                    <span class="ml-item"><span class="ml-dot sm" style="background:#a78bfa"></span> Mini</span>
+                </div>
+                <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:center;">&#x1F4E5; Excel</button>
             </div>
         </div>
 
-        <!-- ROW 2: Giao dien Spacer + Stats Block + Dist Calc + Legend -->
+        <!-- ROW 2: Giao dien Spacer + Stats Block + Dist Calc -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
-            <div style="width: 310px; flex-shrink: 0; min-height: 32px;"></div>
+            <div style="width: 420px; flex-shrink: 0; min-height: 32px;"></div>
             
             <div class="map-stats" style="margin: 0; justify-content: flex-start;">
                 <div class="map-stat"><div class="map-stat-num" style="color:var(--blue)" id="map-total">0</div><div class="map-stat-label">Tổng ST</div></div>
@@ -866,7 +880,9 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                 <div class="map-stat"><div class="map-stat-num" style="color:var(--purple)" id="map-mini">0</div><div class="map-stat-label">Mini</div></div>
             </div>
             
-            <div style="display: flex; flex-direction: row; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-left: auto;">
+            <div style="flex-grow: 1;"></div>
+            
+            <div style="display: flex; flex-direction: row; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
                 <div class="filter-group">
                     <span class="filter-label">Đo KC: Điểm A</span>
                     <div class="combo-wrap">
@@ -883,18 +899,6 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                 </div>
                 <button class="btn-export" onclick="calcDistance()" style="padding:6px 14px;font-size:11px;align-self:flex-end;">📏 Tính KC</button>
                 <div id="dist-result" style="align-self:center;padding:6px 12px;font-size:12px;color:var(--green);font-weight:600;"></div>
-                
-                <div class="map-legend" style="margin: 0 0 0 10px;">
-                    <span class="map-legend-title">Doanh thu:</span>
-                    <span class="ml-item"><span class="ml-dot" style="background:#34d399"></span> A</span>
-                    <span class="ml-item"><span class="ml-dot" style="background:#6c8cff"></span> B</span>
-                    <span class="ml-item"><span class="ml-dot" style="background:#9898b0"></span> C</span>
-                    <span style="color:var(--border)">|</span>
-                    <span class="map-legend-title">Loại:</span>
-                    <span class="ml-item"><span class="ml-dot lg" style="background:#fb923c"></span> Mart</span>
-                    <span class="ml-item"><span class="ml-dot sm" style="background:#a78bfa"></span> Mini</span>
-                </div>
-                <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:center;">&#x1F4E5; Excel</button>
             </div>
         </div>
     </div>

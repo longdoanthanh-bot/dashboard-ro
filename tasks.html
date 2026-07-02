@@ -427,45 +427,47 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 <div class="container" style="padding-top:12px;">
 
     <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
+    <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
     <div class="top-row" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch; position: relative; z-index: 10; width: 100%;">
         
         <!-- ROW 1: Logo Spacer + Add Form -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
             <div style="width: 420px; flex-shrink: 0; min-height: 50px;"></div>
-            <div class="add-form" style="margin: 0; flex: 1;">
-                <div class="add-form-row">
-                    <div class="form-title" style="margin-right:10px; padding-bottom:6px;">➕ Thêm task mới</div>
-                    <div class="form-group" style="flex:1;">
-                        <label>Tiêu đề</label>
-                        <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
-                    </div>
-                    <div class="form-group" style="flex:2;">
-                        <label>Nội dung</label>
-                        <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;padding-top:4px;"></textarea>
-                    </div>
+            <div class="add-form" style="margin: 0; flex: 1; display: flex; flex-direction: row; align-items: flex-end; flex-wrap: wrap; gap: 12px; padding: 0;">
+                <div class="form-title" style="margin-right:0; padding-bottom:6px; font-size: 13px;">➕ Thêm task mới</div>
+                
+                <div class="form-group" style="flex:1; min-width: 120px;">
+                    <label>Tiêu đề</label>
+                    <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
                 </div>
-                <div class="add-form-row">
-                    <div class="form-group" style="flex:1;">
-                        <label>Deadline</label>
-                        <input class="form-input" type="datetime-local" id="new-deadline" style="width:100%;">
-                    </div>
-                    <div class="form-group" style="flex:0 0 100px;">
-                        <label>Ưu tiên</label>
-                        <select class="form-input" id="new-priority" style="min-width:90px;width:100%;">
-                            <option value="3">🟢 P3</option>
-                            <option value="2">🟠 P2</option>
-                            <option value="1">🔴 P1</option>
-                        </select>
-                    </div>
-                    <button class="btn-create" onclick="createTask()" style="height:32px; padding:0 24px;">Tạo</button>
-                    <button class="header-btn" onclick="exportExcel()" style="height:32px; padding:0 12px; margin-left:0;">📥 Excel</button>
+                
+                <div class="form-group" style="flex:2; min-width: 150px;">
+                    <label>Nội dung</label>
+                    <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:none;min-height:28px;padding-top:4px;overflow:hidden;"></textarea>
                 </div>
+                
+                <div class="form-group" style="flex:0 0 130px;">
+                    <label>Deadline</label>
+                    <input class="form-input" type="datetime-local" id="new-deadline" style="width:100%;">
+                </div>
+                
+                <div class="form-group" style="flex:0 0 80px;">
+                    <label>Ưu tiên</label>
+                    <select class="form-input" id="new-priority" style="min-width:80px;width:100%;">
+                        <option value="3">🟢 P3</option>
+                        <option value="2">🟠 P2</option>
+                        <option value="1">🔴 P1</option>
+                    </select>
+                </div>
+                
+                <button class="btn-create" onclick="createTask()" style="height:32px; padding:0 16px;">Tạo</button>
+                <button class="header-btn" onclick="exportExcel()" style="height:32px; padding:0 12px; margin-left:0;">📥 Excel</button>
             </div>
         </div>
 
         <!-- ROW 2: Giao dien Spacer + Stats Block -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
-            <div style="width: 310px; flex-shrink: 0; min-height: 32px;"></div>
+            <div style="width: 420px; flex-shrink: 0; min-height: 32px;"></div>
             <div class="stats-row" style="flex: 1; justify-content: flex-start; gap: 8px; margin: 0;">
                 <div class="stat-total-card" id="stat-total-card">
                     <div class="stat-num" id="stat-total">0</div>
