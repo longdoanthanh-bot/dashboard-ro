@@ -71,13 +71,13 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 /* ===== STATS — RIGHT SIDE ===== */
 .stats-row { flex:0 0 auto; display:flex; gap:6px; align-items:stretch; }
 .stat-total-card {
-    flex:0 0 80px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
-    padding:6px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    flex:0 0 auto; background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+    padding:6px 12px; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:8px;
     position:relative; overflow:hidden; transition:background .4s;
 }
-.stat-total-card .stat-num { font-size:20px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
-.stat-total-card .stat-label { font-size:7px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.4px; margin-top:1px; position:relative; z-index:1; font-weight:700; }
-.stat-total-card .stat-pct { font-size:8px; color:rgba(255,255,255,0.9); font-weight:700; margin-top:2px; position:relative; z-index:1; }
+.stat-total-card .stat-num { font-size:16px; font-weight:900; color:#fff; position:relative; z-index:1; text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+.stat-total-card .stat-label { font-size:10px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:.4px; position:relative; z-index:1; font-weight:700; }
+.stat-total-card .stat-pct { font-size:10px; color:rgba(255,255,255,0.9); font-weight:700; position:relative; z-index:1; }
 .stat-right-group {
     flex:0 0 auto; display:flex; flex-direction:row; gap:6px;
 }
