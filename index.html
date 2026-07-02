@@ -378,8 +378,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 1: TỒN KHO -->
 <div class="main-panel active" id="panel-tonkho">
-    <div class="top-controls" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; padding-left: 420px; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
-    <div class="filters-container" style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px;">
+    <div class="top-controls" style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding-left: 420px; flex-wrap: nowrap; gap: 8px; margin-bottom: 12px; min-height: 60px; position: relative; z-index: 10;">
+    <div class="filters-container" style="display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 8px;">
         <div class="filter-row" style="margin-bottom: 0; justify-content: flex-start;">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
@@ -424,22 +424,24 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             </div>
         </div>
     </div>
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; flex-wrap: nowrap; width: 100%;">
         <div class="color-legend">
-        <span class="legend-title">Tồn kho:</span>
-        <span class="legend-item"><span class="legend-dot ld-green"></span>&lt; 30</span>
-        <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
-        <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
-        <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
+            <span class="legend-title">Tồn kho:</span>
+            <span class="legend-item"><span class="legend-dot ld-green"></span>&lt; 30</span>
+            <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
+            <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
+            <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
+        </div>
+        <div class="stats-bar" style="margin-bottom: 0; padding-left: 10px;">
+            <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
+            <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
+            <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
+            <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
+        </div>
     </div>
-    </div>
-    <div class="stats-bar" style="margin-bottom: 0;">
-        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
-        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
-        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
-        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
     </div>
 </div>
-<div class="table-wrap" style="max-height:calc(100vh - 320px); overflow-y:auto;">
+<div class="table-wrap" style="max-height:calc(100vh - 160px); overflow-y:auto;">
         <table class="data-table" id="tonkho-table">
             <thead><tr class="row-total"><td></td><td class="total-row-label" colspan="2">TỔNG</td><td class="num total-row">25,487</td><td class="num total-row bc-col" data-col="0" data-warehouse="Đông Mát">12</td><td class="num total-row bc-col" data-col="1" data-warehouse="Rau">544</td><td class="num total-row bc-col" data-col="2" data-warehouse="Khô">6,195</td><td class="num total-row bc-col" data-col="3" data-warehouse="Rau">11,675</td><td class="num total-row bc-col" data-col="4" data-warehouse="Đông Mát">28</td><td class="num total-row bc-col" data-col="5" data-warehouse="">4,618</td><td class="num total-row bc-col" data-col="6" data-warehouse="Đông Mát">589</td><td class="num total-row bc-col" data-col="7" data-warehouse="Đông Mát">1,303</td><td class="num total-row bc-col" data-col="8" data-warehouse="Rau">523</td></tr>
 <tr>
@@ -668,8 +670,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 2: THU HỒI -->
 <div class="main-panel" id="panel-thuhoi">
-    <div class="top-controls-thuhoi" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; padding-left: 420px; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
-    <div class="filters-container-thuhoi" style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px;">
+    <div class="top-controls-thuhoi" style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding-left: 420px; flex-wrap: nowrap; gap: 8px; margin-bottom: 12px; min-height: 60px; position: relative; z-index: 10;">
+    <div class="filters-container-thuhoi" style="display: flex; flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 8px;">
         <div class="cal-bar" style="margin-bottom: 0;" id="trip-date-bar">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
             <span class="cal-title">📅 Khoảng ngày</span>
@@ -744,27 +746,29 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         </div>
     </div>
     </div>
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; flex-wrap: nowrap; width: 100%;">
         <div class="color-legend" style="margin-bottom: 0;">
-        <span class="legend-title">Chênh lệch:</span>
-        <span class="legend-item"><span class="legend-dot ld-green"></span>0 (đủ)</span>
-        <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt; 10</span>
-        <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
-        <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
+            <span class="legend-title">Chênh lệch:</span>
+            <span class="legend-item"><span class="legend-dot ld-green"></span>0 (đủ)</span>
+            <span class="legend-item"><span class="legend-dot ld-yellow"></span>&lt; 10</span>
+            <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
+            <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
+        </div>
+        <div class="stats-bar compact" style="margin-bottom: 0; padding-left: 10px;">
+            <div class="stat red"><div class="stat-num">113</div><div class="stat-label">Lượt chưa thu</div></div>
+            <div class="stat green"><div class="stat-num">865</div><div class="stat-label">Lượt đã thu</div></div>
+            <div class="stat blue"><div class="stat-num">111,940</div><div class="stat-label">Tổng SL Giao</div></div>
+            <div class="stat green"><div class="stat-num">109,262</div><div class="stat-label">Tổng SL Thu</div></div>
+            <button class="btn-export" onclick="exportThuHoi()" style="align-self:center;padding:5px 12px;font-size:11px;">📥 Excel</button>
+        </div>
     </div>
-    </div>
-    <div class="stats-bar compact" style="margin-bottom: 0;">
-        <div class="stat red"><div class="stat-num">113</div><div class="stat-label">Lượt chưa thu</div></div>
-        <div class="stat green"><div class="stat-num">865</div><div class="stat-label">Lượt đã thu</div></div>
-        <div class="stat blue"><div class="stat-num">111,940</div><div class="stat-label">Tổng SL Giao</div></div>
-        <div class="stat green"><div class="stat-num">109,262</div><div class="stat-label">Tổng SL Thu</div></div>
-        <button class="btn-export" onclick="exportThuHoi()" style="align-self:center;padding:5px 12px;font-size:11px;">📥 Excel</button>
     </div>
 </div>
 <div class="basket-summary-panel" id="basket-summary" style="display:none; background:var(--bg); border:1px dashed var(--red); border-radius:8px; padding:10px 14px; margin-bottom:10px;">
         <div style="font-size:11px; font-weight:700; color:var(--text2); margin-bottom:8px; text-transform:uppercase;">Chi tiết các loại rổ chưa thu (tổng quan)</div>
         <div id="basket-summary-content" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
     </div>
-    <div style="max-height:calc(100vh - 280px); overflow-y:auto;">
+    <div style="max-height:calc(100vh - 160px); overflow-y:auto;">
         <table class="data-table" id="trip-table">
             <thead>
                 <tr class="row-total trip-total"><td></td><td></td><td class="total-row-label">TỔNG</td><td class="num total-row" id="tt-giao">0</td><td class="num total-row" id="tt-thu">0</td><td class="num total-row" id="tt-cl">0</td><td></td></tr>
