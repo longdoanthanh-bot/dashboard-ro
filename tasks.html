@@ -124,11 +124,11 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .cal-loading { font-size:11px; color:var(--text3); text-align:center; padding:6px; }
 
 /* ===== KANBAN BOARD ===== */
-.kanban { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; flex:1; min-height:0; }
+.kanban { display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:minmax(0, 1fr); gap:14px; flex:1; min-height:0; height:100%; }
 
 .kanban-col {
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:14px; min-height:300px; display:flex; flex-direction:column;
+    padding:14px; min-height:300px; display:flex; flex-direction:column; height:100%;
 }
 .col-header {
     display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
