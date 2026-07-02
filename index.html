@@ -354,7 +354,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
             <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trợ lý — KingFoodmart</span>
         </h1>
-        <button id="themeToggle" onclick="toggleTheme()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
+        <button id="themeToggle" onclick="toggleTheme()" style="margin-left: auto; background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
             <span id="themeIcon">☀️</span> Giao diện
         </button>
         <div style="font-size:11px; color:var(--text3);">Cập nhật: 01/07/2026 22:46</div>
@@ -374,7 +374,15 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 1: TỒN KHO -->
 <div class="main-panel active" id="panel-tonkho">
-    <div class="filter-row">
+    <div class="top-controls" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 12px;">
+    <div class="stats-bar" style="margin-bottom: 0; flex: 1; min-width: 450px;">
+        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
+        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
+        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
+        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
+    </div>
+    <div class="filters-container" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+        <div class="filter-row" style="margin-bottom: 0; justify-content: flex-end;">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
             <select class="filter-select" id="tonkho-wh-filter" onchange="filterWarehouse(this.value)">
@@ -418,20 +426,16 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             </div>
         </div>
     </div>
-    <div class="color-legend">
+        <div class="color-legend">
         <span class="legend-title">Tồn kho:</span>
         <span class="legend-item"><span class="legend-dot ld-green"></span>&lt; 30</span>
         <span class="legend-item"><span class="legend-dot ld-yellow"></span>30 – 50</span>
         <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
         <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
     </div>
-    <div class="stats-bar">
-        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
-        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
-        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
-        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
     </div>
-    <div class="table-wrap" style="max-height:calc(100vh - 320px); overflow-y:auto;">
+</div>
+<div class="table-wrap" style="max-height:calc(100vh - 320px); overflow-y:auto;">
         <table class="data-table" id="tonkho-table">
             <thead><tr class="row-total"><td></td><td class="total-row-label" colspan="2">TỔNG</td><td class="num total-row">25,487</td><td class="num total-row bc-col" data-col="0" data-warehouse="Đông Mát">12</td><td class="num total-row bc-col" data-col="1" data-warehouse="Rau">544</td><td class="num total-row bc-col" data-col="2" data-warehouse="Khô">6,195</td><td class="num total-row bc-col" data-col="3" data-warehouse="Rau">11,675</td><td class="num total-row bc-col" data-col="4" data-warehouse="Đông Mát">28</td><td class="num total-row bc-col" data-col="5" data-warehouse="">4,618</td><td class="num total-row bc-col" data-col="6" data-warehouse="Đông Mát">589</td><td class="num total-row bc-col" data-col="7" data-warehouse="Đông Mát">1,303</td><td class="num total-row bc-col" data-col="8" data-warehouse="Rau">523</td></tr>
 <tr>
