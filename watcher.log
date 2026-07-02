@@ -262,3 +262,12 @@ Theo dõi [.xlsx] tại: G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Trip
   → Cập nhật Excel Data...
   → Đang commit + push lên GitHub...
   → LỖI KHI PUSH: Command '['git', 'push', 'origin', 'master']' returned non-zero exit status 1.
+=========================================================
+    AUTO UPDATE DASHBOARD - THEO DÕI THƯ MỤC G: DRIVE
+=========================================================
+Theo dõi [.json] tại: G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master
+Theo dõi [.xlsx] tại: G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Tồn kho Rổ
+Theo dõi [.xlsx] tại: G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Trip
+---------------------------------------------------------
+[10:50:03] Trạng thái ban đầu: 1782917387.3_1782960993.565_1782961070.559
+[10:50:03] Đang theo dõi... (Ctrl+C để dừng)
