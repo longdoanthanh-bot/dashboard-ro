@@ -426,22 +426,8 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 <div class="container" style="padding-top:12px;">
 
     <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
-    <div class="top-row">
-        <!-- STATS — LEFT SIDE -->
-        <div class="stats-row">
-            <div class="stat-total-card" id="stat-total-card">
-                <div class="stat-num" id="stat-total">0</div>
-                <div class="stat-label">Tổng</div>
-                <div class="stat-pct" id="stat-pct">0%</div>
-            </div>
-            <div class="stat-right-group">
-                <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
-                <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
-                <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
-            </div>
-        </div>
-
-        <!-- ADD TASK FORM — RIGHT SIDE -->
+    <div class="top-row" style="display: flex; flex-direction: column; align-items: flex-end; padding-left: 450px; gap: 12px; margin-bottom: 16px; min-height: 80px; position: relative; z-index: 10;">
+        <!-- ADD TASK FORM — RIGHT SIDE (Now Top) -->
         <div class="add-form">
             <div class="form-title">➕ Thêm task mới</div>
             <div class="form-group">
@@ -466,6 +452,20 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
             </div>
             <button class="btn-create" onclick="createTask()">Tạo</button>
             <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
+        </div>
+        
+        <!-- STATS — LEFT SIDE (Now Bottom) -->
+        <div class="stats-row" style="justify-content: flex-end;">
+            <div class="stat-total-card" id="stat-total-card">
+                <div class="stat-num" id="stat-total">0</div>
+                <div class="stat-label">Tổng</div>
+                <div class="stat-pct" id="stat-pct">0%</div>
+            </div>
+            <div class="stat-right-group">
+                <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
+                <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
+                <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
+            </div>
         </div>
     </div>
 
