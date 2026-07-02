@@ -458,8 +458,9 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
                 <button class="header-btn" onclick="exportExcel()" style="height:32px; padding:0 12px; margin-left:0;">📥 Excel</button>
             </div></div>
         
-        <!-- STATS — LEFT SIDE (Now Bottom) -->
-        <div class="stats-row" style="justify-content: flex-end;">
+    </div>
+        <!-- STATS — LEFT SIDE (Absolute Positioned under Giao dien) -->
+        <div class="stats-row" style="position: absolute; left: 12px; top: 110px; width: 380px; z-index: 20; justify-content: flex-start; padding-left: 0;">
             <div class="stat-total-card" id="stat-total-card">
                 <div class="stat-num" id="stat-total">0</div>
                 <div class="stat-label">Tổng</div>
@@ -471,7 +472,6 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
                 <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
             </div>
         </div>
-    </div>
 
     <!-- FILTER TABS -->
     <div class="filter-tabs">

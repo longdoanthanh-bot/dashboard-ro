@@ -432,13 +432,14 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <span class="legend-item"><span class="legend-dot ld-orange"></span>50 – 60</span>
             <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 60</span>
         </div>
-        <div class="stats-bar" style="margin-bottom: 0; padding-left: 10px;">
-            <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
-            <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
-            <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
-            <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
-        </div>
     </div>
+    </div>
+    <!-- STATS MOVED TO LEFT -->
+    <div class="stats-bar" style="position: absolute; left: 12px; top: 110px; width: 380px; z-index: 20; padding-left: 0; justify-content: flex-start; gap: 8px;">
+        <div class="stat blue"><div class="stat-num" id="tk-stat-st">197</div><div class="stat-label">Tổng ST có tồn</div></div>
+        <div class="stat yellow"><div class="stat-num" id="tk-stat-total">25,487</div><div class="stat-label">Tổng rổ</div></div>
+        <div class="stat green"><div class="stat-num" id="tk-stat-types">9</div><div class="stat-label">Loại rổ</div></div>
+        <button class="btn-export" onclick="exportTonKho()">📥 Tải Excel</button>
     </div>
 </div>
 <div class="table-wrap" style="max-height:calc(100vh - 160px); overflow-y:auto;">
@@ -754,14 +755,15 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <span class="legend-item"><span class="legend-dot ld-orange"></span>10 – 30</span>
             <span class="legend-item"><span class="legend-dot ld-red"></span>&gt; 30</span>
         </div>
-        <div class="stats-bar compact" style="margin-bottom: 0; padding-left: 10px;">
-            <div class="stat red"><div class="stat-num">113</div><div class="stat-label">Lượt chưa thu</div></div>
-            <div class="stat green"><div class="stat-num">865</div><div class="stat-label">Lượt đã thu</div></div>
-            <div class="stat blue"><div class="stat-num">111,940</div><div class="stat-label">Tổng SL Giao</div></div>
-            <div class="stat green"><div class="stat-num">109,262</div><div class="stat-label">Tổng SL Thu</div></div>
-            <button class="btn-export" onclick="exportThuHoi()" style="align-self:center;padding:5px 12px;font-size:11px;">📥 Excel</button>
-        </div>
     </div>
+    </div>
+    <!-- STATS MOVED TO LEFT -->
+    <div class="stats-bar compact" style="position: absolute; left: 12px; top: 110px; width: 380px; z-index: 20; padding-left: 0; justify-content: flex-start; gap: 8px;">
+        <div class="stat red"><div class="stat-num">113</div><div class="stat-label">Lượt chưa thu</div></div>
+        <div class="stat green"><div class="stat-num">865</div><div class="stat-label">Lượt đã thu</div></div>
+        <div class="stat blue"><div class="stat-num">111,940</div><div class="stat-label">Tổng SL Giao</div></div>
+        <div class="stat green"><div class="stat-num">109,262</div><div class="stat-label">Tổng SL Thu</div></div>
+        <button class="btn-export" onclick="exportThuHoi()" style="align-self:center;padding:5px 12px;font-size:11px;">📥 Excel</button>
     </div>
 </div>
 <div class="basket-summary-panel" id="basket-summary" style="display:none; background:var(--bg); border:1px dashed var(--red); border-radius:8px; padding:10px 14px; margin-bottom:10px;">
@@ -824,12 +826,14 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         </div>
         <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:flex-end;">&#x1F4E5; Xuất Excel</button>
     </div>
+    <!-- MAP STATS MOVED TO LEFT -->
+    <div class="map-stats" style="position: absolute; left: 12px; top: 110px; width: 380px; z-index: 20; justify-content: flex-start;">
+        <div class="map-stat"><div class="map-stat-num" style="color:var(--blue)" id="map-total">0</div><div class="map-stat-label">Tổng ST</div></div>
+        <div class="map-stat"><div class="map-stat-num" style="color:var(--green)" id="map-mart">0</div><div class="map-stat-label">Mart</div></div>
+        <div class="map-stat"><div class="map-stat-num" style="color:var(--purple)" id="map-mini">0</div><div class="map-stat-label">Mini</div></div>
+    </div>
+    
     <div class="map-controls-left" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: flex-start;">
-        <div class="map-stats">
-            <div class="map-stat"><div class="map-stat-num" style="color:var(--blue)" id="map-total">0</div><div class="map-stat-label">Tổng ST</div></div>
-            <div class="map-stat"><div class="map-stat-num" style="color:var(--green)" id="map-mart">0</div><div class="map-stat-label">Mart</div></div>
-            <div class="map-stat"><div class="map-stat-num" style="color:var(--purple)" id="map-mini">0</div><div class="map-stat-label">Mini</div></div>
-        </div>
         <div class="filter-group">
             <span class="filter-label">Đo KC: Điểm A</span>
             <div class="combo-wrap">
