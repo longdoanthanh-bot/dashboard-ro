@@ -815,9 +815,9 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
     <div class="map-controls" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch; position: relative; z-index: 10; width: 100%;">
         
-        <!-- ROW 1: Logo Spacer + Filters + Excel + Dist Calc -->
+        <!-- ROW 1: Logo Spacer + Filters + Excel -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
-            <div style="width: 420px; flex-shrink: 0; min-height: 60px;"></div>
+            <div style="width: 420px; flex-shrink: 0; min-height: 40px;"></div>
             
             <div style="flex: 1; display: flex; flex-direction: row; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
                 <div class="filter-group">
@@ -860,44 +860,39 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                 </div>
                 
                 <button class="btn-export" onclick="exportMapExcel()" style="height:33px; padding:0 14px; font-size:11px;">📥 Excel</button>
-                
-                <div style="width: 8px;"></div>
-                
-                <div class="filter-group">
-                    <span class="filter-label">Đo KC: Điểm A</span>
-                    <div class="combo-wrap">
-                        <input class="filter-select search-upper" type="text" id="dist-a" placeholder="Gõ mã..." autocomplete="off" oninput="this.value=this.value.toUpperCase();comboFilter('dist-a')" onfocus="comboFilter('dist-a')">
-                        <div class="combo-list" id="dist-a-list"></div>
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <span class="filter-label">Điểm B</span>
-                    <div class="combo-wrap">
-                        <input class="filter-select search-upper" type="text" id="dist-b" placeholder="Gõ mã..." autocomplete="off" oninput="this.value=this.value.toUpperCase();comboFilter('dist-b')" onfocus="comboFilter('dist-b')">
-                        <div class="combo-list" id="dist-b-list"></div>
-                    </div>
-                </div>
-                <button class="btn-export" onclick="calcDistance()" style="height:33px; padding:0 14px; font-size:11px;">📏 Tính KC</button>
-                <div id="dist-result" style="align-self:center;padding:6px 12px;font-size:12px;color:var(--green);font-weight:600;"></div>
             </div>
         </div>
 
-        <!-- ROW 2: Giao dien Spacer + Stats Block + Legend -->
-        <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
-            <div style="width: 420px; flex-shrink: 0; min-height: 32px;"></div>
+        <!-- ROW 2: Giao dien Spacer + Stats + Dist Calc + Legend -->
+        <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%; flex-wrap: nowrap; overflow: hidden;">
+            <div style="width: 420px; flex-shrink: 0;"></div>
             
-            <div class="map-stats" style="flex: 1; margin: 0; justify-content: flex-start;">
+            <div class="map-stats" style="margin: 0; justify-content: flex-start; flex-shrink: 0; flex-wrap: nowrap;">
                 <div class="map-stat"><div class="map-stat-num" style="color:var(--blue)" id="map-total">0</div><div class="map-stat-label">Tổng ST</div></div>
                 <div class="map-stat"><div class="map-stat-num" style="color:var(--green)" id="map-mart">0</div><div class="map-stat-label">Mart</div></div>
                 <div class="map-stat"><div class="map-stat-num" style="color:var(--purple)" id="map-mini">0</div><div class="map-stat-label">Mini</div></div>
             </div>
             
-            <div class="map-legend" style="margin-bottom: 0; flex-shrink: 0;">
-                <span class="map-legend-title">Doanh thu:</span>
-                <span class="ml-item"><span class="ml-dot" style="background:#34d399"></span> A</span>
-                <span class="ml-item"><span class="ml-dot" style="background:#6c8cff"></span> B</span>
-                <span class="ml-item"><span class="ml-dot" style="background:#9898b0"></span> C</span>
-                <span style="color:var(--border)">|</span>
+            <div style="display: flex; flex-direction: row; align-items: flex-end; flex-wrap: nowrap; gap: 12px; flex: 1;">
+                <div class="filter-group" style="flex-shrink: 0;">
+                    <span class="filter-label">Đo KC: Điểm A</span>
+                    <div class="combo-wrap">
+                        <input class="filter-select search-upper" type="text" id="dist-a" placeholder="Gõ mã..." autocomplete="off" oninput="this.value=this.value.toUpperCase();comboFilter('dist-a')" onfocus="comboFilter('dist-a')" style="width:110px;">
+                        <div class="combo-list" id="dist-a-list"></div>
+                    </div>
+                </div>
+                <div class="filter-group" style="flex-shrink: 0;">
+                    <span class="filter-label">Điểm B</span>
+                    <div class="combo-wrap">
+                        <input class="filter-select search-upper" type="text" id="dist-b" placeholder="Gõ mã..." autocomplete="off" oninput="this.value=this.value.toUpperCase();comboFilter('dist-b')" onfocus="comboFilter('dist-b')" style="width:110px;">
+                        <div class="combo-list" id="dist-b-list"></div>
+                    </div>
+                </div>
+                <button class="btn-export" onclick="calcDistance()" style="height:33px; padding:0 14px; font-size:11px; flex-shrink: 0;">📏 Tính KC</button>
+                <div id="dist-result" style="align-self:center;padding:6px 12px;font-size:12px;color:var(--green);font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+            </div>
+            
+            <div class="map-legend" style="margin-bottom: 0; flex-shrink: 0; padding: 6px 12px;">
                 <span class="map-legend-title">Loại:</span>
                 <span class="ml-item"><span class="ml-dot lg" style="background:#fb923c"></span> Mart</span>
                 <span class="ml-item"><span class="ml-dot sm" style="background:#a78bfa"></span> Mini</span>
