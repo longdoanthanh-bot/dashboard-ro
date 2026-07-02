@@ -354,10 +354,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <h1 style="margin: 0; font-size: 24px; font-weight: 800;">
             <span style="background: linear-gradient(135deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trợ lý — KingFoodmart</span>
         </h1>
-        <button id="themeToggle" onclick="toggleTheme()" style="margin-left: auto; background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
-            <span id="themeIcon">☀️</span> Giao diện
-        </button>
-        <div style="font-size:11px; color:var(--text3);">Cập nhật: 01/07/2026 22:46</div>
+        
+        
         
         <div id="navMenuDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999;">
             <div class="nav-menu-item active" onclick="selectNavMenu(event, 'tonkho', 'Trợ lý — KingFoodmart')">📊 Tồn Rổ tại Siêu Thị</div>
@@ -365,6 +363,12 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'storemap', 'Trợ lý — KingFoodmart')">🗺️ Sơ Đồ ST</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'tasks', 'Trợ lý — KingFoodmart')">📋 Công Việc</div>
         </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 14px;">
+        <button id="themeToggle" onclick="toggleTheme()" style=" background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
+            <span id="themeIcon">☀️</span> Giao diện
+        </button>
+        <div style="font-size:11px; color:var(--text3);">Cập nhật: 01/07/2026 22:46</div>
     </div>
 </header>
 
