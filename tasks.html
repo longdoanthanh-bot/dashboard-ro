@@ -40,7 +40,7 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 .header-btn.primary:hover { background:#5a7aee; }
 
 /* ===== CONTAINER ===== */
-.container { position:relative; z-index:1; max-width:100%; margin:0 auto; padding:8px 24px 16px; }
+.container { position:relative; z-index:1; max-width:100%; margin:0 auto; padding:8px 24px 16px; display:flex; flex-direction:column; height:calc(100vh - 20px); }
 
 /* ===== TOP ROW: FORM LEFT | STATS RIGHT ===== */
 .top-row { display:flex; gap:10px; margin-bottom:6px; align-items:stretch; }
@@ -116,11 +116,11 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .cal-loading { font-size:11px; color:var(--text3); text-align:center; padding:6px; }
 
 /* ===== KANBAN BOARD ===== */
-.kanban { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+.kanban { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; flex:1; min-height:0; }
 
 .kanban-col {
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:14px; min-height:300px; display:flex; flex-direction:column;
+    padding:14px; min-height:300px; display:flex; flex-direction:column; max-height:100%;
 }
 .col-header {
     display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
@@ -145,7 +145,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .kanban-col.col-done .col-count { background:rgba(52,211,153,0.15); color:var(--green); }
 
 /* ===== TASK CARDS ===== */
-.col-cards { display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto; max-height:calc(100vh - 240px); }
+.col-cards { display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto; }
 
 .task-card {
     background:var(--bg2); border:1px solid var(--border); border-radius:8px;
