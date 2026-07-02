@@ -946,6 +946,12 @@ function toggleTheme() {
         iframe.contentWindow.postMessage({ theme: localStorage.getItem('theme') || 'dark' }, '*');
     }
 }
+window.addEventListener('message', function(e) {
+    if (e.data && e.data.request === 'getTheme') {
+        const theme = localStorage.getItem('theme') || (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+        if (e.source) e.source.postMessage({ theme: theme }, '*');
+    }
+});
 if (localStorage.getItem('theme') === 'light') {
     document.documentElement.setAttribute('data-theme', 'light');
     window.addEventListener('DOMContentLoaded', () => {
