@@ -427,8 +427,11 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 <div class="container" style="padding-top:12px;">
 
     <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
-    <div class="top-row" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; padding-left: 420px; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; min-height: 60px; position: relative; z-index: 10;">
-        <!-- ADD TASK FORM — RIGHT SIDE (Now Top) -->
+    <div class="top-row" style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding-left: 0; flex-wrap: nowrap; gap: 8px; margin-bottom: 12px; position: relative; z-index: 10;">
+    <!-- Row 1: Logo Space + Add Form -->
+    <div style="display: flex; flex-direction: row; gap: 12px; flex-wrap: nowrap; align-items: flex-start; width: 100%;">
+        <div style="width: 420px; flex-shrink: 0; min-height: 90px;"></div>
+        
         <div class="add-form">
             <div class="add-form-row">
                 <div class="form-title" style="margin-right:10px; padding-bottom:6px;">➕ Thêm task mới</div>
@@ -456,11 +459,15 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
                 </div>
                 <button class="btn-create" onclick="createTask()" style="height:32px; padding:0 24px;">Tạo</button>
                 <button class="header-btn" onclick="exportExcel()" style="height:32px; padding:0 12px; margin-left:0;">📥 Excel</button>
-            </div></div>
-        
+            </div>
+        </div>
+    
     </div>
-        <!-- STATS — LEFT SIDE (Absolute Positioned under Giao dien) -->
-        <div class="stats-row" style="position: absolute; left: 12px; top: 110px; width: 380px; z-index: 20; justify-content: flex-start; padding-left: 0;">
+    
+    <!-- Row 2: Stats Block on left -->
+    <div style="display: flex; flex-direction: row; gap: 12px; flex-wrap: nowrap; width: 100%;">
+        <div class="stats-row" style="width: 420px; flex-shrink: 0; justify-content: flex-start; gap: 8px; padding-left: 12px; margin-bottom: 0;">
+            
             <div class="stat-total-card" id="stat-total-card">
                 <div class="stat-num" id="stat-total">0</div>
                 <div class="stat-label">Tổng</div>
@@ -471,6 +478,11 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
                 <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
                 <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
             </div>
+    
+        </div>
+        <div style="flex: 1;"></div>
+    </div>
+</div>
         </div>
 
     <!-- FILTER TABS -->
