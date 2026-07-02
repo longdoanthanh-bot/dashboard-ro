@@ -378,9 +378,9 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 1: TỒN KHO -->
 <div class="main-panel active" id="panel-tonkho">
-    <div class="top-controls" style="display: flex; flex-direction: column; align-items: flex-end; padding-left: 450px; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
-    <div class="filters-container" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-        <div class="filter-row" style="margin-bottom: 0; justify-content: flex-end;">
+    <div class="top-controls" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; padding-left: 420px; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
+    <div class="filters-container" style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div class="filter-row" style="margin-bottom: 0; justify-content: flex-start;">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
             <select class="filter-select" id="tonkho-wh-filter" onchange="filterWarehouse(this.value)">
@@ -668,8 +668,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 2: THU HỒI -->
 <div class="main-panel" id="panel-thuhoi">
-    <div class="top-controls-thuhoi" style="display: flex; flex-direction: column; align-items: flex-end; padding-left: 450px; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
-    <div class="filters-container-thuhoi" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+    <div class="top-controls-thuhoi" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; padding-left: 420px; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
+    <div class="filters-container-thuhoi" style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px;">
         <div class="cal-bar" style="margin-bottom: 0;" id="trip-date-bar">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
             <span class="cal-title">📅 Khoảng ngày</span>
@@ -691,7 +691,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <!-- CAL_GRID_END -->
             </div>
         </div>
-        <div class="filter-row" style="margin-bottom: 0; justify-content: flex-end;">
+        <div class="filter-row" style="margin-bottom: 0; justify-content: flex-start;">
         <div class="filter-group">
             <span class="filter-label">Kho</span>
             <select class="filter-select" id="trip-wh-filter" onchange="filterTripWarehouse(this.value)">
@@ -778,8 +778,8 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 
 <!-- PANEL 3: SƠ ĐỒ ST -->
 <div class="main-panel" id="panel-storemap">
-    <div class="map-controls" style="display: flex; flex-direction: column; align-items: flex-end; padding-left: 450px; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
-    <div class="map-controls-right" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; justify-content: flex-end;">
+    <div class="map-controls" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; padding-left: 420px; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; min-height: 80px; position: relative; z-index: 10;">
+    <div class="map-controls-right" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: flex-start;">
         <div class="filter-group">
             <span class="filter-label">Location Type</span>
             <select class="filter-select" id="map-loc-filter" onchange="filterMap()">
@@ -820,7 +820,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         </div>
         <button class="btn-export" onclick="exportMapExcel()" style="padding:6px 14px;font-size:11px;align-self:flex-end;">&#x1F4E5; Xuất Excel</button>
     </div>
-    <div class="map-controls-left" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+    <div class="map-controls-left" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: flex-start;">
         <div class="map-stats">
             <div class="map-stat"><div class="map-stat-num" style="color:var(--blue)" id="map-total">0</div><div class="map-stat-label">Tổng ST</div></div>
             <div class="map-stat"><div class="map-stat-num" style="color:var(--green)" id="map-mart">0</div><div class="map-stat-label">Mart</div></div>
