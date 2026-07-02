@@ -682,12 +682,12 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <!-- PANEL 2: THU HỒI -->
 <div class="main-panel" id="panel-thuhoi">
     <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
-    <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
+    <!-- TOP CONTROLS: 3 ROWS -->
     <div class="top-controls-thuhoi" id="thuhoi-controls" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch; position: relative; z-index: 10; width: 100%;">
         
         <!-- ROW 1: Logo Spacer + Filters + Excel -->
         <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
-            <div style="width: 420px; flex-shrink: 0; min-height: 60px;"></div>
+            <div style="width: 420px; flex-shrink: 0; min-height: 40px;"></div>
             
             <div style="flex: 1; display: flex; flex-direction: row; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
                 <div class="filter-group">
@@ -745,9 +745,9 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             </div>
         </div>
 
-        <!-- ROW 2: Giao dien Spacer + Khoang ngay + Legend + Stats -->
-        <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
-            <div style="width: 420px; flex-shrink: 0; min-height: 32px;"></div>
+        <!-- ROW 2: Giao dien Spacer + Khoang ngay -->
+        <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
+            <div style="width: 420px; flex-shrink: 0;"></div>
             
             <div class="cal-bar" style="margin-bottom: 0;" id="trip-date-bar">
                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:nowrap;">
@@ -758,7 +758,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                         <label style="color:var(--text3);font-size:10px;">Đến</label>
                         <input type="date" id="date-to" value="2026-07-02" min="2026-06-26" max="2026-07-02" onchange="filterDateRange()" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:2px 4px;font-size:11px;font-family:inherit;">
                     </div>
-                    <div class="cal-grid" style="gap:4px;">
+                    <div class="cal-grid" style="gap:4px; flex-wrap:nowrap;">
 <!-- CAL_GRID_START -->
 <div class="cal-day" onclick="toggleDate('26/06/2026',this)" data-date="26/06/2026" data-iso="2026-06-26"><div class="cal-date">26</div><div class="cal-badge"><span class="badge-nr">0</span> chưa</div></div>
 <div class="cal-day" onclick="toggleDate('27/06/2026',this)" data-date="27/06/2026" data-iso="2026-06-27"><div class="cal-date">27</div><div class="cal-badge"><span class="badge-nr">0</span> chưa</div></div>
@@ -771,6 +771,11 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- ROW 3: Giao dien Spacer + Legend + Stats -->
+        <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
+            <div style="width: 420px; flex-shrink: 0;"></div>
             
             <div class="color-legend" style="margin-bottom: 0; flex-shrink: 0;">
                 <span class="legend-title">Chênh lệch:</span>
