@@ -30,6 +30,7 @@ def find_latest_excel(directory, prefix):
 
 # Mapping Tên hàng to Column Index and Warehouse in index.html
 XNT_MAPPING = {
+    "ITL Thùng tote xanh dương đục lỗ": {"col": 0, "wh": "Dòng Mát"},
     "Rổ nhựa đen/xanh lá kho rau": {"col": 1, "wh": "Rau"},
     "Seedlog - Thùng tote xanh lá, xanh dương không đục lỗ": {"col": 2, "wh": "Khô"},
     "Rổ đen xếp chồng quai đỏ": {"col": 3, "wh": "Rau"},
@@ -70,7 +71,7 @@ def parse_xnt_file(file_path):
             col_idx = XNT_MAPPING[ten_hang]["col"]
             
             if st_name not in store_data:
-                store_data[st_name] = {i: 0 for i in range(1, 9)}
+                store_data[st_name] = {i: 0 for i in range(0, 9)}
             
             store_data[st_name][col_idx] += ton_cuoi_ky
             
@@ -101,7 +102,7 @@ def generate_tonkho_html(store_data, store_coords):
             
         row_html = f'<tr class="{tr_class}"><td>{idx}</td><td class="st-code">{abbr}</td><td class="store-name">{st_name}</td><td class="num total-col">{total_sum}</td>'
         
-        for col_idx in range(1, 9):
+        for col_idx in range(0, 9):
             val = cols.get(col_idx, 0)
             
             # Find warehouse for this col

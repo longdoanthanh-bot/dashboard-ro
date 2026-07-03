@@ -24,6 +24,7 @@ DB_CONFIG = {
 }
 
 XNT_MAPPING = {
+    "ITL Thùng tote xanh dương đục lỗ": {"col": 0, "wh": "Dòng Mát"},
     "Rổ nhựa đen/xanh lá kho rau": {"col": 1, "wh": "Rau"},
     "Seedlog - Thùng tote xanh lá, xanh dương không đục lỗ": {"col": 2, "wh": "Khô"},
     "Rổ đen xếp chồng quai đỏ": {"col": 3, "wh": "Rau"},
@@ -56,7 +57,7 @@ def generate_tonkho_html(store_data, name_to_abbr):
             
         row_html = f'<tr class="{tr_class}"><td>{idx}</td><td class="st-code">{abbr}</td><td class="store-name">{st_name}</td><td class="num total-col">{total_sum}</td>'
         
-        for col_idx in range(1, 9):
+        for col_idx in range(0, 9):
             val = cols.get(col_idx, 0)
             wh = ""
             for v in XNT_MAPPING.values():
@@ -138,7 +139,7 @@ def main():
                             col_idx = XNT_MAPPING[p_name]["col"]
                             
                             if st_name not in store_stock_data:
-                                store_stock_data[st_name] = {i: 0 for i in range(1, 9)}
+                                store_stock_data[st_name] = {i: 0 for i in range(0, 9)}
                             store_stock_data[st_name][col_idx] += closing
             
             tonkho_tbody = generate_tonkho_html(store_stock_data, name_to_abbr)
