@@ -998,15 +998,15 @@ function switchMain(panel, btn) {
     }
     if (panel === 'tasks') {
         const iframe = document.getElementById('iframe-tasks');
-        if (iframe && !iframe.src) iframe.src = 'tasks.html';
+        if (iframe) iframe.src = 'tasks.html?v=' + Date.now();
     }
     if (panel === 'calendar') {
         const iframe = document.getElementById('iframe-calendar');
-        if (iframe && !iframe.src) iframe.src = 'lich_hop.html';
+        if (iframe) iframe.src = 'lich_hop.html?v=' + Date.now();
     }
     if (panel === 'tele') {
         const iframe = document.getElementById('iframe-tele');
-        if (iframe && !iframe.src) iframe.src = 'tele.html';
+        if (iframe) iframe.src = 'tele.html?v=' + Date.now();
     }
 }
 window.switchMain = switchMain;
