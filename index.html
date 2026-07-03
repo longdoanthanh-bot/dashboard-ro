@@ -25,10 +25,6 @@
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
-    background: radial-gradient(ellipse at 30% 50%, rgba(108,140,255,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 20%, rgba(167,139,250,0.04) 0%, transparent 50%);
-    z-index:0; }
 
 .header { position:relative; z-index:9999; padding:24px 36px; display:flex; align-items:center; justify-content:space-between;
     border-bottom:1px solid var(--border); backdrop-filter:blur(20px); background:rgba(15,17,23,0.8); }
