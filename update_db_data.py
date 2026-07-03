@@ -245,6 +245,7 @@ def main():
                     day_str = d_obj.strftime("%d")
                     
                     chua_count = sum(1 for st in final_trip_data[d] if st["g"] > st["t"])
+                    if chua_count == 0: continue
                     active_cls = " active" if idx == len(valid_dates) - 1 else ""
                     cal_html += f'<div class="cal-day{active_cls}" onclick="toggleDate(\'{d}\',this)" data-date="{d}" data-iso="{iso}"><div class="cal-date">{day_str}</div><div class="cal-badge"><span class="badge-nr">{chua_count}</span> chưa</div></div>\n'
                     
