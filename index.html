@@ -1187,7 +1187,10 @@ function renderTripTable() {
         const thuCls = t===0 ? 'num zero' : 'num';
         let dr = '';
         const detailWh = document.getElementById('trip-wh-filter')?.value || '';
-        let detailItems = Object.entries(s.items)
+        // Use ALL dates data for detail to show complete basket picture
+        const allStoreData = (TRIP_DATA['all']||[]).find(x => x.c === s.code);
+        const detailSource = allStoreData ? allStoreData.items : s.items;
+        let detailItems = Object.entries(detailSource)
             .filter(([ic,[g,t]]) => COUNTABLE_CODES.has(ic) && !(g===0 && t===0))
             .filter(([ic]) => useAll || !activeCodes || activeCodes.includes(ic))
             .filter(([ic]) => !detailWh || (BASKET_WAREHOUSE[ic]||'') === detailWh);
