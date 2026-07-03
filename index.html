@@ -1017,8 +1017,8 @@ function renderTripTable() {
             const useAllLocal = (activeCodes === null);
             if(!useAllLocal && activeCodes && !activeCodes.includes(ic)) continue;
             if(activeWh && (BASKET_WAREHOUSE[ic]||'') !== activeWh) continue;
-            if (ig > 0 && it === 0) {
-                missingBaskets[ic] = (missingBaskets[ic] || 0) + ig;
+            if (ig > it) {
+                missingBaskets[ic] = (missingBaskets[ic] || 0) + (ig - it);
             }
         }
     });
@@ -1051,7 +1051,7 @@ function renderTripTable() {
         allG = 0; allT = 0; allNr = 0; allRc = 0;
         stores.forEach(s => {
             const item = s.items[window.activeMissingFilter];
-            if (item && item[0] > 0 && item[1] === 0) {
+            if (item && item[0] > item[1]) {
                 allG += item[0];
                 allT += item[1];
                 allNr++;
@@ -1069,7 +1069,7 @@ function renderTripTable() {
     if (window.activeMissingFilter) {
         renderStores = renderStores.filter(s => {
             const item = s.items[window.activeMissingFilter];
-            return item && (item[0] > 0 && item[1] === 0);
+            return item && (item[0] > item[1]);
         });
     }
     
