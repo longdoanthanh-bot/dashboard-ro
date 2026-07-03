@@ -266,7 +266,7 @@ def main():
                 )
                 
             current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
-            new_html = re.sub(r'<div>Cập nhật:.*?</div>', f'<div>Cập nhật: {current_time}</div>', new_html)
+            new_html = re.sub(r'(id="last-update-time"[^>]*>Cập nhật:\s*).*?(</div>)', r'\g<1>' + current_time + r'\2', new_html)
             
             backup_path = html_path + ".bak"
             shutil.copy2(html_path, backup_path)

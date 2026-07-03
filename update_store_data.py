@@ -56,8 +56,8 @@ def main():
 
     # Cập nhật timestamp
     current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
-    pattern_time = re.compile(r'<div>Cập nhật:.*?</div>')
-    new_html_content = pattern_time.sub(f'<div>Cập nhật: {current_time}</div>', new_html_content)
+    pattern_time = re.compile(r'(id="last-update-time"[^>]*>Cập nhật:\s*).*?(</div>)')
+    new_html_content = pattern_time.sub(r'\g<1>' + current_time + r'\2', new_html_content)
 
     # KI-3: Tạo backup trước khi ghi đè
     backup_path = html_path + ".bak"
