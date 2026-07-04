@@ -2028,5 +2028,11 @@ function exportExcel() {
 
 
 </script>
+<script>
+if (window.self !== window.top) {
+  document.querySelector('.header').style.display = 'none';
+  document.querySelector('.page').style.paddingTop = '8px';
+}
+</script>
 </body>
 </html>
