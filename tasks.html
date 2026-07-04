@@ -53,13 +53,31 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 /* ===== CONTAINER ===== */
 .container { flex:1; position:relative; z-index:1; max-width:100%; margin:0 auto; padding:8px 24px 16px; display:flex; flex-direction:column; overflow:hidden; }
 
-/* ===== TOP ROW: FORM LEFT | STATS RIGHT ===== */
-.top-row { display:flex; gap:10px; margin-bottom:6px; align-items:stretch; }
+/* ===== TOOLBAR: spacer + flex row (same pattern as tonkho) ===== */
+.tasks-toolbar {
+    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    padding: 0 24px; margin-bottom: 4px;
+}
+.toolbar-spacer { width: 430px; flex-shrink: 0; }
+.toolbar-row { display: flex; gap: 6px; align-items: center; flex: 1; justify-content: flex-end; }
+.toolbar-btns { display:flex; gap:4px; align-items:center; }
+.toolbar-btn {
+    padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:var(--bg3);
+    color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:4px; transition:all .2s; white-space:nowrap;
+}
+.toolbar-btn:hover { border-color:var(--blue); color:var(--text); }
+.toolbar-btn.primary { background:linear-gradient(135deg,#fb923c,#f97316); color:#fff; border-color:transparent; }
+.toolbar-btn.primary:hover { filter:brightness(1.1); }
 
-/* ===== ADD TASK FORM ===== */
+/* ===== ADD TASK FORM (collapsible) ===== */
+.add-form-panel {
+    display:none; background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; margin-bottom:6px; animation:fadeIn .2s;
+}
+.add-form-panel.open { display:block; }
 .add-form {
-    flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px;
-    padding:8px 14px; display:flex; flex-direction:column; gap:8px;
+    display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;
 }
 .add-form-row { display:flex; gap:10px; align-items:flex-end; width:100%; flex-wrap:nowrap; }
 .add-form .form-title { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; margin-bottom:0; white-space:nowrap; }
@@ -105,7 +123,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .stat-card.s-done .stat-pct-detail { color:var(--green); }
 
 /* ===== FILTER TABS ===== */
-.filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
+.filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; align-items:center; }
 .filter-tab {
     padding:5px 12px; border-radius:16px; border:1px solid var(--border); background:transparent;
     color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
@@ -449,37 +467,56 @@ try {
 </head>
 <body>
 
-<div class="container" style="padding-top:100px;">
-
-    <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
-    <!-- TOP CONTROLS: 2 ROWS (Match header layout) -->
-    <div class="top-row" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch; position: relative; z-index: 10; width: 100%;">
-        
-        <!-- ROW: Buttons + Stats -->
-        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%; padding-left: 430px;">
-            <button class="btn-create" onclick="openAddModal()" style="height:34px; padding:0 18px; font-size:13px; display:flex; align-items:center; gap:6px; white-space:nowrap;">➕ Thêm task mới</button>
-            <button class="header-btn" onclick="exportExcel()" style="height:34px; padding:0 12px; white-space:nowrap;">📥 Excel</button>
-            <div class="stats-row" style="flex: 1; justify-content: flex-end; gap: 8px; margin: 0;">
-                <div class="stat-total-card" id="stat-total-card">
-                    <div class="stat-num" id="stat-total">0</div>
-                    <div class="stat-label">Tổng</div>
-                    <div class="stat-pct" id="stat-pct">0%</div>
-                </div>
-                <div class="stat-right-group">
-                    <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
-                    <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
-                    <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
-                </div>
+<!-- TOOLBAR: Spacer + Buttons + Stats (same pattern as tonkho panel) -->
+<div class="tasks-toolbar">
+    <div class="toolbar-spacer"></div>
+    <div class="toolbar-row">
+        <div class="toolbar-btns">
+            <button class="toolbar-btn primary" onclick="toggleAddForm()">✨ Thêm task mới</button>
+            <button class="toolbar-btn" onclick="exportExcel()">📥 Excel</button>
+        </div>
+        <div class="stats-row">
+            <div class="stat-total-card" id="stat-total-card">
+                <div class="stat-num" id="stat-total">0</div>
+                <div class="stat-label">Tổng</div>
+                <div class="stat-pct" id="stat-pct">0%</div>
+            </div>
+            <div class="stat-right-group">
+                <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
+                <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
+                <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- FILTER TABS -->
-    <div class="filter-tabs">
-        <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
-        <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
-        <button class="filter-tab" onclick="setFilter('overdue',this)">Quá hạn</button>
-        <button class="filter-tab" onclick="setFilter('high',this)">Ưu tiên cao</button>
+<div class="container" style="padding-top:75px;">
+
+    <!-- ADD TASK FORM (collapsible) -->
+    <div class="add-form-panel" id="add-form-panel">
+        <div class="add-form">
+            <div class="form-group">
+                <label>Tiêu đề</label>
+                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+            </div>
+            <div class="form-group" style="flex:1;min-width:200px;">
+                <label>Nội dung</label>
+                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Deadline</label>
+                <input class="form-input" type="datetime-local" id="new-deadline">
+            </div>
+            <div class="form-group">
+                <label>Ưu tiên</label>
+                <select class="form-input" id="new-priority" style="min-width:90px;">
+                    <option value="3">🟢 P3</option>
+                    <option value="2">🟠 P2</option>
+                    <option value="1">🔴 P1</option>
+                </select>
+            </div>
+            <button class="btn-create" onclick="createTask()">Tạo</button>
+        </div>
     </div>
 
     <!-- KANBAN BOARD -->
@@ -921,6 +958,13 @@ function openAddModal() {
 }
 function closeAddModal() {
     document.getElementById('add-task-modal').classList.remove('active');
+}
+function toggleAddForm() {
+    document.getElementById('add-form-panel').classList.toggle('open');
+    const panel = document.getElementById('add-form-panel');
+    if (panel.classList.contains('open')) {
+        setTimeout(() => document.getElementById('new-title').focus(), 100);
+    }
 }
 function createTask() {
     const title = document.getElementById('new-title').value.trim();
