@@ -358,6 +358,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'thuhoi', 'Trợ lý — KingFoodmart')">🔄 Tiến Độ Thu Hồi</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'storemap', 'Trợ lý — KingFoodmart')">🗺️ Sơ Đồ ST</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'tasks', 'Trợ lý — KingFoodmart')">📋 Công Việc</div>
+            <div class="nav-menu-item" onclick="selectNavMenu(event, 'sla', 'Trợ lý — KingFoodmart')">📈 SLA Dashboard</div>
         </div>
     </div>
     <div style="display: flex; align-items: center; gap: 14px; padding-left: 74px; pointer-events: auto;">
@@ -896,6 +897,11 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
     <iframe id="iframe-tasks" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
 </div>
 
+<!-- PANEL 5: SLA DASHBOARD -->
+<div class="main-panel" id="panel-sla" style="height:calc(100vh - 85px); padding-top:0;">
+    <iframe id="iframe-sla" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
+</div>
+
 
 </div>
 
@@ -1003,6 +1009,10 @@ function switchMain(panel, btn) {
     if (panel === 'tele') {
         const iframe = document.getElementById('iframe-tele');
         if (iframe) iframe.src = 'tele.html?v=' + Date.now();
+    }
+    if (panel === 'sla') {
+        const iframe = document.getElementById('iframe-sla');
+        if (iframe) iframe.src = 'sla.html?v=' + Date.now();
     }
 }
 window.switchMain = switchMain;
