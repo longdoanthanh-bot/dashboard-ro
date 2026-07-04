@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLA Performance Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/libs/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+.chip-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:2px solid transparent;user-select:none}
+.chip .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.chip.off{opacity:.35}
+.chip.off .dot{opacity:.4}
+.week-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.week-chip{padding:3px 10px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;background:#1e293b;color:#94a3b8;border:1.5px solid #334155;user-select:none}
+.week-chip.on{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.week-chip-label{font-size:11px;color:#64748b;margin-right:8px;font-weight:500}
+.toggle-btns{display:flex;gap:6px;margin-bottom:8px}
+.toggle-btn{padding:5px 16px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;background:#334155;color:#94a3b8;border:1.5px solid #334155;transition:all .2s}
+.toggle-btn:hover{background:#475569;color:#e2e8f0}
+.toggle-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0b1120;--bg2:#111827;--card:#1a2332;--card2:#1e293b;
+--border:#2a3a4e;--border2:#374151;
+--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+--accent:#3b82f6;--accent2:#60a5fa;
+--success:#22c55e;--success2:#4ade80;
+--warning:#f59e0b;--warning2:#fbbf24;
+--danger:#ef4444;--danger2:#f87171;
+--teal:#06b6d4;
+--wh0:#06b6d4;--wh1:#f43f5e;--wh2:#22c55e;--wh3:#eab308;
+--wh0bg:rgba(6,182,212,.15);--wh1bg:rgba(244,63,94,.15);
+--wh2bg:rgba(34,197,94,.15);--wh3bg:rgba(234,179,8,.15);
+--shadow:0 4px 24px rgba(0,0,0,.4);
+--radius:12px;--radius2:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.page{max-width:1600px;margin:0 auto;padding:20px 24px 60px}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);border-radius:var(--radius);padding:28px 32px;margin-bottom:20px;border:1px solid var(--border);position:sticky;top:20px;z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--wh0),var(--wh1),var(--wh2),var(--wh3));border-top-left-radius:calc(var(--radius) - 1px);border-top-right-radius:calc(var(--radius) - 1px)}
+.header h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px}
+.header .sub{color:var(--text2);font-size:13px;margin-top:4px;font-weight:400}
+.header .badge{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-left:12px;vertical-align:middle}
+
+/* NAV */
+.nav{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.nav a{padding:8px 18px;border-radius:var(--radius2);font-size:13px;font-weight:500;color:var(--text2);text-decoration:none;transition:all .2s;border:1px solid transparent;cursor:pointer}
+.nav a:hover,.nav a.active{color:var(--accent2);background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3)}
+
+/* FILTERS */
+.filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.filter-group{display:flex;align-items:center;gap:8px}
+.filter-group label{font-size:12px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.filter-group select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 32px 8px 12px;border-radius:var(--radius2);font-size:13px;font-family:inherit;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .2s}
+.filter-group select:hover{border-color:var(--accent)}
+.filter-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+.reset-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:8px 16px;border-radius:var(--radius2);font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.reset-btn:hover{border-color:var(--danger);color:var(--danger)}
+.btn-export{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:var(--accent2);padding:8px 16px;border-radius:var(--radius2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-export:hover{background:rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.5)}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
+.kpi:hover{transform:translateY(-2px);border-color:var(--border2)}
+.kpi .kpi-icon{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px}
+.kpi .kpi-label{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi .kpi-value{font-size:18px;font-weight:800;letter-spacing:-1px}
+.kpi .kpi-sub{font-size:10px;color:var(--text2);margin-top:2px;font-weight:400}
+.kpi.green .kpi-value{color:var(--success2)}
+.kpi.green .kpi-icon{background:rgba(34,197,94,.15);color:var(--success)}
+.kpi.red .kpi-value{color:var(--danger2)}
+.kpi.red .kpi-icon{background:rgba(239,68,68,.15);color:var(--danger)}
+.kpi.yellow .kpi-value{color:var(--warning2)}
+.kpi.yellow .kpi-icon{background:rgba(245,158,11,.15);color:var(--warning)}
+.kpi.blue .kpi-value{color:var(--accent2)}
+.kpi.blue .kpi-icon{background:rgba(59,130,246,.15);color:var(--accent)}
+.kpi.teal .kpi-value{color:#67e8f9}
+.kpi.teal .kpi-icon{background:rgba(6,182,212,.15);color:var(--teal)}
+
+/* CHART GRID */
+.chart-grid{display:grid;gap:16px;margin-bottom:20px}
+.chart-grid.g2{grid-template-columns:1fr 1fr}
+.chart-grid.g3{grid-template-columns:1fr 1fr 1fr}
+.chart-grid.g4{grid-template-columns:repeat(4, 1fr)}
+.chart-grid.g1{grid-template-columns:1fr}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:border-color .2s;min-width:0;overflow:hidden}
+.chart-card:hover{border-color:var(--border2)}
+.chart-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;text-align:center}
+.chart-subtitle{font-size:11px;color:var(--text3);margin-bottom:16px}
+.chart-wrap{position:relative;height:260px}
+.chart-wrap.tall{height:650px}
+.chart-wrap.medium{height:420px}
+/* SECTION */
+.section{margin-bottom:24px}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.section-header h2{font-size:18px;font-weight:700;color:var(--text)}
+.section-header .line{flex:1;height:1px;background:var(--border)}
+.section-header .count{font-size:12px;color:var(--text3);background:var(--card);padding:4px 12px;border-radius:20px;border:1px solid var(--border)}
+
+/* DETAIL TABLE */
+.table-controls{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.search-box{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:var(--radius2);font-size:13px;font-family:inherit;width:260px;transition:border-color .2s}
+.search-box:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.search-box::placeholder{color:var(--text3)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:var(--bg2)}
+th{padding:12px 14px;text-align:left;font-weight:600;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--accent2)}
+th .sort-icon{margin-left:4px;opacity:.4;font-size:10px}
+td{padding:10px 14px;border-bottom:1px solid rgba(42,58,78,.4);color:var(--text);white-space:nowrap}
+tr:hover td{background:rgba(59,130,246,.04)}
+tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
+.badge-som{background:rgba(245,158,11,.15);color:var(--warning2);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-tre{background:rgba(239,68,68,.15);color:var(--danger2);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-dung{background:rgba(34,197,94,.15);color:var(--success2);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 0;flex-wrap:wrap;gap:10px}
+.pagination .info{font-size:12px;color:var(--text3)}
+.pagination .pages{display:flex;gap:4px}
+.pagination .pages button{background:var(--card);border:1px solid var(--border);color:var(--text2);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.pagination .pages button:hover{border-color:var(--accent);color:var(--accent2)}
+.pagination .pages button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.pagination .pages button:disabled{opacity:.3;cursor:default}
+
+/* DEST TABLE */
+.dest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.dest-item{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius2);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s}
+.dest-item:hover{border-color:var(--border2)}
+.dest-item .name{font-size:13px;font-weight:600}
+.dest-item .rate{font-size:14px;font-weight:700}
+.dest-item .bar{flex:1;margin:0 14px;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.dest-item .bar .fill{height:100%;border-radius:3px;transition:width .5s ease}
+
+/* WAREHOUSE TABS */
+.wh-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.wh-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--text2);transition:all .2s;background:transparent}
+.wh-tab:hover{border-color:var(--border2)}
+.wh-tab.active{color:#fff}
+.wh-tab[data-wh="0"].active{background:var(--wh0);border-color:var(--wh0)}
+.wh-tab[data-wh="1"].active{background:var(--wh1);border-color:var(--wh1)}
+.wh-tab[data-wh="2"].active{background:var(--wh2);border-color:var(--wh2)}
+.wh-tab[data-wh="3"].active{background:var(--wh3);border-color:var(--wh3)}
+.wh-tab[data-wh="-1"].active{background:var(--accent);border-color:var(--accent)}
+
+/* TRIP CARDS */
+.trip-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.trip-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius2);padding:16px;text-align:center}
+.trip-card .val{font-size:24px;font-weight:800;margin:6px 0}
+.trip-card .lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+
+/* RESPONSIVE */
+@media(max-width:1200px){.chart-grid.g2{grid-template-columns:1fr}.chart-grid.g4{grid-template-columns:1fr 1fr}.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.kpi-row{grid-template-columns:repeat(2,1fr)}.chart-grid.g3{grid-template-columns:1fr}.chart-grid.g4{grid-template-columns:1fr}}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;height:200px;color:var(--text3)}
+.loading::after{content:'';width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin-left:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.animate{animation:fadeIn .4s ease forwards;opacity:0}
+.animate:nth-child(1){animation-delay:.05s}
+
+/* PRINT */
+@media print {
+  body { background: #fff; color: #000; }
+  .header { position: static; box-shadow: none; border: 1px solid #ddd; background: #fff !important; }
+  .header h1 { background: none; color: #000; -webkit-text-fill-color: #000; }
+  .nav, .filters, .ms-wrap, .btn-export { display: none !important; }
+  .chart-card { break-inside: avoid; border: 1px solid #ddd; box-shadow: none; background: #fff; }
+  .kpi { border: 1px solid #ddd; box-shadow: none; background: #fff; }
+  .kpi .kpi-value { color: #000 !important; }
+  .chart-title { color: #000; }
+  canvas { background: #fff !important; }
+}
+.animate:nth-child(2){animation-delay:.1s}
+.animate:nth-child(3){animation-delay:.15s}
+.animate:nth-child(4){animation-delay:.2s}
+.animate:nth-child(5){animation-delay:.25s}
+
+.tooltip-custom{font-family:'Inter',sans-serif!important}
+/* MULTI SELECT CUSTOM */
+.ms-wrap { position: relative; min-width: 140px; }
+.ms-btn { background: var(--card); border: 1px solid var(--border); padding: 8px 12px; border-radius: var(--radius2); font-size: 13px; color: var(--text); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; height: 34px; }
+.ms-btn:hover { border-color: var(--accent); }
+.ms-text { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100px; }
+.ms-arrow { font-size: 10px; color: var(--text3); margin-left: 8px; }
+.ms-drop { position: absolute; top: 100%; left: 0; min-width: 100%; background: var(--card); border: 1px solid var(--border2); border-radius: var(--radius2); margin-top: 4px; max-height: 250px; overflow-y: auto; z-index: 100; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+.ms-drop.show { display: block; }
+.ms-label { display: flex; align-items: center; padding: 6px 12px; font-size: 13px; cursor: pointer; color: var(--text); transition: background 0.1s; margin: 0; }
+.ms-label.ms-hidden { display: none !important; }
+.ms-label:hover { background: var(--border); }
+.ms-label input { margin-right: 8px; accent-color: var(--accent); cursor: pointer; }
+
+</style>
+</head>
+<body>
+<div class="page">
+<!-- HEADER -->
+<div class="header animate" style="display:flex; flex-direction:column; padding:16px 24px; gap:20px;">
+  <div class="header-top" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+    <div class="header-left" style="display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+      <div>
+        <h1 style="margin:0;">SLA Performance Dashboard</h1>
+        <div class="sub" id="updateTimeLabel">Cập nhật lúc: đang tải...</div>
+      </div>
+      <div class="nav" style="margin-bottom:0;">
+        <a class="active" onclick="scrollTo2('#sec-overview')">Tổng quan</a>
+        <a onclick="scrollTo2('#sec-trend')">Trend SLA</a>
+        <a onclick="scrollTo2('#sec-carrier')">Nhà vận tải</a>
+        <a onclick="scrollTo2('#sec-driver')">Top Tài xế</a>
+      </div>
+    </div>
+    <div class="filters" style="margin-bottom:0;">
+      <div class="filter-group">
+        <label>Tháng</label>
+        <select id="fMonth"></select>
+      </div>
+      <div class="filter-group">
+        <label>Tuần</label>
+        <select id="fWeek"></select>
+      </div>
+      <div class="filter-group">
+        <label>Ngày</label>
+        <select id="fDay"></select>
+      </div>
+      <div class="filter-group">
+        <label>Kho</label>
+        <select id="fWh"></select>
+      </div>
+      <div class="filter-group">
+        <label>NVT</label>
+        <select id="fCarrier"></select>
+      </div>
+      <div class="filter-group">
+        <label>SLA</label>
+        <select id="fSla">
+          <option value="-1">Tất cả</option>
+          <option value="1">Đạt SLA</option>
+          <option value="0">Không đạt SLA</option>
+        </select>
+      </div>
+      <div class="filter-group" style="margin-left:auto;">
+        <button class="reset-btn" onclick="resetFilters()" style="padding: 6px 12px; background: rgba(239, 68, 68, 0.15); color: var(--danger2); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+          Bỏ lọc
+        </button>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="btn-export" onclick="exportExcel()">⬇ Excel</button>
+        <button class="btn-export" onclick="window.print()">🖨 PDF</button>
+        <button class="btn-export" onclick="exportPPTX('month')">📊 PPTX Tháng</button>
+        <button class="btn-export" onclick="exportPPTX('week')">📊 PPTX Tuần</button>
+      </div>
+    </div>
+  </div>
+  <div class="header-bottom">
+    <div class="kpi-row" id="kpiRow" style="margin-bottom:0; gap:10px;"></div>
+  </div>
+</div>
+
+<!-- OVERVIEW SECTION -->
+<div class="section" id="sec-overview">
+  <div class="section-header"><h2>Tổng quan SLA theo Tháng</h2><div class="line"></div></div>
+  <div class="chart-grid g2">
+    <div class="chart-card"><div class="chart-title">Tỉ lệ đạt SLA tổng theo Tháng</div><div class="chart-wrap"><canvas id="chartOverallMonth"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Tỉ lệ đạt SLA từng Kho theo Tháng</div><div class="chart-wrap"><canvas id="chartWhMonth"></canvas></div></div>
+  </div>
+</div>
+
+<!-- TREND SECTION -->
+<div class="section" id="sec-trend">
+  <div class="section-header"><h2>Trend SLA theo Thời gian</h2><div class="line"></div></div>
+  <div class="chart-grid g1">
+    <div class="chart-card"><div class="chart-title">SLA từng Kho theo Tuần</div><div id="whWeekScroll" style="width:100%;"><div id="whWeekChartBox" class="chart-wrap" style="height:400px;width:100%;"><canvas id="chartWhWeek"></canvas></div></div></div>
+  </div>
+</div>
+
+<!-- CARRIER SECTION -->
+<div class="section" id="sec-carrier">
+  <div class="section-header"><h2>Phân tích theo Nhà vận tải</h2><div class="line"></div></div>
+  <div class="chart-grid g2">
+    <div class="chart-card"><div class="chart-title">Sản lượng chuyến theo tháng</div><div class="chart-wrap medium"><canvas id="chartCarrierVolume"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">SLA Nhà vận tải theo Tháng</div><div class="chart-wrap"><canvas id="chartCarrierMonth"></canvas></div></div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card"><div class="chart-title">SLA Nhà vận tải theo Tuần</div><div id="carrierWeekScroll" style="width:100%;"><div id="carrierWeekChartBox" class="chart-wrap" style="height:400px;width:100%;"><canvas id="chartCarrierWeek"></canvas></div></div></div>
+    <div class="chart-card"><div class="chart-title">Top 20 Tài xế có số điểm KHÔNG đạt SLA nhiều nhất</div><div class="chart-wrap medium"><canvas id="chartDriverBar"></canvas></div></div>
+  </div>
+</div>
+</div>
+
+<!-- DAILY REPORT SECTION -->
+<div class="section" id="sec-daily">
+  <div class="section-header"><h2>Báo cáo vận hành hàng ngày</h2><div style="display:flex;gap:6px;margin-left:16px;"><button class="toggle-btn active" id="btnDailyWeek" onclick="setDailyViewMode('week')">Theo Tuần</button><button class="toggle-btn" id="btnDailyMonth" onclick="setDailyViewMode('month')">Theo Tháng</button></div><div class="line"></div></div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <div class="chart-title">Số lượng Siêu Thị</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyST"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Số lượng Items</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyIT"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Số lượng Xe</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyXE"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Sản lượng (Tấn)</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyT"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top: 32px;"><h2 id="ratiosHeader">Chỉ số Hiệu suất (Ratios)</h2><div class="line"></div></div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <div class="chart-title">Tấn / Xe</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyTX"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">% Tải xe (1.9T)</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyTX_Pct"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Items / Siêu Thị</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyIS"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Siêu Thị / Xe</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailySX"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">KG / Siêu Thị</div>
+      <div class="chart-wrap medium" style="height:250px;width:100%;"><canvas id="chartDailyKS"></canvas></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// DATA (loaded from external data.js)
+// D and D_GENERATED are loaded via <script src="data.js">
+let _lastGenerated = typeof D_GENERATED !== 'undefined' ? D_GENERATED : '';
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+// Row indices: 0=week_idx, 1=month, 2=wh_idx, 3=dest_idx, 4=trip_idx, 5=sla(0/1/2), 6=actual, 7=planned, 8=date, 9=driver_idx, 10=carrier_idx
+const WH_COLORS = ['#06b6d4','#38bdf8','#f43f5e','#22c55e','#eab308','#f97316'];
+const WH_BG = ['rgba(6,182,212,.2)','rgba(56,189,248,.2)','rgba(244,63,94,.2)','rgba(34,197,94,.2)','rgba(234,179,8,.2)','rgba(249,115,22,.2)'];
+const CR_COLORS = ['#f97316','#3b82f6','#eab308','#22c55e','#a855f7','#ec4899','#ef4444','#06b6d4','#14b8a6','#6366f1','#84cc16','#f43f5e','#f59e0b','#10b981','#d946ef','#0ea5e9','#8b5cf6','#10b981','#f43f5e','#f97316'];
+const CR_BG = ['rgba(249,115,22,.2)','rgba(59,130,246,.2)','rgba(234,179,8,.2)','rgba(34,197,94,.2)','rgba(168,85,247,.2)','rgba(236,72,153,.2)','rgba(239,68,68,.2)','rgba(6,182,212,.2)','rgba(20,184,166,.2)','rgba(99,102,241,.2)','rgba(132,204,22,.2)','rgba(244,63,94,.2)','rgba(245,158,11,.2)','rgba(16,185,129,.2)','rgba(217,70,239,.2)','rgba(14,165,233,.2)','rgba(139,92,246,.2)','rgba(16,185,129,.2)','rgba(244,63,94,.2)','rgba(249,115,22,.2)'];
+const SLA_LABELS = ['Đúng','Sớm','Trễ'];
+const MONTH_LABELS = D.months.map(m => 'Tháng ' + m);
+let charts = {};
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FILTERING
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+const filterState = {
+  fMonth: new Set([0]),
+  fWeek: new Set([-1]),
+  fDay: new Set([-1]),
+  fWh: new Set([-1]),
+  fCarrier: new Set([-1]),
+  fSla: new Set([-1])
+};
+
+let dailyViewMode = 'week'; // 'week' or 'month'
+function setDailyViewMode(mode) {
+  dailyViewMode = mode;
+  document.getElementById('btnDailyWeek').classList.toggle('active', mode === 'week');
+  document.getElementById('btnDailyMonth').classList.toggle('active', mode === 'month');
+  if (typeof renderDailyChart === 'function') renderDailyChart();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DYNAMIC FILTER POPULATION (from D data)
+// ═══════════════════════════════════════════════════════════════
+function populateFilters() {
+  // Update time label
+  const timeLabel = document.getElementById('updateTimeLabel');
+  if (timeLabel && typeof D_GENERATED !== 'undefined') {
+    timeLabel.textContent = 'Cập nhật lúc: ' + D_GENERATED;
+  }
+
+  // Month filter
+  const fMonth = document.getElementById('fMonth');
+  fMonth.innerHTML = '<option value="0">Tất cả</option>' +
+    D.months.slice().reverse().map(m => '<option value="'+m+'">Tháng '+m+'</option>').join('');
+
+  // Week filter
+  const fWeek = document.getElementById('fWeek');
+  fWeek.innerHTML = '<option value="-1">Tất cả</option>' +
+    D.weeks.slice().reverse().map((w, ri) => {
+      const idx = D.weeks.length - 1 - ri;
+      return '<option value="'+idx+'">'+w+'</option>';
+    }).join('');
+
+  // Day filter - extract unique dates from rows
+  const daysSet = new Set();
+  D.rows.forEach(r => { if (r[8]) daysSet.add(r[8]); });
+  const days = Array.from(daysSet).sort((a, b) => {
+    const [da,ma,ya] = a.split('/').map(Number);
+    const [db,mb,yb] = b.split('/').map(Number);
+    return (yb*10000+mb*100+db) - (ya*10000+ma*100+da);
+  });
+  const fDay = document.getElementById('fDay');
+  fDay.innerHTML = '<option value="-1">Tất cả</option>' +
+    days.map(d => '<option value="'+d+'">'+d+'</option>').join('');
+
+  // Warehouse filter (hardcoded structure with composite values)
+  const fWh = document.getElementById('fWh');
+  fWh.innerHTML = '<option value="-1">Tất cả</option>' +
+    '<option value="0,1">Đông Mát (Tổng)</option>' +
+    '<option value="0">Đông</option>' +
+    '<option value="1">Mát</option>' +
+    '<option value="2">Thịt</option>' +
+    '<option value="3">Rau</option>' +
+    '<option value="4,5">Khô (Tổng)</option>' +
+    '<option value="4">Khô giao ngày</option>' +
+    '<option value="5">Khô giao đêm</option>';
+
+  // Carrier filter
+  const fCarrier = document.getElementById('fCarrier');
+  fCarrier.innerHTML = '<option value="-1">Tất cả</option>' +
+    D.carriers.map((c, i) => '<option value="'+i+'">'+c+'</option>').join('');
+
+  // SLA filter (static)
+  const fSla = document.getElementById('fSla');
+  fSla.innerHTML = '<option value="-1">Tất cả</option>' +
+    '<option value="1">Đạt SLA</option>' +
+    '<option value="0">Không đạt SLA</option>';
+}
+
+function initMultiSelect(id, allValue) {
+  const sel = document.getElementById(id);
+  const wrap = document.createElement('div');
+  wrap.className = 'ms-wrap';
+  
+  const btn = document.createElement('div');
+  btn.className = 'ms-btn';
+  btn.innerHTML = `<span class="ms-text">Tất cả</span><span class="ms-arrow">▼</span>`;
+  
+  const drop = document.createElement('div');
+  drop.className = 'ms-drop';
+  
+  const state = filterState[id];
+  state.clear(); state.add(allValue);
+  
+  const parseVal = v => isNaN(v) && v !== String(allValue) ? v : Number(v);
+
+  function updateText() {
+    if(state.has(allValue)) {
+      btn.querySelector('.ms-text').textContent = 'Tất cả';
+    } else if(state.size === 0) {
+      btn.querySelector('.ms-text').textContent = 'Chọn...';
+    } else {
+      let texts = [];
+      Array.from(sel.options).forEach(o => {
+        if(o.value === String(allValue)) return;
+        const vals = o.value.split(',').map(parseVal);
+        if(vals.every(v => state.has(v))) texts.push(o.text);
+      });
+      btn.querySelector('.ms-text').textContent = texts.length > 1 ? texts.length + ' đã chọn' : texts[0];
+    }
+  }
+
+  Array.from(sel.options).forEach(o => {
+    const valStr = o.value;
+    const isAll = (valStr === String(allValue));
+    const vals = valStr.split(',').map(parseVal);
+    
+    const lbl = document.createElement('label');
+    lbl.className = 'ms-label';
+    const chk = document.createElement('input');
+    chk.type = 'checkbox';
+    chk.value = valStr;
+    chk.checked = true; // By default everything is visually checked because All is checked
+    
+    chk.addEventListener('change', (e) => {
+      if(isAll) {
+        if(chk.checked) {
+          state.clear(); state.add(allValue);
+        } else {
+          state.clear();
+        }
+      } else {
+        if(chk.checked) {
+          if(!state.has(allValue)) {
+            vals.forEach(v => state.add(v));
+          }
+        } else {
+          if (state.has(allValue)) {
+            state.clear();
+            Array.from(sel.options).forEach(opt => {
+              if (opt.value === String(allValue) || opt.value === valStr) return;
+              opt.value.split(',').map(parseVal).forEach(v => state.add(v));
+            });
+          } else {
+            vals.forEach(v => state.delete(v));
+          }
+        }
+      }
+      
+      let allSelected = true;
+      let hasVisibleOptions = false;
+      drop.querySelectorAll('input').forEach(i => {
+        if (i.value === String(allValue)) return;
+        if (!i.closest('.ms-label').classList.contains('ms-hidden')) hasVisibleOptions = true;
+        
+        const iVals = i.value.split(',').map(parseVal);
+        const isChecked = state.has(allValue) || iVals.every(v => state.has(v));
+        i.checked = isChecked;
+        if (!isChecked && !i.closest('.ms-label').classList.contains('ms-hidden')) allSelected = false;
+      });
+      
+      if (hasVisibleOptions && allSelected && !state.has(allValue)) {
+         state.clear(); state.add(allValue);
+      }
+      
+      drop.querySelector(`input[value="${allValue}"]`).checked = state.has(allValue);
+
+      updateText();
+      update();
+    });
+    
+    lbl.appendChild(chk);
+    lbl.appendChild(document.createTextNode(' ' + o.text));
+    drop.appendChild(lbl);
+  });
+  
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isShow = drop.classList.contains('show');
+    document.querySelectorAll('.ms-drop').forEach(d => d.classList.remove('show'));
+    if(!isShow) drop.classList.add('show');
+  });
+  
+  wrap.appendChild(btn);
+  wrap.appendChild(drop);
+  sel.parentNode.insertBefore(wrap, sel);
+  sel.style.display = 'none';
+  
+  sel.msUpdateText = updateText;
+}
+
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.ms-wrap')) {
+    document.querySelectorAll('.ms-drop').forEach(d => d.classList.remove('show'));
+  }
+});
+
+function getFiltered(){
+  const sm = filterState.fMonth;
+  const sw = filterState.fWeek;
+  const sd = filterState.fDay;
+  const swh = filterState.fWh;
+  const sc = filterState.fCarrier;
+  const ssla = filterState.fSla;
+
+  return D.rows.filter(r=>{
+    if(!sm.has(0) && !sm.has(r[1])) return false;
+    if(!sw.has(-1) && !sw.has(r[0])) return false;
+    if(!sd.has(-1) && !sd.has(r[8])) return false;
+    if(!swh.has(-1) && !swh.has(r[2])) return false;
+    if(!sc.has(-1) && !sc.has(r[10])) return false;
+    if(!ssla.has(-1)) {
+        let isDat = (r[5] === 0 || r[5] === 1);
+        let match = false;
+        if(ssla.has(1) && isDat) match = true;
+        if(ssla.has(0) && !isDat) match = true;
+        if(!match) return false;
+    }
+    return true;
+  });
+}
+
+function resetFilters(){
+  const alls = { fMonth: 0, fWeek: -1, fDay: -1, fWh: -1, fCarrier: -1, fSla: -1 };
+  for(let id in alls) {
+    const allVal = alls[id];
+    filterState[id].clear();
+    filterState[id].add(allVal);
+    const wrap = document.getElementById(id).previousElementSibling;
+    if(wrap && wrap.classList.contains('ms-wrap')) {
+       wrap.querySelectorAll('input').forEach(i => i.checked = (Number(i.value) === allVal));
+       document.getElementById(id).msUpdateText();
+    }
+  }
+  update();
+}
+
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// AGGREGATION HELPERS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function agg(rows, keyFn){
+  const m = {};
+  rows.forEach(r=>{
+    const k = keyFn(r);
+    if(!m[k]) m[k]={total:0,dat:0,som:0,tre:0};
+    m[k].total++;
+    if(r[5]===0) m[k].dat++;
+    else if(r[5]===1) m[k].som++;
+    else m[k].tre++;
+  });
+  return m;
+}
+
+function getWhLabel(){
+  const swh = filterState.fWh;
+  if(swh.has(-1)) return '';
+  const names = Array.from(swh).map(i => D.warehouses[i]).filter(Boolean);
+  return names.length ? ' – ' + names.join(', ') : '';
+}
+
+function rate(obj){return obj&&obj.total?(((obj.dat+obj.som)/obj.total)*100):0}
+function missRate(obj){return obj&&obj.total?((obj.tre/obj.total)*100):0}
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// KPI CARDS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function renderKPIs(rows){
+  const t=rows.length, datSLA=rows.filter(r=>r[5]===0||r[5]===1).length, tr=rows.filter(r=>r[5]===2).length;
+  const pct=t?(datSLA/t*100):0, tpct=t?(tr/t*100):0;
+  const trips=new Set(rows.map(r=>r[4])).size;
+  document.getElementById('kpiRow').innerHTML=`
+    <div class="kpi blue animate"><div class="kpi-icon">📦</div><div class="kpi-label">Tổng chuyến giao</div><div class="kpi-value">${t.toLocaleString()}</div><div class="kpi-sub">${trips.toLocaleString()} trips</div></div>
+    <div class="kpi green animate"><div class="kpi-icon">✅</div><div class="kpi-label">Đạt SLA (Đúng + Sớm)</div><div class="kpi-value">${pct.toFixed(1)}%</div><div class="kpi-sub">${datSLA.toLocaleString()} chuyến</div></div>
+    <div class="kpi red animate"><div class="kpi-icon">🚨</div><div class="kpi-label">Không đạt SLA (Trễ)</div><div class="kpi-value">${tpct.toFixed(1)}%</div><div class="kpi-sub">${tr.toLocaleString()} chuyến trễ hạn</div></div>
+    <div class="kpi teal animate"><div class="kpi-icon">📍</div><div class="kpi-label">Điểm đến</div><div class="kpi-value">${new Set(rows.map(r=>r[3])).size}</div><div class="kpi-sub">điểm giao hàng</div></div>`;
+}
+
+// ========================================================================================================================
+// CHART HELPERS
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
+const chartDefaults = {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94a3b8',font:{family:'Inter',size:11},padding:12,usePointStyle:true,pointStyle:'circle'}},tooltip:{backgroundColor:'#1e293b',titleColor:'#e2e8f0',bodyColor:'#94a3b8',borderColor:'#374151',borderWidth:1,padding:12,cornerRadius:8,titleFont:{family:'Inter',weight:'600'},bodyFont:{family:'Inter'}}},scales:{x:{ticks:{color:'#64748b',font:{family:'Inter',size:11}},grid:{color:'rgba(255,255,255,.05)'},border:{color:'rgba(255,255,255,.1)'}},y:{ticks:{color:'#64748b',font:{family:'Inter',size:11},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.05)'},border:{color:'rgba(255,255,255,.1)'},min:0,max:100}}};
+
+function makeChart(id, type, data, opts={}){
+  if(charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  if(!ctx) return;
+  const merged = JSON.parse(JSON.stringify(chartDefaults));
+  if(opts.scales) Object.assign(merged.scales, opts.scales);
+  if(opts.plugins) {
+    Object.keys(opts.plugins).forEach(k=>{
+      merged.plugins[k] = {...(merged.plugins[k]||{}), ...opts.plugins[k]};
+    });
+  }
+  if(opts.indexAxis) merged.indexAxis = opts.indexAxis;
+  charts[id] = new Chart(ctx, {type, data, options:merged, plugins:opts._plugins||[]});
+}
+// Helper: merge multiple agg objects
+function mergeAgg(...objs){
+  const r={total:0,dat:0,som:0,tre:0};
+  objs.forEach(o=>{if(o){r.total+=o.total;r.dat+=o.dat;r.som+=o.som;r.tre+=o.tre;}});
+  return r.total?r:null;
+}
+const AGG_COLORS = {dongmat:'#0ea5e9',kho:'#d97706'};
+const AGG_BG = {dongmat:'rgba(14,165,233,.2)',kho:'rgba(217,119,6,.2)'};
+
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
+// CHART: OVERALL SLA BY MONTH (stacked bar + aggregate legend)
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
+function renderOverallMonth(rows){
+  const sm = filterState.fMonth;
+  const filteredMonths = sm.has(0) ? D.months : D.months.filter(m => sm.has(m));
+  const MONTH_LABELS = filteredMonths.map(m => 'Tháng ' + m);
+
+  const swh = filterState.fWh;
+  const whIndices = swh.has(-1) ? D.warehouses.map((_, i) => i) : Array.from(swh);
+  const isSingle = whIndices.length === 1;
+
+  const byMW = agg(rows, r=>r[1]+'_'+r[2]);
+  const byM = agg(rows, r=>r[1]);
+  const overallSLA = filteredMonths.map(m=>{const v=byM[m]; return rate(v).toFixed(1)});
+  
+  const allSlaVals = overallSLA.map(v => parseFloat(v)).filter(v => v > 0);
+  const minSlaVal = allSlaVals.length ? Math.min(...allSlaVals, 99) : 90;
+  // Nếu chỉ 1 kho (isSingle = true), set yMin = 0 để tỷ lệ Đạt/Không đạt hiển thị chính xác theo tỷ lệ thực tế.
+  // Nếu nhiều kho, giữ yMin cắt ở đáy để dễ nhìn biến động.
+  const yMin = isSingle ? 0 : Math.max(0, Math.floor(minSlaVal) - 4);
+
+  const datasets = whIndices.map(wi=>({
+    label: D.warehouses[wi],
+    data: filteredMonths.map(() => null), // Dummy để hiện legend
+    backgroundColor: WH_COLORS[wi],
+    borderColor: 'rgba(0,0,0,.1)',
+    borderWidth: 1
+  }));
+
+  if (isSingle) {
+      datasets.push({
+          label: 'Không đạt SLA',
+          data: filteredMonths.map(() => null),
+          backgroundColor: '#ef4444',
+          borderColor: 'rgba(0,0,0,.1)',
+          borderWidth: 1
+      });
+  }
+
+  // Dataset thật hiển thị cột SLA Tổng với màu gradient chia tỷ lệ khối lượng
+  datasets.push({
+    label: 'SLA Tổng',
+    // Nếu chỉ 1 kho, cột vẽ lên tận 100% để thể hiện phần Không Đạt. Nếu nhiều kho, vẽ tới SLA Tổng.
+    data: filteredMonths.map((m, i) => {
+        const val = parseFloat(overallSLA[i]);
+        return isSingle && val > 0 ? 100 : val;
+    }),
+    backgroundColor: (context) => {
+        const chart = context.chart;
+        const {ctx, chartArea, scales} = chart;
+        if (!chartArea) return '#cbd5e1';
+        
+        const dataIndex = context.dataIndex;
+        const m = filteredMonths[dataIndex];
+        const v_month = byM[m];
+        if (!v_month || v_month.total === 0) return '#cbd5e1';
+        
+        const overallSlaVal = parseFloat(overallSLA[dataIndex]);
+        const barTopVal = isSingle ? 100 : overallSlaVal;
+        
+        const yTop = scales.y.getPixelForValue(barTopVal);
+        const yBottom = scales.y.getPixelForValue(yMin);
+        
+        const gradient = ctx.createLinearGradient(0, yBottom, 0, yTop);
+        
+        if (isSingle) {
+            const wi = whIndices[0];
+            const color = WH_COLORS[wi];
+            const failColor = '#ef4444';
+            
+            // Tính tỷ lệ của phần Đạt so với toàn bộ phần hiển thị (từ yMin đến 100)
+            const prop = (overallSlaVal - yMin) / (100 - yMin);
+            const safeProp = Math.min(Math.max(prop, 0), 1);
+            
+            gradient.addColorStop(0, color);
+            gradient.addColorStop(safeProp, color);
+            gradient.addColorStop(safeProp, failColor);
+            gradient.addColorStop(1, failColor);
+        } else {
+            let currentProp = 0;
+            for (let idx = 0; idx < whIndices.length; idx++) {
+                const wi = whIndices[idx];
+                const v = byMW[m+'_'+wi];
+                if (!v || v.total === 0) continue;
+                
+                const prop = v.total / v_month.total;
+                const color = WH_COLORS[wi];
+                
+                gradient.addColorStop(Math.min(Math.max(currentProp, 0), 1), color);
+                currentProp += prop;
+                gradient.addColorStop(Math.min(Math.max(currentProp, 0), 1), color);
+            }
+        }
+        return gradient;
+    },
+    borderColor: 'rgba(0,0,0,.2)',
+    borderWidth: 1,
+    barPercentage: .55,
+    categoryPercentage: .8,
+    datalabels: { display: false }
+  });
+
+  const topPlugin = {
+    id:'topSLA',
+    afterDraw(chart){
+      const {ctx,scales} = chart;
+      const refMeta = chart.getDatasetMeta(datasets.length - 1);
+      if (!refMeta) return;
+      refMeta.data.forEach((bar,i)=>{
+        const overallSlaVal = overallSLA[i];
+        if (!overallSlaVal || isNaN(overallSlaVal)) return;
+        const barTopY = scales.y.getPixelForValue(parseFloat(overallSlaVal));
+        
+        ctx.save(); ctx.font='800 16px Inter'; ctx.fillStyle='#ffffff';
+        ctx.textAlign='center';
+        
+        if (isSingle) {
+            ctx.shadowColor = 'rgba(0,0,0,0.4)';
+            ctx.shadowBlur = 4;
+            ctx.textBaseline='middle';
+            ctx.fillText(overallSlaVal+'%', bar.x, barTopY);
+        } else {
+            ctx.textBaseline='bottom';
+            ctx.fillText(overallSlaVal+'%', bar.x, barTopY - 6);
+        }
+        ctx.restore();
+      });
+    }
+  };
+
+  const targetLinePlugin = {
+    id:'targetLine99',
+    afterDraw(chart){
+      const {ctx, chartArea, scales} = chart;
+      if(!chartArea || !scales.y) return;
+      const yPixel = scales.y.getPixelForValue(99);
+      
+      ctx.save();
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 4]);
+      ctx.beginPath();
+      ctx.moveTo(chartArea.left, yPixel);
+      ctx.lineTo(chartArea.right, yPixel);
+      ctx.stroke();
+      
+      ctx.fillStyle = '#ef4444';
+      ctx.font = '800 13px Inter';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('99%', chartArea.right - 4, yPixel - 4);
+      ctx.restore();
+    }
+  };
+
+  makeChart('chartOverallMonth','bar',{labels:MONTH_LABELS,datasets},{
+    _plugins:[targetLinePlugin, topPlugin],
+    plugins:{
+      datalabels:{},
+      tooltip:{
+        callbacks:{
+          label:(ctx)=>{
+            if (ctx.dataset.label !== 'SLA Tổng') return null;
+            const dataIndex = ctx.dataIndex;
+            const m = filteredMonths[dataIndex];
+            const lines = [];
+            lines.push('Tổng SL: ' + (byM[m] ? byM[m].total.toLocaleString() : 0) + ' đơn (SLA: ' + overallSLA[dataIndex] + '%)');
+            whIndices.forEach(wi => {
+                const v = byMW[m+'_'+wi];
+                if(v && v.total > 0){
+                    lines.push(' - ' + D.warehouses[wi] + ': ' + v.total.toLocaleString() + ' đơn (SLA: ' + rate(v).toFixed(1) + '%)');
+                    if (isSingle) {
+                        const passV = v.dat + v.som;
+                        const failV = v.tre;
+                        lines.push('   + Đạt: ' + passV.toLocaleString() + ' đơn');
+                        lines.push('   + Không đạt: ' + failV.toLocaleString() + ' đơn');
+                    }
+                }
+            });
+            return lines;
+          }
+        }
+      },
+      legend:{
+        position: 'bottom',
+        onClick: (e, legendItem, legend) => {}
+      }
+    },
+    scales:{
+      x:{stacked:true},
+      y:{stacked:true, min:yMin, max:101.5, ticks:{callback:v=>v+'%'},title:{display:true,text:'Tỷ lệ đạt SLA Tổng (%)',color:'#64748b',font:{family:'Inter',size:11}}}
+    }
+  });
+}
+
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
+// CHART: SLA BY WAREHOUSE BY MONTH (line + custom legend + % diff)
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
+function renderWhMonth(rows){
+  const sm = filterState.fMonth;
+  const filteredMonths = sm.has(0) ? D.months : D.months.filter(m => sm.has(m));
+  const MONTH_LABELS = filteredMonths.map(m => 'Tháng ' + m);
+
+  const swh = filterState.fWh;
+  const whIndices = swh.has(-1) ? D.warehouses.map((_, i) => i) : Array.from(swh);
+
+  const byMW = agg(rows, r=>r[1]+'_'+r[2]);
+  const byM = agg(rows, r=>r[1]);
+
+  const allDS = [];
+  whIndices.forEach(wi=>{
+    allDS.push({label:D.warehouses[wi],
+      data:filteredMonths.map(m=>{const v=byMW[m+'_'+wi];return v?rate(v).toFixed(1):null}),
+      borderColor:WH_COLORS[wi],backgroundColor:WH_BG[wi],
+      borderWidth:3,tension:.3,pointRadius:6,pointHoverRadius:9,
+      pointBackgroundColor:WH_COLORS[wi],pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,
+      datalabels:{color:WH_COLORS[wi],anchor:'end',align:'top',offset:4,font:{family:'Inter',size:11,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  });
+  // Aggregate: Đông Mát (idx 0+1)
+  if (swh.has(-1) || (swh.has(0) && swh.has(1))) {
+    allDS.push({label:'Đông Mát (Tổng)',
+      data:filteredMonths.map(m=>{const v=mergeAgg(byMW[m+'_0'],byMW[m+'_1']);return v?rate(v).toFixed(1):null}),
+      borderColor:AGG_COLORS.dongmat,backgroundColor:AGG_BG.dongmat,
+      borderWidth:2.5,borderDash:[8,4],tension:.3,pointRadius:5,pointHoverRadius:8,
+      pointBackgroundColor:AGG_COLORS.dongmat,pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,_color:AGG_COLORS.dongmat,hidden:true,
+      datalabels:{color:AGG_COLORS.dongmat,anchor:'end',align:'top',offset:4,font:{family:'Inter',size:11,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  }
+  // Aggregate: Khô (idx 4+5)
+  if (swh.has(-1) || (swh.has(4) && swh.has(5))) {
+    allDS.push({label:'Khô (Tổng)',
+      data:filteredMonths.map(m=>{const v=mergeAgg(byMW[m+'_4'],byMW[m+'_5']);return v?rate(v).toFixed(1):null}),
+      borderColor:AGG_COLORS.kho,backgroundColor:AGG_BG.kho,
+      borderWidth:2.5,borderDash:[8,4],tension:.3,pointRadius:5,pointHoverRadius:8,
+      pointBackgroundColor:AGG_COLORS.kho,pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,_color:AGG_COLORS.kho,hidden:true,
+      datalabels:{color:AGG_COLORS.kho,anchor:'end',align:'top',offset:4,font:{family:'Inter',size:11,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  }
+  // Average
+  allDS.push({label:'Target 99%',
+    data:filteredMonths.map(()=>99.0),
+    borderColor:'#ef4444',backgroundColor:'transparent',
+    borderWidth:2,borderDash:[6,4],tension:0,pointRadius:0,pointHoverRadius:0,
+    fill:false,spanGaps:true,
+    datalabels:{color:'#ef4444',anchor:'start',align:'top',offset:2,
+      font:{family:'Inter',size:12,weight:'800'},
+      formatter:(v,ctx)=>ctx.dataIndex===0?'99%':''}
+  });
+
+  // Plugin: draw % diff at midpoint (with background pill)
+  const diffPlugin = {
+    id:'diffLabels',
+    afterDatasetsDraw(chart){
+      // Đếm số lượng line đang hiển thị (bỏ qua Target 99%)
+      const visibleLines = chart.data.datasets.filter((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          return !meta.hidden && ds.label !== 'Target 99%';
+      }).length;
+      
+      // Nếu có từ 3 data lines trở lên (tính cả Target là >= 4 lines), ẩn nhãn tăng giảm
+      if (visibleLines > 2) return;
+
+      const {ctx} = chart;
+      chart.data.datasets.forEach((ds,di)=>{
+        const meta = chart.getDatasetMeta(di);
+        if(meta.hidden) return;
+        const pts = meta.data;
+        for(let i=0;i<pts.length-1;i++){
+          const v0=parseFloat(ds.data[i]), v1=parseFloat(ds.data[i+1]);
+          if(isNaN(v0)||isNaN(v1)) continue;
+          const diff=v1-v0;
+          if(diff===0) continue;
+          const mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
+          const txt=(diff>0?'+':'')+diff.toFixed(1)+'%';
+          ctx.save();
+          ctx.font='700 11px Inter';
+          const w=ctx.measureText(txt).width+10, h=18;
+          ctx.fillStyle='rgba(15,23,42,.85)';
+          ctx.beginPath();
+          ctx.roundRect(mx-w/2, my-h-6, w, h, 4);
+          ctx.fill();
+          ctx.fillStyle=diff>0?'#4ade80':'#f87171';
+          ctx.textAlign='center'; ctx.textBaseline='bottom';
+          ctx.fillText(txt, mx, my-4);
+          ctx.restore();
+        }
+      });
+    }
+  };
+
+  const allVals = allDS.flatMap(ds=>ds.data).filter(v=>v!=null).map(Number);
+  const yMin = allVals.length ? Math.floor(Math.min(...allVals)) - 1 : 0;
+
+  makeChart('chartWhMonth','line',{labels:MONTH_LABELS,datasets:allDS},{
+    _plugins:[ChartDataLabels,diffPlugin],
+    plugins:{datalabels:{},legend:{display:true, position:'bottom', labels:{color:'#94a3b8', font:{family:'Inter', size:12}}}},
+    layout: { padding: { top: 50, right: 20 } },
+    scales:{y:{min:yMin,max:101,ticks:{callback:v=>v+'%'}}}
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHART: SLA BY WAREHOUSE BY WEEK (line + legend + week picker + % diff)
+// ═══════════════════════════════════════════════════════════════
+function renderWhWeek(rows){
+  const sw = filterState.fWeek;
+  const filteredWeekIdxs = sw.has(-1) ? D.weeks.map((_, i) => i) : Array.from(sw).sort((a,b)=>a-b);
+  const WEEK_LABELS = filteredWeekIdxs.map(i => D.weeks[i]);
+
+  const swh = filterState.fWh;
+  const whIndices = swh.has(-1) ? D.warehouses.map((_, i) => i) : Array.from(swh);
+
+  const byWW = agg(rows, r=>r[0]+'_'+r[2]);
+  const byW = agg(rows, r=>r[0]);
+
+  const allDS = [];
+  whIndices.forEach(wi=>{
+    allDS.push({label:D.warehouses[wi],
+      data:filteredWeekIdxs.map(wi2=>{const v=byWW[wi2+'_'+wi];return v?rate(v).toFixed(1):null}),
+      borderColor:WH_COLORS[wi],backgroundColor:WH_BG[wi],
+      borderWidth:2.5,tension:.3,pointRadius:5,pointHoverRadius:7,
+      pointBackgroundColor:WH_COLORS[wi],pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,spanGaps:true,
+      datalabels:{color:WH_COLORS[wi],anchor:'end',align:'top',offset:4,
+        font:{family:'Inter',size:10,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  });
+
+  if(swh.has(-1) || (swh.has(0) && swh.has(1))) {
+    allDS.push({label:'Đông Mát (Tổng)',
+      data:filteredWeekIdxs.map(wi2=>{const v=mergeAgg(byWW[wi2+'_0'],byWW[wi2+'_1']);return v?rate(v).toFixed(1):null}),
+      borderColor:AGG_COLORS.dongmat,backgroundColor:AGG_BG.dongmat,
+      borderWidth:2,borderDash:[8,4],tension:.3,pointRadius:4,pointHoverRadius:7,
+      pointBackgroundColor:AGG_COLORS.dongmat,pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,spanGaps:true,
+      datalabels:{color:AGG_COLORS.dongmat,anchor:'end',align:'top',offset:4,
+        font:{family:'Inter',size:10,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  }
+
+  if(swh.has(-1) || (swh.has(4) && swh.has(5))) {
+    allDS.push({label:'Khô (Tổng)',
+      data:filteredWeekIdxs.map(wi2=>{const v=mergeAgg(byWW[wi2+'_4'],byWW[wi2+'_5']);return v?rate(v).toFixed(1):null}),
+      borderColor:AGG_COLORS.kho,backgroundColor:AGG_BG.kho,
+      borderWidth:2,borderDash:[8,4],tension:.3,pointRadius:4,pointHoverRadius:7,
+      pointBackgroundColor:AGG_COLORS.kho,pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,spanGaps:true,
+      datalabels:{color:AGG_COLORS.kho,anchor:'end',align:'top',offset:4,
+        font:{family:'Inter',size:10,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  }
+
+  allDS.push({label:'Target 99%',
+    data:filteredWeekIdxs.map(()=>99.0),
+    borderColor:'#ef4444',backgroundColor:'transparent',
+    borderWidth:2,borderDash:[6,4],tension:0,pointRadius:0,pointHoverRadius:0,
+    fill:false,spanGaps:true,
+    datalabels:{color:'#ef4444',anchor:'start',align:'top',offset:2,
+      font:{family:'Inter',size:12,weight:'800'},
+      formatter:(v,ctx)=>ctx.dataIndex===0?'99%':''}
+  });
+
+  const diffPluginW = {
+    id:'diffLabelsWeek',
+    afterDatasetsDraw(chart){
+      // Đếm số lượng line đang hiển thị (bỏ qua Target 99%)
+      const visibleLines = chart.data.datasets.filter((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          return !meta.hidden && ds.label !== 'Target 99%';
+      }).length;
+      
+      // Nếu có từ 3 data lines trở lên (tính cả Target là >= 4 lines), ẩn nhãn tăng giảm
+      if (visibleLines > 2) return;
+
+      const {ctx} = chart;
+      chart.data.datasets.forEach((ds,di)=>{
+        const meta = chart.getDatasetMeta(di);
+        if(meta.hidden) return;
+        const pts = meta.data;
+        for(let i=0;i<pts.length-1;i++){
+          const v0=parseFloat(ds.data[i]), v1=parseFloat(ds.data[i+1]);
+          if(isNaN(v0)||isNaN(v1)) continue;
+          const diff=v1-v0;
+          if(Math.abs(diff)<0.05) continue;
+          const mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
+          const txt=(diff>0?'+':'')+diff.toFixed(1)+'%';
+          ctx.save();
+          ctx.font='700 10px Inter';
+          const w=ctx.measureText(txt).width+8, h=16;
+          ctx.fillStyle='rgba(15,23,42,.85)';
+          ctx.beginPath();
+          ctx.roundRect(mx-w/2, my-h-6, w, h, 4);
+          ctx.fill();
+          ctx.fillStyle=diff>0?'#4ade80':'#f87171';
+          ctx.textAlign='center'; ctx.textBaseline='bottom';
+          ctx.fillText(txt, mx, my-4);
+          ctx.restore();
+        }
+      });
+    }
+  };
+
+
+  const allValsW = allDS.flatMap(ds=>ds.data).filter(v=>v!=null).map(Number);
+  const yMinW = allValsW.length ? Math.floor(Math.min(...allValsW)) - 1 : 90;
+
+  makeChart('chartWhWeek','line',{labels:WEEK_LABELS,datasets:allDS},{
+    _plugins:[ChartDataLabels,diffPluginW],
+    plugins:{datalabels:{},legend:{display:true, position:'bottom', labels:{color:'#94a3b8', font:{family:'Inter', size:12}}}},
+    layout: { padding: { top: 50, right: 20 } },
+    scales:{x:{ticks:{maxRotation:45}},y:{min:yMinW,max:101,ticks:{callback:v=>v+'%'}}}
+  });
+
+  const box = document.getElementById('whWeekChartBox');
+  if(box) box.style.width = '100%';
+  // Center title above chart
+  const card = box ? box.closest('.chart-card') : null;
+  const title = card ? card.querySelector('.chart-title') : null;
+  if(title) title.style.maxWidth = '100%';
+  if(charts['chartWhWeek']) charts['chartWhWeek'].resize();
+}
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// CHART: SLA BY CARRIER BY MONTH (line)
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function renderCarrierMonth(rows){
+  const whLbl = getWhLabel();
+  const el = document.getElementById('chartCarrierMonth')?.closest('.chart-card')?.querySelector('.chart-title');
+  if(el) el.textContent = 'SLA Nhà vận tải theo Tháng' + whLbl;
+  const sm = filterState.fMonth;
+  const filteredMonths = sm.has(0) ? D.months : D.months.filter(m => sm.has(m));
+  const MONTH_LABELS = filteredMonths.map(m => 'Tháng ' + m);
+
+  const sc = filterState.fCarrier;
+  const carrierIndices = sc.has(-1) ? D.carriers.map((_, i) => i) : Array.from(sc);
+
+  const byCM = agg(rows, r=>r[1]+'_'+r[10]);
+  const allDS = [];
+  carrierIndices.forEach(ci=>{
+    const data = filteredMonths.map(m=>{const v=byCM[m+'_'+ci];return v?rate(v).toFixed(1):null});
+    if(!data.some(v => v !== null)) return;
+    allDS.push({label:D.carriers[ci],
+      data: data,
+      borderColor:CR_COLORS[ci],backgroundColor:CR_BG[ci],
+      borderWidth:3,tension:.3,pointRadius:6,pointHoverRadius:9,
+      pointBackgroundColor:CR_COLORS[ci],pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,
+      datalabels:{color:CR_COLORS[ci],anchor:'end',align:'top',offset:4,font:{family:'Inter',size:11,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  });
+
+  allDS.push({label:'Target 99%',
+    data:filteredMonths.map(()=>99.0),
+    borderColor:'#ef4444',backgroundColor:'transparent',
+    borderWidth:2,borderDash:[6,4],tension:0,pointRadius:0,pointHoverRadius:0,
+    fill:false,spanGaps:true,
+    datalabels:{color:'#ef4444',anchor:'start',align:'top',offset:2,
+      font:{family:'Inter',size:12,weight:'800'},
+      formatter:(v,ctx)=>ctx.dataIndex===0?'99%':''}
+  });
+
+  const diffPluginCM = {
+    id:'diffLabelsCarrierMonth',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      let visibleCount = 0;
+      chart.data.datasets.forEach((ds,di)=>{
+        if(!chart.getDatasetMeta(di).hidden && ds.data.some(v=>v!=null)) visibleCount++;
+      });
+      if(visibleCount > 2) return;
+      chart.data.datasets.forEach((ds,di)=>{
+        const meta = chart.getDatasetMeta(di);
+        if(meta.hidden) return;
+        const pts = meta.data;
+        for(let i=0;i<pts.length-1;i++){
+          const v0=parseFloat(ds.data[i]), v1=parseFloat(ds.data[i+1]);
+          if(isNaN(v0)||isNaN(v1)) continue;
+          const diff=v1-v0;
+          if(diff===0) continue;
+          const mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
+          const txt=(diff>0?'+':'')+diff.toFixed(1)+'%';
+          ctx.save();
+          ctx.font='700 11px Inter';
+          const w=ctx.measureText(txt).width+10, h=18;
+          ctx.fillStyle='rgba(15,23,42,.85)';
+          ctx.beginPath(); ctx.roundRect(mx-w/2, my-h-6, w, h, 4); ctx.fill();
+          ctx.fillStyle=diff>0?'#4ade80':'#f87171';
+          ctx.textAlign='center'; ctx.textBaseline='bottom';
+          ctx.fillText(txt, mx, my-4);
+          ctx.restore();
+        }
+      });
+    }
+  };
+
+  const allVals = allDS.flatMap(ds=>ds.data).filter(v=>v!=null).map(Number);
+  const yMin = allVals.length ? Math.floor(Math.min(...allVals)) - 1 : 90;
+
+  makeChart('chartCarrierMonth','line',{labels:MONTH_LABELS,datasets:allDS},{
+    _plugins:[ChartDataLabels,diffPluginCM],
+    plugins:{datalabels:{},legend:{display:true, position:'bottom', labels:{color:'#94a3b8', font:{family:'Inter', size:12}, filter:(item,chart)=>{const ds=chart.datasets[item.datasetIndex];return ds.data.some(v=>v!=null)}}}},
+    layout: { padding: { top: 50, right: 20 } },
+    scales:{y:{min:yMin,max:101,ticks:{callback:v=>v+'%'}}}
+  });
+}
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// CHART: SLA BY CARRIER BY WEEK (line + week picker)
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function renderCarrierWeek(rows){
+  const whLbl = getWhLabel();
+  const el = document.getElementById('chartCarrierWeek')?.closest('.chart-card')?.querySelector('.chart-title');
+  if(el) el.textContent = 'SLA Nhà vận tải theo Tuần' + whLbl;
+  const sw = filterState.fWeek;
+  const filteredWeekIdxs = sw.has(-1) ? D.weeks.map((_, i) => i) : Array.from(sw).sort((a,b)=>a-b);
+  const WEEK_LABELS = filteredWeekIdxs.map(i => D.weeks[i]);
+
+  const sc = filterState.fCarrier;
+  const carrierIndices = sc.has(-1) ? D.carriers.map((_, i) => i) : Array.from(sc);
+
+  const byCW = agg(rows, r=>r[0]+'_'+r[10]);
+  const allDS = [];
+  carrierIndices.forEach(ci=>{
+    const data = filteredWeekIdxs.map(wi2=>{const v=byCW[wi2+'_'+ci];return v?rate(v).toFixed(1):null});
+    if(!data.some(v => v !== null)) return;
+    allDS.push({label:D.carriers[ci],
+      data: data,
+      borderColor:CR_COLORS[ci],backgroundColor:CR_BG[ci],
+      borderWidth:2.5,tension:.3,pointRadius:5,pointHoverRadius:7,
+      pointBackgroundColor:CR_COLORS[ci],pointBorderColor:'#1a2332',pointBorderWidth:2,
+      fill:false,spanGaps:true,
+      datalabels:{color:CR_COLORS[ci],anchor:'end',align:'top',offset:4,
+        font:{family:'Inter',size:10,weight:'700'},formatter:v=>v!=null?v+'%':''}
+    });
+  });
+
+  allDS.push({label:'Target 99%',
+    data:filteredWeekIdxs.map(()=>99.0),
+    borderColor:'#ef4444',backgroundColor:'transparent',
+    borderWidth:2,borderDash:[6,4],tension:0,pointRadius:0,pointHoverRadius:0,
+    fill:false,spanGaps:true,
+    datalabels:{color:'#ef4444',anchor:'start',align:'top',offset:2,
+      font:{family:'Inter',size:12,weight:'800'},
+      formatter:(v,ctx)=>ctx.dataIndex===0?'99%':''}
+  });
+
+  const diffPluginCW = {
+    id:'diffLabelsCarrierWeek',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      let visibleCount = 0;
+      chart.data.datasets.forEach((ds,di)=>{
+        if(!chart.getDatasetMeta(di).hidden && ds.data.some(v=>v!=null)) visibleCount++;
+      });
+      if(visibleCount > 2) return;
+      chart.data.datasets.forEach((ds,di)=>{
+        const meta = chart.getDatasetMeta(di);
+        if(meta.hidden) return;
+        const pts = meta.data;
+        for(let i=0;i<pts.length-1;i++){
+          const v0=parseFloat(ds.data[i]), v1=parseFloat(ds.data[i+1]);
+          if(isNaN(v0)||isNaN(v1)) continue;
+          const diff=v1-v0;
+          if(Math.abs(diff)<0.05) continue;
+          const mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
+          const txt=(diff>0?'+':'')+diff.toFixed(1)+'%';
+          ctx.save(); ctx.font='700 10px Inter';
+          const w=ctx.measureText(txt).width+8, h=16;
+          ctx.fillStyle='rgba(15,23,42,.85)';
+          ctx.beginPath(); ctx.roundRect(mx-w/2, my-h-6, w, h, 4); ctx.fill();
+          ctx.fillStyle=diff>0?'#4ade80':'#f87171';
+          ctx.textAlign='center'; ctx.textBaseline='bottom';
+          ctx.fillText(txt, mx, my-4);
+          ctx.restore();
+        }
+      });
+    }
+  };
+
+  const allValsW = allDS.flatMap(ds=>ds.data).filter(v=>v!=null).map(Number);
+  const yMinW = allValsW.length ? Math.floor(Math.min(...allValsW)) - 1 : 90;
+
+  makeChart('chartCarrierWeek','line',{labels:WEEK_LABELS,datasets:allDS},{
+    _plugins:[ChartDataLabels,diffPluginCW],
+    plugins:{datalabels:{},legend:{display:true, position:'bottom', labels:{color:'#94a3b8', font:{family:'Inter', size:12}, filter:(item,chart)=>{const ds=chart.datasets[item.datasetIndex];return ds.data.some(v=>v!=null)}}}},
+    layout: { padding: { top: 50, right: 20 } },
+    scales:{x:{ticks:{maxRotation:45}},y:{min:yMinW,max:101,ticks:{callback:v=>v+'%'}}}
+  });
+
+  const box = document.getElementById('carrierWeekChartBox');
+  if(box) box.style.width = '100%';
+  if(charts['chartCarrierWeek']) charts['chartCarrierWeek'].resize();
+}
+
+// â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
+// CHART: TOP 30 DRIVERS WITH WORST SLA
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function renderDriverAnalysis(rows){
+  const whLbl = getWhLabel();
+  const el = document.getElementById('chartDriverBar')?.closest('.chart-card')?.querySelector('.chart-title');
+  if(el) el.textContent = 'Top 20 Tài xế có số điểm KHÔNG đạt SLA nhiều nhất' + whLbl;
+  const byDriver = {};
+  rows.forEach(r=>{
+    const drIdx = r[9];
+    const crIdx = r[10];
+    if(!byDriver[drIdx]) byDriver[drIdx]={total:0,fail:0,cr:D.carriers[crIdx]};
+    byDriver[drIdx].total++;
+    if(r[5]===2) byDriver[drIdx].fail++;
+  });
+  const driverStats = Object.entries(byDriver)
+    .filter(([_,v])=>v.fail>0)
+    .map(([idx,v])=>({name:`${D.drivers[idx]} - ${v.cr}`,total:v.total,fail:v.fail,pct:(v.fail/v.total*100)}))
+    .sort((a,b)=>b.fail-a.fail || b.pct-a.pct)
+    .slice(0,20);
+
+  makeChart('chartDriverBar','bar',{
+    labels:driverStats.map(d=>d.name),
+    datasets:[{
+      label:'Số điểm không đạt SLA',
+      data:driverStats.map(d=>d.fail),
+      backgroundColor:driverStats.map(d=>d.pct>10?'rgba(239,68,68,.8)':d.pct>5?'rgba(245,158,11,.8)':'rgba(34,197,94,.8)'),
+      borderColor:driverStats.map(d=>d.pct>10?'#ef4444':d.pct>5?'#f59e0b':'#22c55e'),
+      borderWidth:1,borderRadius:4,
+      datalabels:{
+        color:'#ffffff',anchor:'end',align:'right',offset:4,
+        font:{family:'Inter',size:11,weight:'700'},
+        formatter:(v,ctx2)=>v+' điểm ('+driverStats[ctx2.dataIndex].pct.toFixed(1)+'%)'
+      }
+    }]
+  },{
+    indexAxis:'y',
+    _plugins:[ChartDataLabels],
+    plugins:{datalabels:{},legend:{display:false}},
+    scales:{
+      x:{min:0,ticks:{callback:v=>v},title:{display:true,text:'Số điểm Trễ SLA',color:'#64748b',font:{family:'Inter',size:11}}},
+      y:{ticks:{font:{family:'Inter',size:11}}}
+    }
+  });
+}
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// MAIN UPDATE
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function renderCarrierVolume(rows){
+  const whLbl = getWhLabel();
+  const el = document.getElementById('chartCarrierVolume')?.closest('.chart-card')?.querySelector('.chart-title');
+  if(el) el.textContent = 'Sản lượng chuyến theo tháng' + whLbl;
+  const byMC = {};
+  rows.forEach(r => {
+    const k = r[1]+'_'+r[10];
+    if(!byMC[k]) byMC[k] = new Set();
+    byMC[k].add(r[4]); // r[4] is ma_trip
+  });
+  const ds = [];
+  D.carriers.forEach((cr, ci) => {
+    const data = D.months.map((m) => {
+      const s = byMC[m+'_'+ci];
+      return s ? s.size : 0;
+    });
+    if(!data.some(v => v > 0)) return;
+    ds.push({
+      label: cr,
+      data: data,
+      backgroundColor: CR_COLORS[ci],
+      stack: 'Stack 0',
+      barPercentage: 0.6,
+      categoryPercentage: 0.75
+    });
+  });
+
+  const monthTotals = D.months.map(m => {
+    let sum = 0;
+    D.carriers.forEach((cr, ci) => {
+      const s = byMC[m+'_'+ci];
+      if(s) sum += s.size;
+    });
+    return sum;
+  });
+
+  ds.push({
+    label: 'Tổng',
+    data: D.months.map(() => 0),
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
+    borderWidth: 0,
+    stack: 'Stack 0',
+    _totals: monthTotals,
+    datalabels: {
+      color: '#e2e8f0',
+      anchor: 'end',
+      align: 'top',
+      offset: -2,
+      font: {family:'Inter',size:12,weight:'800'},
+      formatter: (val, ctx) => ctx.dataset._totals[ctx.dataIndex] > 0 ? ctx.dataset._totals[ctx.dataIndex].toLocaleString() : ''
+    }
+  });
+
+  ds.push({
+    type:'line',
+    label: 'Trend',
+    data: monthTotals,
+    borderColor: '#38bdf8',
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    tension: 0.3,
+    pointRadius: 4,
+    pointBackgroundColor: '#38bdf8',
+    pointBorderColor: '#1a2332',
+    pointBorderWidth: 2,
+    fill: false,
+    stack: false,
+    datalabels: {display: false}
+  });
+
+  // Plugin: draw % diff on trend line between months
+  const volDiffPlugin = {
+    id:'volDiff',
+    afterDraw(chart){
+      const {ctx} = chart;
+      const trendIdx = chart.data.datasets.length - 1;
+      const meta = chart.getDatasetMeta(trendIdx);
+      if(meta.hidden || !meta.data || meta.data.length < 2) return;
+      for(let i=1; i<meta.data.length; i++){
+        const prev = monthTotals[i-1];
+        const curr = monthTotals[i];
+        if(!prev || !curr) continue;
+        const pct = ((curr - prev) / prev * 100).toFixed(1);
+        const sign = pct > 0 ? '+' : '';
+        const color = pct >= 0 ? '#22c55e' : '#ef4444';
+        const p0 = meta.data[i-1];
+        const p1 = meta.data[i];
+        const mx = (p0.x + p1.x) / 2;
+        const my = (p0.y + p1.y) / 2;
+        const txt = sign + pct + '%';
+        ctx.save();
+        ctx.font = '700 11px Inter';
+        const tw = ctx.measureText(txt).width;
+        ctx.fillStyle = 'rgba(15,23,42,0.85)';
+        ctx.beginPath();
+        ctx.roundRect(mx - tw/2 - 6, my - 8, tw + 12, 18, 4);
+        ctx.fill();
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(txt, mx, my + 1);
+        ctx.restore();
+      }
+    }
+  };
+
+  makeChart('chartCarrierVolume','bar',{
+    labels: D.months.map(m => 'Tháng ' + m),
+    datasets: ds
+  },{
+    _plugins:[ChartDataLabels, volDiffPlugin],
+    plugins:{
+      datalabels:{
+        color: '#ffffff',
+        font: {family:'Inter',size:11,weight:'600'},
+        formatter: (val) => val > 0 ? val.toLocaleString() : ''
+      },
+      legend:{
+        display:true, 
+        position:'bottom', 
+        labels:{
+          color:'#94a3b8', 
+          font:{family:'Inter'},
+          filter: (item) => item.text !== 'Tổng' && item.text !== 'Trend'
+        }
+      }
+    },
+    scales:{
+      x:{stacked:true, grid:{display:false}},
+      y:{stacked:true, grid:{display:false}}
+    }
+  });
+}
+
+function updateCarrierOptions(){
+  const sm = filterState.fMonth;
+  const sw = filterState.fWeek;
+  const swh = filterState.fWh;
+  
+  const validCarriers = new Set();
+  D.rows.forEach(r => {
+    if(!sm.has(0) && !sm.has(r[1])) return;
+    if(!sw.has(-1) && !sw.has(r[0])) return;
+    if(!swh.has(-1) && !swh.has(r[2])) return;
+    validCarriers.add(r[10]);
+  });
+  // Show/hide carrier checkboxes in the dropdown
+  const carrierWrap = document.getElementById('fCarrier').previousElementSibling;
+  if(carrierWrap && carrierWrap.classList.contains('ms-wrap')) {
+    carrierWrap.querySelectorAll('.ms-label').forEach(lbl => {
+      const chk = lbl.querySelector('input');
+      const valStr = chk.value;
+      if(valStr === '-1') return; // "Tất cả" always visible
+      const vals = valStr.split(',').map(Number);
+      const visible = vals.some(v => validCarriers.has(v));
+      if(visible) lbl.classList.remove('ms-hidden'); else lbl.classList.add('ms-hidden');
+      if(!visible && chk.checked) {
+        chk.checked = false;
+        vals.forEach(v => filterState.fCarrier.delete(v));
+      }
+    });
+    document.getElementById('fCarrier').msUpdateText();
+  }
+}
+
+function renderDailyChart() {
+  if(!D.daily) return;
+  
+  let filtered = D.daily.filter(r => {
+    if(!filterState.fMonth.has(0) && !filterState.fMonth.has(r.m)) return false;
+    if(!filterState.fWeek.has(-1) && !filterState.fWeek.has(r.w)) return false;
+    if(!filterState.fDay.has(-1) && !filterState.fDay.has(r.d)) return false;
+    if(!filterState.fWh.has(-1)) {
+        let whMatch = false;
+        filterState.fWh.forEach(whVal => {
+            if(whVal === r.wh) whMatch = true;
+        });
+        if(!whMatch) return false;
+    }
+    return true;
+  });
+  
+  let group = {};
+  let isMonthMode = dailyViewMode === 'month';
+  filtered.forEach(r => {
+      let groupLabel = isMonthMode ? ('Tháng ' + r.m) : D.weeks[r.w];
+      let khoName = D.warehouses[r.wh] || 'Khác';
+      let k = groupLabel + '||' + khoName;
+      if(!group[k]) group[k] = { label: groupLabel, sortVal: isMonthMode ? r.m : r.w, kho: khoName, khoIdx: r.wh, st:0, it:0, xe:0, t:0 };
+      group[k].st += r.st;
+      group[k].it += r.it;
+      group[k].xe += r.xe;
+      group[k].t += r.t;
+  });
+  
+  let validLabels = [...new Set(Object.values(group).map(g => g.label))].sort((a,b) => {
+      if(isMonthMode) return parseInt(a.replace('Tháng ','')) - parseInt(b.replace('Tháng ',''));
+      return parseInt(a.replace('W','')) - parseInt(b.replace('W',''));
+  });
+  let validKhos = [...new Set(Object.values(group).map(g => g.kho))];
+
+  const formatValue = (v, m) => {
+      if(!v) return '';
+      if(v >= 1000000) return (v / 1000000).toLocaleString('vi-VN', {maximumFractionDigits:1}) + 'M';
+      if(v >= 1000) return (v / 1000).toLocaleString('vi-VN', {maximumFractionDigits:1}) + 'k';
+      if(m === 't' || m === 'tx' || m === 'sx' || m === 'ks') return v.toLocaleString('vi-VN', {maximumFractionDigits:1});
+      if(m === 'st' || m === 'it' || m === 'xe' || m === 'is') return v.toLocaleString('vi-VN', {maximumFractionDigits:0});
+      if(m === 'tx_pct') return v.toLocaleString('vi-VN', {maximumFractionDigits:1}) + '%';
+      return v;
+  };
+
+  const dailyDiffPlugin = {
+      id: 'dailyDiffPlugin',
+      afterDatasetsDraw(chart, args, options) {
+          const m = options.metric;
+          
+          const roundValue = (v, metric) => {
+              if(!v) return 0;
+              if (metric === 't' || metric === 'tx' || metric === 'sx' || metric === 'ks') return Math.round(v * 10) / 10;
+              if (metric === 'st' || metric === 'it' || metric === 'xe' || metric === 'is') return Math.round(v);
+              if (metric === 'tx_pct') return Math.round(v * 10) / 10;
+              return v;
+          };
+
+          let visibleToggleableCount = 0;
+          chart.data.datasets.forEach((ds, di) => {
+              const meta = chart.getDatasetMeta(di);
+              if (!ds.hideInLegend && (!meta || !meta.hidden)) visibleToggleableCount++;
+          });
+          
+          const {ctx} = chart;
+          chart.data.datasets.forEach((ds, di) => {
+              const meta = chart.getDatasetMeta(di);
+              if (meta && meta.hidden) return;
+              if (ds.type !== 'line') return;
+              
+              if (visibleToggleableCount === 1) {
+                  const pts = meta.data;
+                  for (let i = 0; i < pts.length - 1; i++) {
+                      const v0_raw = parseFloat(ds.data[i]), v1_raw = parseFloat(ds.data[i+1]);
+                      if (isNaN(v0_raw) || isNaN(v1_raw) || v0_raw <= 0) continue;
+                      
+                      const v0 = roundValue(v0_raw, m);
+                      const v1 = roundValue(v1_raw, m);
+                      if (v0 <= 0) continue;
+                      
+                      const diff = ((v1 - v0) / v0) * 100;
+                      if (diff === 0) continue;
+                      
+                      const mx = (pts[i].x + pts[i+1].x) / 2;
+                      const my = (pts[i].y + pts[i+1].y) / 2;
+                      const txt = (diff > 0 ? '▲ ' : '▼ ') + Math.abs(diff).toFixed(1) + '%';
+                      
+                      ctx.save();
+                      ctx.font = '700 11px Inter';
+                      const w = ctx.measureText(txt).width + 10;
+                      const h = 18;
+                      
+                      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                      ctx.beginPath();
+                      ctx.roundRect(mx - w/2, my - h/2, w, h, 4);
+                      ctx.fill();
+                      
+                      ctx.fillStyle = diff > 0 ? '#4ade80' : '#f87171';
+                      ctx.textAlign = 'center'; 
+                      ctx.textBaseline = 'middle';
+                      ctx.fillText(txt, mx, my + 1);
+                      ctx.restore();
+                  }
+              }
+          });
+      }
+  };
+
+  const createDatasetsForMetric = (m) => {
+      let ds = [];
+      
+      let trendData = validLabels.map(lbl => {
+          let totalSt = 0, totalIt = 0, totalXe = 0, totalT = 0;
+          validKhos.forEach(kho => {
+              let g = group[lbl + '||' + kho];
+              if(g) {
+                  totalSt += g.st;
+                  totalIt += g.it;
+                  totalXe += g.xe;
+                  totalT += g.t;
+              }
+          });
+          if(m === 'st') return totalSt;
+          if(m === 'it') return totalIt;
+          if(m === 'xe') return totalXe;
+          if(m === 't') return totalT;
+          if(m === 'tx') return totalXe ? totalT / totalXe : 0;
+          if(m === 'tx_pct') return totalXe ? ((totalT / totalXe) / 1.9) * 100 : 0;
+          if(m === 'is') return totalSt ? totalIt / totalSt : 0;
+          if(m === 'sx') return totalXe ? totalSt / totalXe : 0;
+          if(m === 'ks') return totalSt ? (totalT * 1000) / totalSt : 0;
+          return 0;
+      });
+      
+      ds.push({
+          type: 'bar',
+          label: 'Tổng (Cột)',
+          hideInLegend: true,
+          data: trendData,
+          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+          borderRadius: 4,
+          maxBarThickness: 40,
+          datalabels: { display: false }
+      });
+      
+      ds.push({
+          type: 'line',
+          label: 'Tổng (Trend)',
+          hideInLegend: true,
+          data: trendData,
+          borderColor: 'rgba(255, 255, 255, 0.6)',
+          borderDash: [5, 5],
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 3,
+          fill: false,
+          datalabels: { display: false }
+      });
+      
+      validKhos.forEach(kho => {
+          let data = validLabels.map(lbl => {
+              let g = group[lbl + '||' + kho];
+              if(!g) return 0;
+              if(m === 'st') return g.st;
+              if(m === 'it') return g.it;
+              if(m === 'xe') return g.xe;
+              if(m === 't') return g.t;
+              if(m === 'tx') return g.xe ? g.t / g.xe : 0;
+              if(m === 'tx_pct') return g.xe ? ((g.t / g.xe) / 1.9) * 100 : 0;
+              if(m === 'is') return g.st ? g.it / g.st : 0;
+              if(m === 'sx') return g.xe ? g.st / g.xe : 0;
+              if(m === 'ks') return g.st ? (g.t * 1000) / g.st : 0;
+              return 0;
+          });
+          let khoIdx = D.warehouses.indexOf(kho);
+          let color = WH_COLORS[khoIdx % WH_COLORS.length];
+          
+          ds.push({
+              type: 'line',
+              label: kho,
+              hideInLegend: false,
+              data: data,
+              borderColor: color,
+              backgroundColor: color,
+              borderWidth: 2,
+              pointRadius: 4,
+              fill: false,
+              datalabels: {
+                  labels: {
+                      value: {
+                          align: 'top',
+                          anchor: 'center',
+                          color: color,
+                          font: { family: 'Inter', size: 10, weight: 600 },
+                          formatter: (v) => formatValue(v, m),
+                          display: function(context) {
+                              try {
+                                  const chart = context.chart;
+                                  let count = 0;
+                                  chart.data.datasets.forEach((ds, i) => {
+                                      const meta = chart.getDatasetMeta ? chart.getDatasetMeta(i) : null;
+                                      const isVis = meta ? (meta.hidden === false || meta.hidden === null) : true;
+                                      if (!ds.hideInLegend && isVis) count++;
+                                  });
+                                  return count === 1;
+                              } catch(e) { return true; }
+                          }
+                      }
+                  }
+              }
+          });
+      });
+      
+      return ds;
+  };
+
+  const drawBarChart = (canvasId, m) => {
+      const ctx = document.getElementById(canvasId);
+      if(!ctx) return;
+      if(charts[canvasId]) charts[canvasId].destroy();
+      charts[canvasId] = new Chart(ctx, {
+          type: 'bar',
+          data: { labels: validLabels, datasets: createDatasetsForMetric(m) },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: {
+                  padding: { top: 25, right: 10 }
+              },
+              plugins: {
+                  dailyDiffPlugin: { metric: m },
+                  legend: { 
+                      display: true, 
+                      position: 'bottom',
+                      onClick: function(e, legendItem, legend) {
+                          const chart = legend.chart;
+                          const index = legendItem.datasetIndex;
+                          let visibleCount = 0;
+                          chart.data.datasets.forEach((ds, i) => {
+                              if (!ds.hideInLegend && chart.isDatasetVisible(i)) {
+                                  visibleCount++;
+                              }
+                          });
+                          const totalToggleable = chart.data.datasets.filter(ds => !ds.hideInLegend).length;
+                          
+                          if (visibleCount === totalToggleable) {
+                              chart.data.datasets.forEach((ds, i) => {
+                                  if (!ds.hideInLegend && i !== index) {
+                                      chart.setDatasetVisibility(i, false);
+                                  }
+                              });
+                          } else if (visibleCount === 1 && chart.isDatasetVisible(index)) {
+                              chart.data.datasets.forEach((ds, i) => {
+                                  if (!ds.hideInLegend) {
+                                      chart.setDatasetVisibility(i, true);
+                                  }
+                              });
+                          } else {
+                              chart.setDatasetVisibility(index, !chart.isDatasetVisible(index));
+                          }
+                          
+                          let newVisibleCount = 0;
+                          chart.data.datasets.forEach((ds, i) => {
+                              if (!ds.hideInLegend && chart.isDatasetVisible(i)) {
+                                  newVisibleCount++;
+                              }
+                          });
+                          
+                          chart.data.datasets.forEach((ds, i) => {
+                              if (ds.hideInLegend) {
+                                  chart.setDatasetVisibility(i, newVisibleCount !== 1);
+                              }
+                          });
+                          
+                          chart.update();
+                      },
+                      labels: { 
+                          color: '#94a3b8', 
+                          font: { family: 'Inter', size: 12 },
+                          filter: (item, chart) => {
+                              const ds = chart.datasets[item.datasetIndex];
+                              return !ds.hideInLegend;
+                          }
+                      } 
+                  }
+              },
+              scales: {
+                  x: { stacked: false, ticks: { color: '#94a3b8', font: { family: 'Inter' } }, grid: { display: false } },
+                  y: { 
+                      stacked: false, 
+                      grace: '20%',
+                      beginAtZero: true,
+                      ticks: { 
+                          color: '#94a3b8', 
+                          font: { family: 'Inter' },
+                          callback: function(value) { return formatValue(value, m); }
+                      }, 
+                      grid: { color: '#374151' } 
+                  }
+              }
+          },
+          plugins: [ChartDataLabels, dailyDiffPlugin]
+      });
+  };
+
+  try {
+      drawBarChart('chartDailyST', 'st');
+      drawBarChart('chartDailyIT', 'it');
+      drawBarChart('chartDailyXE', 'xe');
+      drawBarChart('chartDailyT', 't');
+      drawBarChart('chartDailyTX', 'tx');
+      drawBarChart('chartDailyTX_Pct', 'tx_pct');
+      drawBarChart('chartDailyIS', 'is');
+      drawBarChart('chartDailySX', 'sx');
+      drawBarChart('chartDailyKS', 'ks');
+  } catch (err) {
+      document.getElementById('chartDailyST').parentElement.innerHTML = '<div style="color:red; padding:20px;">ERROR: ' + err.message + '<br>' + err.stack + '</div>';
+  }
+}
+
+function update(){
+  updateCarrierOptions();
+  const rows = getFiltered();
+  renderKPIs(rows);
+  renderOverallMonth(rows);
+  renderWhMonth(rows);
+  renderWhWeek(rows);
+  renderCarrierMonth(rows);
+  renderCarrierWeek(rows);
+  renderDriverAnalysis(rows);
+  renderCarrierVolume(rows);
+  if (typeof renderDailyChart === 'function') renderDailyChart();
+}
+
+function scrollTo2(sel){document.querySelector(sel)?.scrollIntoView({behavior:'smooth',block:'start'})}
+
+// Populate filters from data
+populateFilters();
+
+// Filter change handlers
+initMultiSelect('fMonth', 0);
+initMultiSelect('fWeek', -1);
+initMultiSelect('fDay', -1);
+initMultiSelect('fWh', -1);
+initMultiSelect('fCarrier', -1);
+initMultiSelect('fSla', -1);
+
+// Initial render
+update();
+
+// ═══════════════════════════════════════════════════════════════
+// AUTO-RELOAD: check for new data every 60 seconds
+// ═══════════════════════════════════════════════════════════════
+setInterval(() => {
+  try {
+    const s = document.createElement('script');
+    s.src = 'data.js?t=' + Date.now();
+    s.onload = () => {
+      if (typeof D_GENERATED !== 'undefined' && D_GENERATED !== _lastGenerated) {
+        console.log('[Auto-reload] New data detected:', D_GENERATED);
+        _lastGenerated = D_GENERATED;
+        // Re-render everything with new data
+        populateFilters();
+        update();
+      }
+      // Clean up script tag
+      s.remove();
+    };
+    s.onerror = () => { s.remove(); };
+    document.head.appendChild(s);
+  } catch(e) { console.warn('[Auto-reload] Error:', e); }
+}, 60000);
+// -----------------------------------------------------------
+// PPTX EXPORT LOGIC
+// -----------------------------------------------------------
+async function exportPPTX(type) {
+  if (typeof PptxGenJS === 'undefined') { alert("Thư viện PptxGenJS chưa tải xong."); return; }
+  
+  const pres = new PptxGenJS();
+  pres.layout = 'LAYOUT_16x9';
+  pres.defineSlideMaster({
+    title: 'MASTER_SLIDE',
+    background: { data: 'data:image/png;base64,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' },
+    objects: [ { image: { data: 'data:image/png;base64,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', x: 0.2, y: 0.2, w: 1.5, h: 0.29 } } ]
+  });
+
+  const fRows = typeof getFiltered === 'function' ? getFiltered() : [];
+  if (fRows.length === 0) { alert("Không có dữ liệu theo bộ lọc hiện tại!"); return; }
+
+  // 1. Title Slide
+  let titleSlide = pres.addSlide();
+  titleSlide.background = { data: 'data:image/png;base64,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' };
+  titleSlide.addText(type === 'month' ? "BÁO CÁO SLA THEO THÁNG" : "BÁO CÁO SLA THEO TUẦN", {
+    x: 0.5, y: 2.5, w: 9, h: 1, fontSize: 44, bold: true, color: 'ffffff', align: 'center'
+  });
+  let dateStr = new Date().toISOString().slice(0, 10);
+  titleSlide.addText("Ngày xuất: " + dateStr, {
+    x: 0.5, y: 3.5, w: 9, h: 0.5, fontSize: 20, color: '94a3b8', align: 'center'
+  });
+
+  // 2. Charts (from Canvas)
+  const canvases = [
+    { id: 'chartOverallMonth', title: 'Tỷ lệ đạt SLA tổng theo Tháng' },
+    { id: 'chartWhMonth', title: 'Tỷ lệ đạt SLA từng Kho theo Tháng' },
+    { id: 'chartWhWeek', title: 'SLA từng Kho theo Tuần' },
+    { id: 'chartCarrierVolume', title: 'Sản lượng chuyến theo tháng' },
+    { id: 'chartCarrierMonth', title: 'SLA Nhà vận tải theo Tháng' },
+    { id: 'chartCarrierWeek', title: 'SLA Nhà vận tải theo Tuần' },
+    { id: 'chartDriverBar', title: 'Top 20 Tài xế rủi ro nhất' }
+  ];
+
+  for (let c of canvases) {
+    let canvas = document.getElementById(c.id);
+    if (canvas) {
+      let slide = pres.addSlide({ masterName: 'MASTER_SLIDE' });
+      slide.addText(c.title, { x: 0.5, y: 0.8, fontSize: 28, bold: true, color: 'ffffff' });
+      
+      // Calculate aspect ratio so image doesn't distort
+      let cw = canvas.width;
+      let ch = canvas.height;
+      let targetW = 9;
+      let targetH = 4.2;
+      let scale = Math.min(targetW / cw, targetH / ch);
+      let newW = cw * scale;
+      let newH = ch * scale;
+      let offsetX = 0.5 + (targetW - newW) / 2;
+      let offsetY = 1.2 + (targetH - newH) / 2;
+
+      // Ensure transparent backgrounds become dark before taking snapshot if needed
+      // Actually Chart.js might have transparent background on canvas. 
+      // To fix transparent background in canvas toDataURL, we can draw it to a temp canvas
+      let tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      let ctx = tempCanvas.getContext('2d');
+      ctx.fillStyle = '#0f172a'; // Dashboard dark background
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(canvas, 0, 0);
+
+      let imgData = tempCanvas.toDataURL('image/png', 1.0);
+      slide.addImage({ data: imgData, x: offsetX, y: offsetY, w: newW, h: newH });
+    }
+  }
+
+  // 3. Đề xuất cải thiện
+  let total = fRows.length;
+  let dung = 0, som = 0, tre = 0;
+  let whIssues = {}, carrierIssues = {};
+  fRows.forEach(r => {
+    if (r[5] === 0) dung++;
+    else if (r[5] === 1) som++;
+    else if (r[5] === 2) {
+      tre++;
+      let wh = r[2] !== undefined ? D.warehouses[r[2]] : 'Unknown';
+      let cr = r[10] !== undefined ? D.carriers[r[10]] : 'Unknown';
+      whIssues[wh] = (whIssues[wh] || 0) + 1;
+      carrierIssues[cr] = (carrierIssues[cr] || 0) + 1;
+    }
+  });
+  
+  let dungRate = (dung/total*100).toFixed(1);
+  let somRate = (som/total*100).toFixed(1);
+  let treRate = (tre/total*100).toFixed(1);
+  let slaRate = ((dung+som)/total*100).toFixed(1);
+
+  let sSug = pres.addSlide({ masterName: 'MASTER_SLIDE' });
+  sSug.addText("💡 ĐỀ XUẤT CẢI THIỆN", { x: 0.5, y: 0.8, fontSize: 32, bold: true, color: '10b981' });
+  sSug.addText(`Tổng chuyến: ${total.toLocaleString()} | SLA Ontime: ${slaRate}%`, { x: 0.5, y: 1.5, w: 9, h: 0.5, fontSize: 20, bold: true, color: 'ffffff' });
+  sSug.addText(`Đúng: ${dungRate}% | Sớm: ${somRate}% | Trễ: ${treRate}%`, { x: 0.5, y: 2.2, w: 9, h: 0.5, fontSize: 18, color: '94a3b8' });
+  
+  let worstWh = Object.keys(whIssues).sort((a,b)=>whIssues[b]-whIssues[a])[0];
+  let worstCarrier = Object.keys(carrierIssues).sort((a,b)=>carrierIssues[b]-carrierIssues[a])[0];
+  
+  let suggestions = [];
+  if (parseFloat(slaRate) < 99.0) {
+    suggestions.push(`- Tỷ lệ SLA (${slaRate}%) đang dưới mức mục tiêu 99%.`);
+    if (worstWh) suggestions.push(`- Kho có tỷ lệ trễ cao nhất là: ${worstWh} (${whIssues[worstWh]} chuyến trễ). Cần rà soát lại quy trình xuất hàng tại kho này.`);
+    if (worstCarrier) suggestions.push(`- Nhà vận chuyển có tỷ lệ trễ cao nhất là: ${worstCarrier} (${carrierIssues[worstCarrier]} chuyến trễ). Đề xuất họp rà soát NVC.`);
+  } else {
+    suggestions.push("- Tỷ lệ SLA đạt mục tiêu. Tiếp tục duy trì quy trình kiểm soát hiện tại.");
+  }
+  
+  let sY = 3.2;
+  suggestions.forEach(s => {
+    sSug.addText(s, { x: 0.8, y: sY, w: 8.5, h: 0.5, fontSize: 18, color: 'ffffff', bullet: true });
+    sY += 0.6;
+  });
+
+  pres.writeFile({ fileName: `Logistics_Report_Dashboard_${type}_${dateStr}.pptx` });
+}
+
+
+function exportExcel() {
+  if (typeof XLSX === 'undefined') {
+    alert("Thư viện xuất Excel chưa được tải.");
+    return;
+  }
+  
+  const fRows = getFiltered();
+  const SLA_MAP = {0: 'Đúng', 1: 'Sớm', 2: 'Trễ'};
+  
+  const outRows = fRows.map(r => {
+    return {
+      "Ngày": r[8],
+      "Tuần": D.weeks[r[0]],
+      "Tháng": D.months[r[1]],
+      "Kho": D.warehouses[r[2]],
+      "Điểm giao": D.destinations[r[3]],
+      "Mã chuyến": r[4] != null ? D.trips[r[4]] : '',
+      "Tài xế": r[9] != null ? D.drivers[r[9]] : '',
+      "Nhà vận tải": r[10] != null ? D.carriers[r[10]] : '',
+      "Trạng thái SLA": SLA_MAP[r[5]] || 'Unknown',
+      "Thực tế": r[6],
+      "Kế hoạch": r[7]
+    };
+  });
+  
+  if(outRows.length === 0) {
+    alert("Không có dữ liệu để xuất.");
+    return;
+  }
+  
+  const ws = XLSX.utils.json_to_sheet(outRows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Data");
+  
+  XLSX.writeFile(wb, "SLA_Dashboard_Data.xlsx");
+}
+
+
+</script>
+</body>
+</html>
