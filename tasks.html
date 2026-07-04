@@ -42,8 +42,10 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 /* ===== CONTAINER ===== */
 .container { position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:8px 24px 16px; }
 
-/* ===== TOP ROW: FORM LEFT | STATS RIGHT ===== */
-.top-row { display:flex; gap:10px; margin-bottom:6px; align-items:stretch; }
+/* ===== TOP ROW: FILTERS LEFT | FORM+STATS RIGHT ===== */
+.top-row { display:flex; gap:10px; margin-bottom:6px; align-items:center; flex-wrap:wrap; }
+.top-row .filter-tabs { margin-bottom:0; }
+.top-row-right { display:flex; gap:10px; align-items:stretch; margin-left:auto; }
 
 /* ===== ADD TASK FORM ===== */
 .add-form {
@@ -93,7 +95,7 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 .stat-card.s-done .stat-pct-detail { color:var(--green); }
 
 /* ===== FILTER TABS ===== */
-.filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
+.filter-tabs { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; align-items:center; }
 .filter-tab {
     padding:5px 12px; border-radius:16px; border:1px solid var(--border); background:transparent;
     color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s;
@@ -425,56 +427,58 @@ select.form-input { appearance:none; padding-right:28px; cursor:pointer;
 
 <div class="container" style="padding-top:12px;">
 
-    <!-- TOP ROW: FORM LEFT | STATS RIGHT -->
+    <!-- TOP ROW: FILTERS LEFT | FORM+STATS RIGHT -->
     <div class="top-row">
-        <!-- ADD TASK FORM -->
-        <div class="add-form">
-            <div class="form-title">➕ Thêm task mới</div>
-            <div class="form-group">
-                <label>Tiêu đề</label>
-                <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
-            </div>
-            <div class="form-group" style="flex:1;min-width:200px;">
-                <label>Nội dung</label>
-                <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Deadline</label>
-                <input class="form-input" type="datetime-local" id="new-deadline">
-            </div>
-            <div class="form-group">
-                <label>Ưu tiên</label>
-                <select class="form-input" id="new-priority" style="min-width:90px;">
-                    <option value="3">🟢 P3</option>
-                    <option value="2">🟠 P2</option>
-                    <option value="1">🔴 P1</option>
-                </select>
-            </div>
-            <button class="btn-create" onclick="createTask()">Tạo</button>
-            <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
+        <!-- FILTER TABS -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
+            <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
+            <button class="filter-tab" onclick="setFilter('overdue',this)">Quá hạn</button>
+            <button class="filter-tab" onclick="setFilter('high',this)">Ưu tiên cao</button>
         </div>
 
-        <!-- STATS — RIGHT SIDE -->
-        <div class="stats-row">
-            <div class="stat-total-card" id="stat-total-card">
-                <div class="stat-num" id="stat-total">0</div>
-                <div class="stat-label">Tổng</div>
-                <div class="stat-pct" id="stat-pct">0%</div>
+        <!-- ADD TASK + STATS -->
+        <div class="top-row-right">
+            <div class="add-form">
+                <div class="form-title">➕ Thêm task mới</div>
+                <div class="form-group">
+                    <label>Tiêu đề</label>
+                    <input class="form-input" type="text" id="new-title" placeholder="Nhập tiêu đề...">
+                </div>
+                <div class="form-group" style="flex:1;min-width:200px;">
+                    <label>Nội dung</label>
+                    <textarea class="form-input" id="new-desc" rows="1" placeholder="Mỗi dòng = 1 task nhỏ..." style="resize:vertical;min-height:28px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input class="form-input" type="datetime-local" id="new-deadline">
+                </div>
+                <div class="form-group">
+                    <label>Ưu tiên</label>
+                    <select class="form-input" id="new-priority" style="min-width:90px;">
+                        <option value="3">🟢 P3</option>
+                        <option value="2">🟠 P2</option>
+                        <option value="1">🔴 P1</option>
+                    </select>
+                </div>
+                <button class="btn-create" onclick="createTask()">Tạo</button>
+                <button class="header-btn" onclick="exportExcel()" style="margin-left:4px;">📥 Excel</button>
             </div>
-            <div class="stat-right-group">
-                <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
-                <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
-                <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
+
+            <!-- STATS -->
+            <div class="stats-row">
+                <div class="stat-total-card" id="stat-total-card">
+                    <div class="stat-num" id="stat-total">0</div>
+                    <div class="stat-label">Tổng</div>
+                    <div class="stat-pct" id="stat-pct">0%</div>
+                </div>
+                <div class="stat-right-group">
+                    <div class="stat-card s-todo"><div class="stat-num" id="stat-todo">0</div><div class="stat-label">Chưa làm</div><div class="stat-pct-detail" id="pct-todo">0%</div></div>
+                    <div class="stat-card s-doing"><div class="stat-num" id="stat-doing">0</div><div class="stat-label">Đang làm</div><div class="stat-pct-detail" id="pct-doing">0%</div></div>
+                    <div class="stat-card s-done"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div><div class="stat-pct-detail" id="pct-done">0%</div></div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- FILTER TABS -->
-    <div class="filter-tabs">
-        <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
-        <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
-        <button class="filter-tab" onclick="setFilter('overdue',this)">Quá hạn</button>
-        <button class="filter-tab" onclick="setFilter('high',this)">Ưu tiên cao</button>
     </div>
 
     <!-- KANBAN BOARD -->
