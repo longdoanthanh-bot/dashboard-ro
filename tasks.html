@@ -53,13 +53,13 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 /* ===== CONTAINER ===== */
 .container { flex:1; position:relative; z-index:1; max-width:100%; margin:0 auto; padding:8px 24px 16px; display:flex; flex-direction:column; overflow:hidden; }
 
-/* ===== TOOLBAR: buttons + stats, fixed top-right ===== */
+/* ===== TOOLBAR: spacer + flex row (same pattern as tonkho) ===== */
 .tasks-toolbar {
-    position: fixed; top: 16px; right: 0; z-index: 50;
-    display: flex; gap: 6px; align-items: center;
-    justify-content: flex-end; padding: 16px 24px 8px;
+    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    padding: 0 24px; margin-bottom: 4px;
 }
-.toolbar-row { display: flex; gap: 6px; align-items: center; }
+.toolbar-spacer { width: 430px; flex-shrink: 0; }
+.toolbar-row { display: flex; gap: 6px; align-items: center; flex: 1; justify-content: flex-end; }
 .toolbar-btns { display:flex; gap:4px; align-items:center; }
 .toolbar-btn {
     padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:var(--bg3);
@@ -467,8 +467,9 @@ try {
 </head>
 <body>
 
-<!-- TOOLBAR: Buttons + Stats (outside container to avoid overflow:hidden clipping) -->
+<!-- TOOLBAR: Spacer + Buttons + Stats (same pattern as tonkho panel) -->
 <div class="tasks-toolbar">
+    <div class="toolbar-spacer"></div>
     <div class="toolbar-row">
         <div class="toolbar-btns">
             <button class="toolbar-btn primary" onclick="toggleAddForm()">✨ Thêm task mới</button>
@@ -489,7 +490,7 @@ try {
     </div>
 </div>
 
-<div class="container" style="padding-top:90px;">
+<div class="container" style="padding-top:8px;">
 
     <!-- ADD TASK FORM (collapsible) -->
     <div class="add-form-panel" id="add-form-panel">
