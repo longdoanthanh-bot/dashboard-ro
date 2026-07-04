@@ -53,10 +53,14 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 /* ===== CONTAINER ===== */
 .container { flex:1; position:relative; z-index:1; max-width:100%; margin:0 auto; padding:8px 24px 16px; display:flex; flex-direction:column; overflow:hidden; }
 
-/* ===== TOP ROW: FILTERS LEFT | BUTTONS+STATS RIGHT ===== */
-.top-row { display:flex; gap:8px; margin-bottom:6px; align-items:center; flex-wrap:wrap; }
-.top-row .filter-tabs { margin-bottom:0; }
-.toolbar-btns { display:flex; gap:4px; align-items:center; margin-left:auto; }
+/* ===== TOOLBAR: 2 rows, fixed top-right ===== */
+.tasks-toolbar {
+    position: fixed; top: 0; right: 0; z-index: 50;
+    padding: 14px 24px 8px; display: flex; flex-direction: column; gap: 6px;
+    align-items: flex-end;
+}
+.toolbar-row { display: flex; gap: 6px; align-items: center; }
+.toolbar-btns { display:flex; gap:4px; align-items:center; }
 .toolbar-btn {
     padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:var(--bg3);
     color:var(--text2); font-size:10px; font-weight:600; font-family:inherit; cursor:pointer;
@@ -465,23 +469,14 @@ try {
 
 <div class="container" style="padding-top:100px;">
 
-    <!-- TOP ROW: FILTERS | BUTTONS | STATS -->
-    <div class="top-row">
-        <!-- FILTER TABS -->
-        <div class="filter-tabs">
-            <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
-            <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
-            <button class="filter-tab" onclick="setFilter('overdue',this)">Quá hạn</button>
-            <button class="filter-tab" onclick="setFilter('high',this)">Ưu tiên cao</button>
-        </div>
-
-        <!-- TOOLBAR BUTTONS -->
+<!-- TOOLBAR: 2 rows fixed top-right -->
+<div class="tasks-toolbar">
+    <!-- Row 1: Buttons + Stats (ngang hang "Tro Ly") -->
+    <div class="toolbar-row">
         <div class="toolbar-btns">
             <button class="toolbar-btn primary" onclick="toggleAddForm()">✨ Thêm task mới</button>
             <button class="toolbar-btn" onclick="exportExcel()">📥 Excel</button>
         </div>
-
-        <!-- STATS -->
         <div class="stats-row">
             <div class="stat-total-card" id="stat-total-card">
                 <div class="stat-num" id="stat-total">0</div>
@@ -495,6 +490,16 @@ try {
             </div>
         </div>
     </div>
+    <!-- Row 2: Filter tabs (ngang hang "Cap nhat") -->
+    <div class="toolbar-row">
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="setFilter('all',this)">Tất cả</button>
+            <button class="filter-tab" onclick="setFilter('today',this)">Hôm nay</button>
+            <button class="filter-tab" onclick="setFilter('overdue',this)">Quá hạn</button>
+            <button class="filter-tab" onclick="setFilter('high',this)">Ưu tiên cao</button>
+        </div>
+    </div>
+</div>
 
     <!-- ADD TASK FORM (collapsible) -->
     <div class="add-form-panel" id="add-form-panel">
