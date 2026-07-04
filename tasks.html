@@ -53,10 +53,11 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 /* ===== CONTAINER ===== */
 .container { flex:1; position:relative; z-index:1; max-width:100%; margin:0 auto; padding:8px 24px 16px; display:flex; flex-direction:column; overflow:hidden; }
 
-/* ===== TOOLBAR: buttons + stats, right-aligned ===== */
+/* ===== TOOLBAR: buttons + stats, fixed top-right ===== */
 .tasks-toolbar {
+    position: fixed; top: 0; right: 0; z-index: 50;
     display: flex; gap: 6px; align-items: center;
-    justify-content: flex-end; margin-bottom: 6px;
+    justify-content: flex-end; padding: 16px 24px 8px;
 }
 .toolbar-row { display: flex; gap: 6px; align-items: center; }
 .toolbar-btns { display:flex; gap:4px; align-items:center; }
