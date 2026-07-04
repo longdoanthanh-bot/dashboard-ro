@@ -467,9 +467,7 @@ try {
 </head>
 <body>
 
-<div class="container" style="padding-top:90px;">
-
-<!-- TOOLBAR: Buttons + Stats -->
+<!-- TOOLBAR: Buttons + Stats (outside container to avoid overflow:hidden clipping) -->
 <div class="tasks-toolbar">
     <div class="toolbar-row">
         <div class="toolbar-btns">
@@ -490,6 +488,8 @@ try {
         </div>
     </div>
 </div>
+
+<div class="container" style="padding-top:90px;">
 
     <!-- ADD TASK FORM (collapsible) -->
     <div class="add-form-panel" id="add-form-panel">
