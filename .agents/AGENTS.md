@@ -33,3 +33,6 @@
 4. git commit -m "Auto update <timestamp>"
 5. $env:GITHUB_TOKEN=""; git push origin master; git push origin master:main
 ```
+
+# Global Git Sync Rule
+Whenever you modify project files, you MUST ALWAYS run a terminal command to commit and push the changes to GitHub. Since this is an automated process, you MUST clear the GitHub token from the environment variable before pushing to avoid authentication errors. Use this exact command structure: `git add . && git commit -m "Your commit message" && $env:GITHUB_TOKEN=""; git push origin master`. Do NOT forget this step after any modifications.
