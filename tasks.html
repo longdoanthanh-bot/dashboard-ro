@@ -53,11 +53,10 @@ body::before { content:''; position:fixed; top:-50%; left:-50%; width:200%; heig
 /* ===== CONTAINER ===== */
 .container { flex:1; position:relative; z-index:1; max-width:100%; margin:0 auto; padding:8px 24px 16px; display:flex; flex-direction:column; overflow:hidden; }
 
-/* ===== TOOLBAR: 2 rows, fixed top-right ===== */
+/* ===== TOOLBAR: buttons + stats, right-aligned ===== */
 .tasks-toolbar {
-    position: fixed; top: 0; right: 0; z-index: 50;
-    padding: 14px 24px 8px; display: flex; flex-direction: column; gap: 6px;
-    align-items: flex-end;
+    display: flex; gap: 6px; align-items: center;
+    justify-content: flex-end; margin-bottom: 6px;
 }
 .toolbar-row { display: flex; gap: 6px; align-items: center; }
 .toolbar-btns { display:flex; gap:4px; align-items:center; }
@@ -467,11 +466,10 @@ try {
 </head>
 <body>
 
-<div class="container" style="padding-top:100px;">
+<div class="container" style="padding-top:12px;">
 
-<!-- TOOLBAR: 2 rows fixed top-right -->
+<!-- TOOLBAR: Buttons + Stats -->
 <div class="tasks-toolbar">
-    <!-- Row 1: Buttons + Stats (ngang hang "Tro Ly") -->
     <div class="toolbar-row">
         <div class="toolbar-btns">
             <button class="toolbar-btn primary" onclick="toggleAddForm()">✨ Thêm task mới</button>
