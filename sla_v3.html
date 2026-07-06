@@ -105,7 +105,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 /* SECTION */
 .section{margin-bottom:24px}
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.section-header.sticky{position:sticky;top:90px;z-index:50;background:var(--bg);padding:8px 0;margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
+.section-header.sticky{position:sticky;top:0;z-index:50;background:var(--bg);padding:8px 0;margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
 .section-header h2{font-size:18px;font-weight:700;color:var(--text)}
 .section-header .line{flex:1;height:1px;background:var(--border)}
 .section-header .count{font-size:12px;color:var(--text3);background:var(--card);padding:4px 12px;border-radius:var(--radius2)}
@@ -220,13 +220,13 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 </head>
 <body>
 <div class="page">
-<!-- TOP CONTROLS: Spacer pattern (KI-62) — STICKY -->
-<div class="top-controls" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px; position:sticky; top:0; z-index:100; background:var(--bg); padding-bottom:8px;">
+<!-- TOP CONTROLS: FIXED at top of iframe viewport -->
+<div class="top-controls" style="display:flex; flex-direction:column; gap:6px; position:fixed; top:0; left:0; right:0; z-index:100; background:var(--bg); padding:12px 24px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
   <div id="updateTimeLabel" style="display:none;"></div>
 
-  <!-- ROW 1: Spacer + Filters (1 hàng ngang) -->
-  <div style="display:flex; flex-direction:row; gap:8px; align-items:center;">
-    <div style="width:350px; flex-shrink:0; min-height:50px;"></div>
+  <!-- ROW 1: Spacer + Filters -->
+  <div style="display:flex; flex-direction:row; gap:8px; align-items:center; max-width:1600px; margin:0 auto; width:100%;">
+    <div style="width:350px; flex-shrink:0;"></div>
     <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:4px;">
       <div class="filter-group"><label>Tháng</label><select id="fMonth"></select></div>
       <div class="filter-group"><label>Tuần</label><select id="fWeek"></select></div>
@@ -247,8 +247,8 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     </div>
   </div>
 
-  <!-- ROW 2: Empty spacer + Export buttons + KPI stats -->
-  <div style="display:flex; flex-direction:row; gap:8px; align-items:center;">
+  <!-- ROW 2: Export buttons + KPI stats -->
+  <div style="display:flex; flex-direction:row; gap:8px; align-items:center; max-width:1600px; margin:0 auto; width:100%;">
     <div style="width:350px; flex-shrink:0;"></div>
     <div style="flex:1; display:flex; align-items:center; gap:8px;">
       <div style="display:flex; gap:4px; flex-shrink:0;">
@@ -263,7 +263,8 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     </div>
   </div>
 </div>
-
+<!-- Spacer to push content below fixed bar -->
+<div style="height:90px;"></div>
 
 
 <!-- OVERVIEW SECTION -->
