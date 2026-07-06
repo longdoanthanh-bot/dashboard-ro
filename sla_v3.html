@@ -59,9 +59,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 
 /* FILTERS */
 .filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.filter-group{display:flex;align-items:center;gap:4px}
-.filter-group label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
-.filter-group select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:5px 24px 5px 8px;border-radius:var(--radius2);font-size:12px;font-family:inherit;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;transition:border-color .2s}
+.filter-group{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+.filter-group label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.filter-group select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:5px 22px 5px 6px;border-radius:var(--radius2);font-size:12px;font-family:inherit;cursor:pointer;appearance:none;width:100%;min-width:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;transition:border-color .2s}
 .filter-group select:hover{border-color:var(--accent)}
 .filter-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
 .reset-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 10px;border-radius:var(--radius2);font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s}
@@ -70,7 +70,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .btn-export:hover{background:rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.5)}
 
 /* KPI CARDS */
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:20px}
+.kpi-row{display:flex;gap:6px;margin-bottom:20px}
+.kpi-row .kpi{flex:1;min-width:0}
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 8px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;align-items:center;gap:6px}
 .kpi:hover{transform:translateY(-1px);border-color:var(--border2)}
 .kpi .kpi-icon{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0}
@@ -224,7 +225,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
   <!-- ROW 1: Spacer + Filters (1 hàng ngang) -->
   <div style="display:flex; flex-direction:row; gap:8px; align-items:center;">
     <div style="width:420px; flex-shrink:0; min-height:50px;"></div>
-    <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:6px; overflow-x:auto;">
+    <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:6px;">
       <div class="filter-group"><label>Tháng</label><select id="fMonth"></select></div>
       <div class="filter-group"><label>Tuần</label><select id="fWeek"></select></div>
       <div class="filter-group"><label>Ngày</label><select id="fDay"></select></div>
