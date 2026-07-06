@@ -105,8 +105,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 /* SECTION */
 .section{margin-bottom:24px}
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.section-header.sticky{position:sticky;top:90px;z-index:50;background:var(--bg);padding:8px 0;margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
 .section-header h2{font-size:18px;font-weight:700;color:var(--text)}
 .section-header .line{flex:1;height:1px;background:var(--border)}
+.section-header .count{font-size:12px;color:var(--text3);background:var(--card);padding:4px 12px;border-radius:var(--radius2)}
 .section-header .count{font-size:12px;color:var(--text3);background:var(--card);padding:4px 12px;border-radius:20px;border:1px solid var(--border)}
 
 /* DETAIL TABLE */
@@ -297,7 +299,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 
 <!-- DAILY REPORT SECTION -->
 <div class="section" id="sec-daily">
-  <div class="section-header"><h2>Báo cáo vận hành hàng ngày</h2><div style="display:flex;gap:6px;margin-left:16px;"><button class="toggle-btn active" id="btnDailyWeek" onclick="setDailyViewMode('week')">Theo Tuần</button><button class="toggle-btn" id="btnDailyMonth" onclick="setDailyViewMode('month')">Theo Tháng</button></div><div class="line"></div></div>
+  <div class="section-header sticky"><h2>Báo cáo vận hành hàng ngày</h2><div style="display:flex;gap:6px;margin-left:16px;"><button class="toggle-btn active" id="btnDailyWeek" onclick="setDailyViewMode('week')">Theo Tuần</button><button class="toggle-btn" id="btnDailyMonth" onclick="setDailyViewMode('month')">Theo Tháng</button></div><div class="line"></div></div>
   <div class="chart-grid g2">
     <div class="chart-card">
       <div class="chart-title">Số lượng Siêu Thị</div>
@@ -317,7 +319,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     </div>
   </div>
 
-  <div class="section-header" style="margin-top: 32px;"><h2 id="ratiosHeader">Chỉ số Hiệu suất (Ratios)</h2><div class="line"></div></div>
+  <div class="section-header sticky" style="margin-top: 32px;"><h2 id="ratiosHeader">Chỉ số Hiệu suất (Ratios)</h2><div class="line"></div></div>
   <div class="chart-grid g2">
     <div class="chart-card">
       <div class="chart-title">Tấn / Xe</div>
