@@ -59,14 +59,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 
 /* FILTERS */
 .filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.filter-group{display:flex;align-items:center;gap:8px}
-.filter-group label{font-size:12px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
-.filter-group select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 32px 8px 12px;border-radius:var(--radius2);font-size:13px;font-family:inherit;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .2s}
+.filter-group{display:flex;align-items:center;gap:4px}
+.filter-group label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.filter-group select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:5px 24px 5px 8px;border-radius:var(--radius2);font-size:12px;font-family:inherit;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;transition:border-color .2s}
 .filter-group select:hover{border-color:var(--accent)}
 .filter-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
-.reset-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:8px 16px;border-radius:var(--radius2);font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.reset-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 10px;border-radius:var(--radius2);font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s}
 .reset-btn:hover{border-color:var(--danger);color:var(--danger)}
-.btn-export{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:var(--accent2);padding:8px 16px;border-radius:var(--radius2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-export{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:var(--accent2);padding:5px 10px;border-radius:var(--radius2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:4px}
 .btn-export:hover{background:rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.5)}
 
 /* KPI CARDS */
@@ -218,12 +218,12 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 <body>
 <div class="page">
 <!-- TOP CONTROLS: Spacer pattern (KI-62) -->
-<div class="top-controls" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px; position:relative; z-index:10; width:100%;">
+<div class="top-controls" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px; position:relative; z-index:10;">
 
-  <!-- ROW 1: Spacer + Filters -->
-  <div style="display:flex; flex-direction:row; gap:12px; align-items:flex-end; width:100%;">
-    <div style="width:420px; flex-shrink:0; min-height:60px;"><div id="updateTimeLabel" style="color:var(--text3); font-size:11px; padding-top:44px;"></div></div>
-    <div style="flex:1; display:flex; flex-direction:row; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+  <!-- ROW 1: Spacer + Filters (1 hàng ngang) -->
+  <div style="display:flex; flex-direction:row; gap:8px; align-items:center;">
+    <div style="width:420px; flex-shrink:0; min-height:50px;"><div id="updateTimeLabel" style="color:var(--text3); font-size:10px; padding-top:38px;"></div></div>
+    <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:6px; overflow-x:auto;">
       <div class="filter-group"><label>Tháng</label><select id="fMonth"></select></div>
       <div class="filter-group"><label>Tuần</label><select id="fWeek"></select></div>
       <div class="filter-group"><label>Ngày</label><select id="fDay"></select></div>
@@ -232,27 +232,27 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
       <div class="filter-group"><label>SLA</label>
         <select id="fSla">
           <option value="-1">Tất cả</option>
-          <option value="1">Đạt SLA</option>
-          <option value="0">Không đạt SLA</option>
+          <option value="1">Đạt</option>
+          <option value="0">Không đạt</option>
         </select>
       </div>
-      <button class="reset-btn" onclick="resetFilters()" style="padding:6px 12px; background:rgba(239,68,68,0.15); color:var(--danger2); border:1px solid rgba(239,68,68,0.3); border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; transition:all .2s;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+      <button class="reset-btn" onclick="resetFilters()" style="padding:4px 8px; background:rgba(239,68,68,0.15); color:var(--danger2); border:1px solid rgba(239,68,68,0.3); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600; display:flex; align-items:center; gap:4px; transition:all .2s; white-space:nowrap;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
         Bỏ lọc
       </button>
     </div>
   </div>
 
   <!-- ROW 2: Export buttons (left/spacer) + KPI stats (right) -->
-  <div style="display:flex; flex-direction:row; gap:12px; align-items:center; width:100%;">
-    <div style="width:420px; flex-shrink:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-      <button class="btn-export" onclick="exportExcel()">⬇ Excel</button>
-      <button class="btn-export" onclick="window.print()">🖨 PDF</button>
-      <button class="btn-export" onclick="exportPPTX('month')">📊 PPTX Tháng</button>
-      <button class="btn-export" onclick="exportPPTX('week')">📊 PPTX Tuần</button>
+  <div style="display:flex; flex-direction:row; gap:8px; align-items:center;">
+    <div style="width:420px; flex-shrink:0; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+      <button class="btn-export" onclick="exportExcel()">⬇Excel</button>
+      <button class="btn-export" onclick="window.print()">🖨PDF</button>
+      <button class="btn-export" onclick="exportPPTX('month')">📊Tháng</button>
+      <button class="btn-export" onclick="exportPPTX('week')">📊Tuần</button>
     </div>
     <div style="flex:1;">
-      <div class="kpi-row" id="kpiRow" style="margin-bottom:0; gap:10px;"></div>
+      <div class="kpi-row" id="kpiRow" style="margin-bottom:0; gap:8px;"></div>
     </div>
   </div>
 </div>
