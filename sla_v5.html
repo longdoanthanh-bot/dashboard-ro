@@ -299,12 +299,13 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
   let isFixed = false;
   function fix(){
     if(isFixed) return;
+    const rect = tc.getBoundingClientRect();
     isFixed = true;
-    ph.style.height = tc.offsetHeight + 'px';
+    ph.style.height = rect.height + 'px';
+    tc.style.width = rect.width + 'px';
+    tc.style.left = rect.left + 'px';
     tc.style.position = 'fixed';
     tc.style.top = '0';
-    tc.style.left = '12px';
-    tc.style.right = '12px';
     tc.style.boxShadow = '0 2px 12px rgba(0,0,0,0.4)';
   }
   function unfix(){
@@ -314,7 +315,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     tc.style.position = '';
     tc.style.top = '';
     tc.style.left = '';
-    tc.style.right = '';
+    tc.style.width = '';
     tc.style.boxShadow = '';
   }
   // IntersectionObserver: watch when placeholder leaves viewport
