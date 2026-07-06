@@ -236,13 +236,15 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 </head>
 <body>
 <div class="page" style="max-width:100%;padding:4px 12px 0;">
-<!-- TOP CONTROLS: STICKY at top when scrolling -->
-<div class="top-controls" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; align-items: stretch; position: sticky; top: 0; z-index: 100; background: var(--bg); width: 100%; padding: 4px 0 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+<!-- Placeholder for JS-based sticky -->
+<div id="stickyPlaceholder"></div>
+<!-- TOP CONTROLS: JS-based sticky -->
+<div class="top-controls" id="topControls" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; align-items: stretch; z-index: 100; background: var(--bg); width: 100%; padding: 4px 12px 6px;">
     <div id="updateTimeLabel" style="display:none;"></div>
 
-    <!-- ROW 1: Logo Spacer + Filters + Export -->
-    <div style="display: flex; flex-direction: row; gap: 12px; align-items: flex-start; width: 100%;">
-        <div style="width: 420px; flex-shrink: 0; min-height: 40px;"></div>
+    <!-- ROW 1: Logo Spacer + Filters -->
+    <div style="display: flex; flex-direction: row; gap: 8px; align-items: flex-start; width: 100%;">
+        <div class="sla-spacer" style="width: 300px; flex-shrink: 0; min-height: 36px;"></div>
 
         <div style="flex: 1; display: flex; flex-direction: row; align-items: flex-end; flex-wrap: nowrap; gap: 6px;">
             <div class="filter-group">
@@ -274,14 +276,14 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     </div>
 
     <!-- ROW 2: Giao dien Spacer + Export + KPI Stats -->
-    <div style="display: flex; flex-direction: row; gap: 12px; align-items: center; width: 100%;">
-        <div style="width: 420px; flex-shrink: 0; min-height: 32px;"></div>
+    <div style="display: flex; flex-direction: row; gap: 8px; align-items: center; width: 100%;">
+        <div class="sla-spacer" style="width: 300px; flex-shrink: 0; min-height: 28px;"></div>
 
         <div style="display:flex; gap:6px; flex-shrink:0;">
-            <button class="btn-export" onclick="exportExcel()" style="height:33px; padding:0 14px; font-size:11px;">⬇ Excel</button>
-            <button class="btn-export" onclick="window.print()" style="height:33px; padding:0 14px; font-size:11px;">🖨 PDF</button>
-            <button class="btn-export" onclick="exportPPTX('month')" style="height:33px; padding:0 14px; font-size:11px;">📊 Tháng</button>
-            <button class="btn-export" onclick="exportPPTX('week')" style="height:33px; padding:0 14px; font-size:11px;">📊 Tuần</button>
+            <button class="btn-export" onclick="exportExcel()" style="height:28px; padding:0 10px; font-size:10px;">⬇ Excel</button>
+            <button class="btn-export" onclick="window.print()" style="height:28px; padding:0 10px; font-size:10px;">🖨 PDF</button>
+            <button class="btn-export" onclick="exportPPTX('month')" style="height:28px; padding:0 10px; font-size:10px;">📊 Tháng</button>
+            <button class="btn-export" onclick="exportPPTX('week')" style="height:28px; padding:0 10px; font-size:10px;">📊 Tuần</button>
         </div>
 
         <div class="stats-bar compact" style="flex: 1; margin: 0; justify-content: flex-start; gap: 6px;">
@@ -289,6 +291,34 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
         </div>
     </div>
 </div>
+<script>
+// JS-based sticky: toggle fixed positioning on scroll
+(function(){
+  const tc = document.getElementById('topControls');
+  const ph = document.getElementById('stickyPlaceholder');
+  let isFixed = false;
+  window.addEventListener('scroll', function(){
+    const phRect = ph.getBoundingClientRect();
+    if(phRect.top <= 0 && !isFixed){
+      isFixed = true;
+      ph.style.height = tc.offsetHeight + 'px';
+      tc.style.position = 'fixed';
+      tc.style.top = '0';
+      tc.style.left = '0';
+      tc.style.right = '0';
+      tc.style.boxShadow = '0 2px 12px rgba(0,0,0,0.4)';
+    } else if(phRect.top > 0 && isFixed){
+      isFixed = false;
+      ph.style.height = '0';
+      tc.style.position = '';
+      tc.style.top = '';
+      tc.style.left = '';
+      tc.style.right = '';
+      tc.style.boxShadow = '';
+    }
+  });
+})();
+</script>
 
 
 <!-- OVERVIEW SECTION -->
