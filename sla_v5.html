@@ -244,7 +244,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 
     <!-- ROW 1: Logo Spacer + Filters -->
     <div style="display: flex; flex-direction: row; gap: 8px; align-items: flex-start; width: 100%;">
-        <div class="sla-spacer" style="width: 300px; flex-shrink: 0; min-height: 36px;"></div>
+        <div class="sla-spacer" style="width: 220px; flex-shrink: 0;"></div>
 
         <div style="flex: 1; display: flex; flex-direction: row; align-items: flex-end; flex-wrap: nowrap; gap: 6px;">
             <div class="filter-group">
@@ -277,7 +277,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 
     <!-- ROW 2: Giao dien Spacer + Export + KPI Stats -->
     <div style="display: flex; flex-direction: row; gap: 8px; align-items: center; width: 100%;">
-        <div class="sla-spacer" style="width: 300px; flex-shrink: 0; min-height: 28px;"></div>
+        <div class="sla-spacer" style="width: 220px; flex-shrink: 0;"></div>
 
         <div style="display:flex; gap:6px; flex-shrink:0;">
             <button class="btn-export" onclick="exportExcel()" style="height:28px; padding:0 10px; font-size:10px;">⬇ Excel</button>
@@ -292,31 +292,48 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     </div>
 </div>
 <script>
-// JS-based sticky: toggle fixed positioning on scroll
+// JS-based sticky using IntersectionObserver (works in iframes)
 (function(){
   const tc = document.getElementById('topControls');
   const ph = document.getElementById('stickyPlaceholder');
+  const spacers = tc.querySelectorAll('.sla-spacer');
   let isFixed = false;
-  window.addEventListener('scroll', function(){
-    const phRect = ph.getBoundingClientRect();
-    if(phRect.top <= 0 && !isFixed){
-      isFixed = true;
-      ph.style.height = tc.offsetHeight + 'px';
-      tc.style.position = 'fixed';
-      tc.style.top = '0';
-      tc.style.left = '0';
-      tc.style.right = '0';
-      tc.style.boxShadow = '0 2px 12px rgba(0,0,0,0.4)';
-    } else if(phRect.top > 0 && isFixed){
-      isFixed = false;
-      ph.style.height = '0';
-      tc.style.position = '';
-      tc.style.top = '';
-      tc.style.left = '';
-      tc.style.right = '';
-      tc.style.boxShadow = '';
-    }
-  });
+  function fix(){
+    if(isFixed) return;
+    isFixed = true;
+    ph.style.height = tc.offsetHeight + 'px';
+    tc.style.position = 'fixed';
+    tc.style.top = '0';
+    tc.style.left = '0';
+    tc.style.right = '0';
+    tc.style.boxShadow = '0 2px 12px rgba(0,0,0,0.4)';
+    spacers.forEach(s => s.style.display = 'none');
+  }
+  function unfix(){
+    if(!isFixed) return;
+    isFixed = false;
+    ph.style.height = '0';
+    tc.style.position = '';
+    tc.style.top = '';
+    tc.style.left = '';
+    tc.style.right = '';
+    tc.style.boxShadow = '';
+    spacers.forEach(s => s.style.display = '');
+  }
+  // IntersectionObserver: watch when placeholder leaves viewport
+  const obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.intersectionRatio < 1) fix(); else unfix();
+    });
+  }, { threshold: [1.0] });
+  // Use sentinel div at top
+  ph.style.height = '1px'; ph.style.marginBottom = '-1px';
+  obs.observe(ph);
+  // Also listen to scroll as fallback
+  (document.scrollingElement || document.documentElement).addEventListener ? 
+    window.addEventListener('scroll', function(){
+      if(ph.getBoundingClientRect().top <= 0) fix(); else unfix();
+    }, {passive:true}) : null;
 })();
 </script>
 
