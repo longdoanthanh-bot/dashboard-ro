@@ -244,14 +244,13 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 </style>
 </head>
 <body>
-<div class="page">
-<!-- TOP CONTROLS: FIXED at top of iframe viewport -->
-<div class="top-controls" style="display:flex; flex-direction:column; gap:3px; position:fixed; top:0; left:0; right:0; z-index:100; background:var(--bg); padding:4px 24px 4px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+<div class="page" style="max-width:100%;padding:8px 16px 40px;">
+<!-- TOP CONTROLS: FIXED right-aligned -->
+<div class="top-controls" style="display:flex; flex-direction:column; gap:3px; position:fixed; top:0; right:0; z-index:100; background:var(--bg); padding:4px 16px 4px; box-shadow:-2px 2px 8px rgba(0,0,0,0.3); border-bottom-left-radius:8px;">
   <div id="updateTimeLabel" style="display:none;"></div>
 
-  <!-- ROW 1: Spacer + Filters with labels -->
-  <div style="display:flex; flex-direction:row; gap:4px; align-items:stretch; max-width:1600px; margin:0 auto; width:100%;">
-    <div style="width:300px; flex-shrink:0;"></div>
+  <!-- ROW 1: Filters right-aligned -->
+  <div style="display:flex; flex-direction:row; gap:4px; align-items:stretch;">
     <div class="f"><span>THÁNG</span><select id="fMonth"></select></div>
     <div class="f"><span>TUẦN</span><select id="fWeek"></select></div>
     <div class="f"><span>NGÀY</span><select id="fDay"></select></div>
@@ -263,21 +262,19 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     </button>
   </div>
 
-  <!-- ROW 2: Export + KPI (full width, no spacer) -->
-  <div style="display:flex; flex-direction:row; gap:6px; align-items:center; max-width:1600px; margin:0 auto; width:100%;">
-    <div style="display:flex; gap:4px; flex-shrink:0;">
+  <!-- ROW 2: Export + KPI -->
+  <div style="display:flex; flex-direction:row; gap:6px; align-items:center;">
+    <div style="display:flex; gap:3px; flex-shrink:0;">
       <button class="btn-export" onclick="exportExcel()">⬇Excel</button>
       <button class="btn-export" onclick="window.print()">🖨PDF</button>
       <button class="btn-export" onclick="exportPPTX('month')">📊Tháng</button>
       <button class="btn-export" onclick="exportPPTX('week')">📊Tuần</button>
     </div>
     <div style="flex:1;">
-      <div class="kpi-row" id="kpiRow" style="margin-bottom:0; gap:6px;"></div>
+      <div class="kpi-row" id="kpiRow" style="margin-bottom:0; gap:4px;"></div>
     </div>
   </div>
 </div>
-<!-- Spacer to push content below fixed bar -->
-<div style="height:75px;"></div>
 
 
 <!-- OVERVIEW SECTION -->
@@ -2030,8 +2027,8 @@ function exportExcel() {
 </script>
 <script>
 if (window.self !== window.top) {
-  document.querySelector('.header').style.display = 'none';
-  document.querySelector('.page').style.paddingTop = '8px';
+  const hdr = document.querySelector('.header');
+  if (hdr) hdr.style.display = 'none';
 }
 // Theme sync from parent
 window.addEventListener('message', function(e) {
