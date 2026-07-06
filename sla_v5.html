@@ -75,6 +75,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .nav a:hover,.nav a.active{color:var(--accent2);background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3)}
 
 /* FILTERS */
+.top-controls select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:4px 18px 4px 6px;border-radius:var(--radius2);font-size:11px;font-family:inherit;cursor:pointer;appearance:none;flex:1;min-width:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;transition:border-color .2s}
+.top-controls select:hover{border-color:var(--accent)}
+.top-controls select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(59,130,246,.2)}
 .filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
 .filter-group{display:flex;align-items:center;gap:2px;flex:1;min-width:0}
 .filter-group label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap}
@@ -238,26 +241,20 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 <body>
 <div class="page">
 <!-- TOP CONTROLS: FIXED at top of iframe viewport -->
-<div class="top-controls" style="display:flex; flex-direction:column; gap:6px; position:fixed; top:0; left:0; right:0; z-index:100; background:var(--bg); padding:12px 24px 8px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+<div class="top-controls" style="display:flex; flex-direction:column; gap:4px; position:fixed; top:0; left:0; right:0; z-index:100; background:var(--bg); padding:6px 24px 6px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
   <div id="updateTimeLabel" style="display:none;"></div>
 
   <!-- ROW 1: Spacer + Filters -->
   <div style="display:flex; flex-direction:row; gap:8px; align-items:center; max-width:1600px; margin:0 auto; width:100%;">
-    <div style="width:260px; flex-shrink:0;"></div>
+    <div style="width:300px; flex-shrink:0;"></div>
     <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:4px;">
-      <div class="filter-group"><label>Tháng</label><select id="fMonth"></select></div>
-      <div class="filter-group"><label>Tuần</label><select id="fWeek"></select></div>
-      <div class="filter-group"><label>Ngày</label><select id="fDay"></select></div>
-      <div class="filter-group"><label>Kho</label><select id="fWh"></select></div>
-      <div class="filter-group"><label>NVT</label><select id="fCarrier"></select></div>
-      <div class="filter-group"><label>SLA</label>
-        <select id="fSla">
-          <option value="-1">Tất cả</option>
-          <option value="1">Đạt</option>
-          <option value="0">Không đạt</option>
-        </select>
-      </div>
-      <button class="reset-btn" onclick="resetFilters()" title="Bỏ lọc" style="padding:4px 6px; background:rgba(239,68,68,0.15); color:var(--danger2); border:1px solid rgba(239,68,68,0.3); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600; display:flex; align-items:center; transition:all .2s; flex-shrink:0;">
+      <select id="fMonth"></select>
+      <select id="fWeek"></select>
+      <select id="fDay"></select>
+      <select id="fWh"></select>
+      <select id="fCarrier"></select>
+      <select id="fSla"></select>
+      <button class="reset-btn" onclick="resetFilters()" title="Bỏ lọc" style="padding:4px 6px; background:rgba(239,68,68,0.15); color:var(--danger2); border:1px solid rgba(239,68,68,0.3); border-radius:6px; cursor:pointer; display:flex; align-items:center; transition:all .2s; flex-shrink:0;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
       </button>
     </div>
@@ -265,7 +262,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 
   <!-- ROW 2: Export buttons + KPI stats -->
   <div style="display:flex; flex-direction:row; gap:8px; align-items:center; max-width:1600px; margin:0 auto; width:100%;">
-    <div style="width:260px; flex-shrink:0;"></div>
+    <div style="width:300px; flex-shrink:0;"></div>
     <div style="flex:1; display:flex; align-items:center; gap:8px;">
       <div style="display:flex; gap:4px; flex-shrink:0;">
         <button class="btn-export" onclick="exportExcel()">⬇Excel</button>
@@ -280,7 +277,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
   </div>
 </div>
 <!-- Spacer to push content below fixed bar -->
-<div style="height:90px;"></div>
+<div style="height:70px;"></div>
 
 
 <!-- OVERVIEW SECTION -->
@@ -411,12 +408,12 @@ function populateFilters() {
 
   // Month filter
   const fMonth = document.getElementById('fMonth');
-  fMonth.innerHTML = '<option value="0">Tất cả</option>' +
+  fMonth.innerHTML = '<option value="0">Tháng: Tất cả</option>' +
     D.months.slice().reverse().map(m => '<option value="'+m+'">Tháng '+m+'</option>').join('');
 
   // Week filter
   const fWeek = document.getElementById('fWeek');
-  fWeek.innerHTML = '<option value="-1">Tất cả</option>' +
+  fWeek.innerHTML = '<option value="-1">Tuần: Tất cả</option>' +
     D.weeks.slice().reverse().map((w, ri) => {
       const idx = D.weeks.length - 1 - ri;
       return '<option value="'+idx+'">'+w+'</option>';
@@ -431,12 +428,12 @@ function populateFilters() {
     return (yb*10000+mb*100+db) - (ya*10000+ma*100+da);
   });
   const fDay = document.getElementById('fDay');
-  fDay.innerHTML = '<option value="-1">Tất cả</option>' +
+  fDay.innerHTML = '<option value="-1">Ngày: Tất cả</option>' +
     days.map(d => '<option value="'+d+'">'+d+'</option>').join('');
 
   // Warehouse filter (hardcoded structure with composite values)
   const fWh = document.getElementById('fWh');
-  fWh.innerHTML = '<option value="-1">Tất cả</option>' +
+  fWh.innerHTML = '<option value="-1">Kho: Tất cả</option>' +
     '<option value="0,1">Đông Mát (Tổng)</option>' +
     '<option value="0">Đông</option>' +
     '<option value="1">Mát</option>' +
@@ -448,12 +445,12 @@ function populateFilters() {
 
   // Carrier filter
   const fCarrier = document.getElementById('fCarrier');
-  fCarrier.innerHTML = '<option value="-1">Tất cả</option>' +
+  fCarrier.innerHTML = '<option value="-1">NVT: Tất cả</option>' +
     D.carriers.map((c, i) => '<option value="'+i+'">'+c+'</option>').join('');
 
   // SLA filter (static)
   const fSla = document.getElementById('fSla');
-  fSla.innerHTML = '<option value="-1">Tất cả</option>' +
+  fSla.innerHTML = '<option value="-1">SLA: Tất cả</option>' +
     '<option value="1">Đạt SLA</option>' +
     '<option value="0">Không đạt SLA</option>';
 }
