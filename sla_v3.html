@@ -59,9 +59,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 
 /* FILTERS */
 .filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.filter-group{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
-.filter-group label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
-.filter-group select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:5px 22px 5px 6px;border-radius:var(--radius2);font-size:12px;font-family:inherit;cursor:pointer;appearance:none;width:100%;min-width:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;transition:border-color .2s}
+.filter-group{display:flex;align-items:center;gap:2px;flex:1;min-width:0}
+.filter-group label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap}
+.filter-group select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:4px 18px 4px 4px;border-radius:var(--radius2);font-size:11px;font-family:inherit;cursor:pointer;appearance:none;width:100%;min-width:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;transition:border-color .2s}
 .filter-group select:hover{border-color:var(--accent)}
 .filter-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
 .reset-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:5px 10px;border-radius:var(--radius2);font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s}
@@ -224,8 +224,8 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 
   <!-- ROW 1: Spacer + Filters (1 hàng ngang) -->
   <div style="display:flex; flex-direction:row; gap:8px; align-items:center;">
-    <div style="width:300px; flex-shrink:0; min-height:50px;"></div>
-    <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:6px;">
+    <div style="width:350px; flex-shrink:0; min-height:50px;"></div>
+    <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:4px;">
       <div class="filter-group"><label>Tháng</label><select id="fMonth"></select></div>
       <div class="filter-group"><label>Tuần</label><select id="fWeek"></select></div>
       <div class="filter-group"><label>Ngày</label><select id="fDay"></select></div>
@@ -247,7 +247,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 
   <!-- ROW 2: Empty spacer + Export buttons + KPI stats -->
   <div style="display:flex; flex-direction:row; gap:8px; align-items:center;">
-    <div style="width:300px; flex-shrink:0;"></div>
+    <div style="width:350px; flex-shrink:0;"></div>
     <div style="flex:1; display:flex; align-items:center; gap:8px;">
       <div style="display:flex; gap:4px; flex-shrink:0;">
         <button class="btn-export" onclick="exportExcel()">⬇Excel</button>
