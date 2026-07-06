@@ -243,7 +243,7 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 
   <!-- ROW 1: Spacer + Filters -->
   <div style="display:flex; flex-direction:row; gap:8px; align-items:center; max-width:1600px; margin:0 auto; width:100%;">
-    <div style="width:350px; flex-shrink:0;"></div>
+    <div style="width:260px; flex-shrink:0;"></div>
     <div style="flex:1; display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; gap:4px;">
       <div class="filter-group"><label>Tháng</label><select id="fMonth"></select></div>
       <div class="filter-group"><label>Tuần</label><select id="fWeek"></select></div>
@@ -257,16 +257,15 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
           <option value="0">Không đạt</option>
         </select>
       </div>
-      <button class="reset-btn" onclick="resetFilters()" style="padding:4px 8px; background:rgba(239,68,68,0.15); color:var(--danger2); border:1px solid rgba(239,68,68,0.3); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600; display:flex; align-items:center; gap:4px; transition:all .2s; white-space:nowrap;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-        Bỏ lọc
+      <button class="reset-btn" onclick="resetFilters()" title="Bỏ lọc" style="padding:4px 6px; background:rgba(239,68,68,0.15); color:var(--danger2); border:1px solid rgba(239,68,68,0.3); border-radius:6px; cursor:pointer; font-size:11px; font-weight:600; display:flex; align-items:center; transition:all .2s; flex-shrink:0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
       </button>
     </div>
   </div>
 
   <!-- ROW 2: Export buttons + KPI stats -->
   <div style="display:flex; flex-direction:row; gap:8px; align-items:center; max-width:1600px; margin:0 auto; width:100%;">
-    <div style="width:350px; flex-shrink:0;"></div>
+    <div style="width:260px; flex-shrink:0;"></div>
     <div style="flex:1; display:flex; align-items:center; gap:8px;">
       <div style="display:flex; gap:4px; flex-shrink:0;">
         <button class="btn-export" onclick="exportExcel()">⬇Excel</button>
