@@ -62,7 +62,7 @@
 [data-theme="light"] .top-controls select{background:#fff;border-color:rgba(0,0,0,0.15);color:#0f172a}
 [data-theme="light"] .section-header{border-bottom:1px solid rgba(0,0,0,0.06)}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:clip}
 .page{max-width:1600px;margin:0 auto;padding:20px 24px 60px}
 
 /* HEADER */
@@ -384,6 +384,9 @@ const WH_BG = ['rgba(6,182,212,.2)','rgba(56,189,248,.2)','rgba(244,63,94,.2)','
 const CR_COLORS = ['#f97316','#3b82f6','#eab308','#22c55e','#a855f7','#ec4899','#ef4444','#06b6d4','#14b8a6','#6366f1','#84cc16','#f43f5e','#f59e0b','#10b981','#d946ef','#0ea5e9','#8b5cf6','#10b981','#f43f5e','#f97316'];
 const CR_BG = ['rgba(249,115,22,.2)','rgba(59,130,246,.2)','rgba(234,179,8,.2)','rgba(34,197,94,.2)','rgba(168,85,247,.2)','rgba(236,72,153,.2)','rgba(239,68,68,.2)','rgba(6,182,212,.2)','rgba(20,184,166,.2)','rgba(99,102,241,.2)','rgba(132,204,22,.2)','rgba(244,63,94,.2)','rgba(245,158,11,.2)','rgba(16,185,129,.2)','rgba(217,70,239,.2)','rgba(14,165,233,.2)','rgba(139,92,246,.2)','rgba(16,185,129,.2)','rgba(244,63,94,.2)','rgba(249,115,22,.2)'];
 const SLA_LABELS = ['Đúng','Sớm','Trễ'];
+// Auto-detect months from rows data (r[1] = month index)
+const _monthSet = new Set(); D.rows.forEach(r => { if(r[1] != null) _monthSet.add(r[1]); });
+if(_monthSet.size > 0) D.months = Array.from(_monthSet).sort((a,b) => a-b);
 const MONTH_LABELS = D.months.map(m => 'Tháng ' + m);
 let charts = {};
 
@@ -419,12 +422,12 @@ function populateFilters() {
 
   // Month filter
   const fMonth = document.getElementById('fMonth');
-  fMonth.innerHTML = '<option value="0">Tháng: Tất cả</option>' +
+  fMonth.innerHTML = '<option value="0">Tất cả</option>' +
     D.months.slice().reverse().map(m => '<option value="'+m+'">Tháng '+m+'</option>').join('');
 
   // Week filter
   const fWeek = document.getElementById('fWeek');
-  fWeek.innerHTML = '<option value="-1">Tuần: Tất cả</option>' +
+  fWeek.innerHTML = '<option value="-1">Tất cả</option>' +
     D.weeks.slice().reverse().map((w, ri) => {
       const idx = D.weeks.length - 1 - ri;
       return '<option value="'+idx+'">'+w+'</option>';
@@ -439,12 +442,12 @@ function populateFilters() {
     return (yb*10000+mb*100+db) - (ya*10000+ma*100+da);
   });
   const fDay = document.getElementById('fDay');
-  fDay.innerHTML = '<option value="-1">Ngày: Tất cả</option>' +
+  fDay.innerHTML = '<option value="-1">Tất cả</option>' +
     days.map(d => '<option value="'+d+'">'+d+'</option>').join('');
 
   // Warehouse filter (hardcoded structure with composite values)
   const fWh = document.getElementById('fWh');
-  fWh.innerHTML = '<option value="-1">Kho: Tất cả</option>' +
+  fWh.innerHTML = '<option value="-1">Tất cả</option>' +
     '<option value="0,1">Đông Mát (Tổng)</option>' +
     '<option value="0">Đông</option>' +
     '<option value="1">Mát</option>' +
@@ -456,12 +459,12 @@ function populateFilters() {
 
   // Carrier filter
   const fCarrier = document.getElementById('fCarrier');
-  fCarrier.innerHTML = '<option value="-1">NVT: Tất cả</option>' +
+  fCarrier.innerHTML = '<option value="-1">Tất cả</option>' +
     D.carriers.map((c, i) => '<option value="'+i+'">'+c+'</option>').join('');
 
   // SLA filter (static)
   const fSla = document.getElementById('fSla');
-  fSla.innerHTML = '<option value="-1">SLA: Tất cả</option>' +
+  fSla.innerHTML = '<option value="-1">Tất cả</option>' +
     '<option value="1">Đạt SLA</option>' +
     '<option value="0">Không đạt SLA</option>';
 }
