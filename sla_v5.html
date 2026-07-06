@@ -296,7 +296,6 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
 (function(){
   const tc = document.getElementById('topControls');
   const ph = document.getElementById('stickyPlaceholder');
-  const spacers = tc.querySelectorAll('.sla-spacer');
   let isFixed = false;
   function fix(){
     if(isFixed) return;
@@ -307,7 +306,6 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     tc.style.left = '0';
     tc.style.right = '0';
     tc.style.boxShadow = '0 2px 12px rgba(0,0,0,0.4)';
-    spacers.forEach(s => s.style.display = 'none');
   }
   function unfix(){
     if(!isFixed) return;
@@ -318,7 +316,6 @@ tr:nth-child(even):hover td{background:rgba(59,130,246,.06)}
     tc.style.left = '';
     tc.style.right = '';
     tc.style.boxShadow = '';
-    spacers.forEach(s => s.style.display = '');
   }
   // IntersectionObserver: watch when placeholder leaves viewport
   const obs = new IntersectionObserver(function(entries){
