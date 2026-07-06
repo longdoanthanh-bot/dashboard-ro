@@ -995,10 +995,6 @@ function switchMain(panel, btn) {
     
     document.getElementById('panel-' + panel).classList.add('active');
     
-    // Hide parent header overlay when SLA tab active (SLA has its own header)
-    const mainHeader = document.querySelector('header.header');
-    if (mainHeader) mainHeader.style.display = (panel === 'sla') ? 'none' : '';
-    
     if (panel === 'thuhoi') renderTripTable();
     if (panel === 'storemap') {
         setTimeout(() => { if (!window._map) initMap(); else window._map.invalidateSize(); }, 100);
