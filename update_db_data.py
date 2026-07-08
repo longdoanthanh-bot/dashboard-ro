@@ -32,10 +32,11 @@ XNT_MAPPING = {
     "Rổ cam xếp chồng quai đỏ (sóng nhựa hở BPGST-25V KT: 600x400x250)": {"col": 5, "wh": ""},
     "Rổ ABA đông mát": {"col": 6, "wh": "Dòng Mát"},
     "Tote ABA đông mát": {"col": 7, "wh": "Dòng Mát"},
-    "Tote đỏ bánh tươi": {"col": 8, "wh": "Rau"}
+    "Tote đỏ bánh tươi": {"col": 8, "wh": "Rau"},
+    "TOTE RỔ ĐEN CÓ NẮP": {"col": 9, "wh": "Thịt Cá SCF"}
 }
 
-COUNTABLE_TRIP_CODES = {"B0001", "B0016", "B0015", "B0012", "B0017"}
+COUNTABLE_TRIP_CODES = {"B0001", "B0016", "B0015", "B0012", "B0017", "CC00392"}
 
 def generate_tonkho_html(store_data, name_to_abbr):
     html_rows = []
@@ -57,7 +58,7 @@ def generate_tonkho_html(store_data, name_to_abbr):
             
         row_html = f'<tr class="{tr_class}"><td>{idx}</td><td class="st-code">{abbr}</td><td class="store-name">{st_name}</td><td class="num total-col">{total_sum}</td>'
         
-        for col_idx in range(0, 9):
+        for col_idx in range(0, 10):
             val = cols.get(col_idx, 0)
             wh = ""
             for v in XNT_MAPPING.values():
@@ -139,7 +140,7 @@ def main():
                             col_idx = XNT_MAPPING[p_name]["col"]
                             
                             if st_name not in store_stock_data:
-                                store_stock_data[st_name] = {i: 0 for i in range(0, 9)}
+                                store_stock_data[st_name] = {i: 0 for i in range(0, 10)}
                             store_stock_data[st_name][col_idx] += closing
             
             tonkho_tbody = generate_tonkho_html(store_stock_data, name_to_abbr)
