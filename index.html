@@ -2118,6 +2118,14 @@ async function triggerUpdate() {
                 }
             }
             showUpdatePopup('success', 'Cập nhật thành công!', detail, true);
+            // Cập nhật timestamp ngay trên trang
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const ts = pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear() + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+            const el = document.getElementById('last-update-time');
+            if (el) el.textContent = 'Cập nhật: ' + ts;
+            // Tự reload sau 3 giây để lấy HTML mới từ GitHub Pages
+            setTimeout(() => location.reload(), 3000);
         } else {
             let detail = result.message || 'Có lỗi xảy ra';
             if (result.errors && result.errors.length > 0) {
