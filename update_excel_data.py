@@ -42,7 +42,7 @@ XNT_MAPPING = {
     "TOTE RỔ ĐEN CÓ NẮP": {"col": 9, "wh": "Thịt Cá SCF"}
 }
 
-COUNTABLE_TRIP_CODES = {"B0001", "B0016", "B0015", "B0012", "B0017", "CC00392"}
+COUNTABLE_TRIP_CODES = {"B0001", "B0016", "B0015", "B0012", "B0017", "CC00392", "B0018"}
 
 def parse_xnt_file(file_path):
     print(f"Reading XNT: {file_path}")
