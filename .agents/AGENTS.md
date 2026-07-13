@@ -34,7 +34,7 @@
 5. $env:GITHUB_TOKEN=""; git push origin master; git push origin master:main
 ```
 
-### Nút "Cập nhật" trên Dashboard (KI-58)
+### Nút "Cập nhật" trên Dashboard (KI-66)
 - Header có nút **🔄 Cập nhật** gọi `http://localhost:5588/update`.
 - Backend: `update_server.py` chạy trên máy local, lắng nghe port 5588.
 - Khi bấm nút: server chạy toàn bộ pipeline → git push → trả kết quả JSON.
@@ -43,7 +43,7 @@
 - Sau khi thành công → tự cập nhật timestamp trên trang + auto reload sau 3 giây.
 - File liên quan: `update_server.py`, `inject_update_btn.py`.
 
-### Mã loại rổ Trip — Mapping quan trọng (KI-59)
+### Mã loại rổ Trip — Mapping quan trọng (KI-67)
 Khi thêm/sửa loại rổ, phải đồng bộ **TẤT CẢ** các vị trí sau:
 
 **Trong `index.html` (JS):**
@@ -70,7 +70,7 @@ Khi thêm/sửa loại rổ, phải đồng bộ **TẤT CẢ** các vị trí s
 > Cả 2 mã vẫn cần tồn tại trong code (backward compatible).
 > Nếu có mã rổ mới xuất hiện trong trip data mà chưa có trong mapping → dashboard sẽ KHÔNG hiển thị rổ đó trong tổng quan thu hồi.
 
-### Header Layout (KI-60)
+### Header Layout (KI-68)
 - Thứ tự nút trong header: **Cập nhật** → **Giao diện** → **Timestamp**
 - Header row có `z-index: 20` để không bị filter controls bên dưới đè lên.
 - Container flex có `flex-wrap: wrap` cho responsive.
