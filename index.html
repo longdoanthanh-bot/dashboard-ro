@@ -2208,25 +2208,18 @@ async function pollWorkflowStatus() {
                     const el = document.getElementById('last-update-time');
                     if (el) el.textContent = 'Cập nhật: ' + ts;
                     
-                    // Fetch summary - đợi 10s cho push landing, lấy từ raw GitHub (không đợi Pages deploy)
+                    // Đọc summary từ biến JS được inject bởi Python
                     let summaryText = 'Pipeline hoàn thành.';
-                    try {
-                        await new Promise(r => setTimeout(r, 10000));
-                        const sumResp = await fetch(
-                            `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/master/data/last_update.json?t=${Date.now()}`,
-                            { headers: { 'Authorization': `token ${GH_PAT}` } }
-                        );
-                        if (sumResp.ok) {
-                            const sum = await sumResp.json();
-                            summaryText = 
-                                `✅ Cập nhật lúc ${sum.time}\n\n` +
-                                `📁 File XNT: ${sum.xnt_file}\n` +
-                                `📁 File Trip: ${sum.trip_file}\n` +
-                                `🏪 Số cửa hàng: ${sum.stores}\n` +
-                                `📅 Số ngày trip: ${sum.days}\n` +
-                                `📦 Tổng giao: ${sum.total_giao} | Tổng thu: ${sum.total_thu}`;
-                        }
-                    } catch(e) { console.log('Summary fetch error:', e); }
+                    if (window.LAST_UPDATE) {
+                        const sum = window.LAST_UPDATE;
+                        summaryText = 
+                            `✅ Cập nhật lúc ${sum.time}\n\n` +
+                            `📁 File XNT: ${sum.xnt_file}\n` +
+                            `📁 File Trip: ${sum.trip_file}\n` +
+                            `🏪 Số cửa hàng: ${sum.stores}\n` +
+                            `📅 Số ngày trip: ${sum.days}\n` +
+                            `📦 Tổng giao: ${sum.total_giao} | Tổng thu: ${sum.total_thu}`;
+                    }
                     
                     showUpdatePopup('success', 'Cập nhật thành công! ✅',
                         summaryText + '\n\nTrang sẽ tự tải lại sau 5 giây...', true);

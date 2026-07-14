@@ -317,7 +317,7 @@ def main():
     print(f"📦 Tổng giao: {total_giao} | Tổng thu: {total_thu}")
     print(f"{'='*50}")
     
-    # Write summary JSON for dashboard popup
+    # Inject summary into HTML as JS variable (no separate fetch needed)
     summary = {
         "time": current_time,
         "xnt_file": os.path.basename(xnt_file),
@@ -327,10 +327,20 @@ def main():
         "total_giao": total_giao,
         "total_thu": total_thu
     }
-    summary_path = os.path.join(os.path.dirname(html_path), 'data', 'last_update.json')
-    with open(summary_path, 'w', encoding='utf-8') as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
-    print(f"Summary written to {summary_path}")
+    summary_js = json.dumps(summary, ensure_ascii=False)
+    # Replace or insert the variable
+    marker = '// %%LAST_UPDATE_SUMMARY%%'
+    if marker in new_html:
+        new_html = re.sub(
+            r'// %%LAST_UPDATE_SUMMARY%%.*?// %%END_SUMMARY%%',
+            f'{marker}\nwindow.LAST_UPDATE = {summary_js};\n// %%END_SUMMARY%%',
+            new_html, flags=re.DOTALL
+        )
+    else:
+        # First time: inject before </body>
+        new_html = new_html.replace('</body>',
+            f'<script>\n{marker}\nwindow.LAST_UPDATE = {summary_js};\n// %%END_SUMMARY%%\n</script>\n</body>')
+    print(f"Summary injected into HTML")
     
     # Write back HTML
     backup_path = html_path + ".bak"
