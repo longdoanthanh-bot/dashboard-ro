@@ -61,34 +61,100 @@ def log(msg):
 
 
 def login(page):
-    """Login vào next.kingfood.co"""
+    """Login vào next.kingfood.co (React SPA)"""
     log("🔑 Đăng nhập vào KFM...")
     page.goto(LOGIN_URL, wait_until="networkidle", timeout=60000)
-    time.sleep(2)
+    time.sleep(5)  # React SPA needs time to render
     
-    # Check if already logged in
-    if "/stock/" in page.url or "/operation/" in page.url or "/dashboard" in page.url:
+    current_url = page.url
+    log(f"  URL: {current_url}")
+    
+    # Check if already logged in (redirected away from login)
+    if any(p in current_url for p in ["/stock/", "/operation/", "/dashboard", "/home"]):
         log("  ✅ Đã đăng nhập sẵn")
         return True
     
-    # Find and fill login form
+    # Screenshot for debug
     try:
-        username_sel = page.locator('input[type="text"], input[name="username"], input[name="email"], input[placeholder*="user" i], input[placeholder*="tên" i], input[placeholder*="email" i]').first
-        password_sel = page.locator('input[type="password"]').first
+        page.screenshot(path="/tmp/kfm_login_page.png")
+        log("  📸 Screenshot saved")
+    except:
+        pass
+    
+    # Wait for login form to render (React SPA)
+    try:
+        # Wait for ANY input to appear
+        page.wait_for_selector('input', timeout=15000)
+        time.sleep(2)
         
+        # Log all visible inputs for debug
+        inputs = page.locator('input').all()
+        log(f"  Found {len(inputs)} input(s)")
+        for i, inp in enumerate(inputs):
+            try:
+                inp_type = inp.get_attribute('type') or '?'
+                inp_placeholder = inp.get_attribute('placeholder') or '?'
+                inp_name = inp.get_attribute('name') or '?'
+                log(f"    Input[{i}]: type={inp_type}, name={inp_name}, placeholder={inp_placeholder}")
+            except:
+                pass
+        
+        # Find username input (first non-password input)
+        username_sel = None
+        password_sel = None
+        
+        for inp in inputs:
+            try:
+                inp_type = (inp.get_attribute('type') or '').lower()
+                if inp_type == 'password':
+                    password_sel = inp
+                elif inp_type in ('text', 'email', '') and username_sel is None:
+                    username_sel = inp
+            except:
+                pass
+        
+        if not username_sel:
+            # Fallback: first input
+            username_sel = page.locator('input').first
+        if not password_sel:
+            password_sel = page.locator('input[type="password"]').first
+        
+        log(f"  Filling username...")
+        username_sel.click()
+        time.sleep(0.3)
         username_sel.fill(KFM_USER)
         time.sleep(0.5)
+        
+        log(f"  Filling password...")
+        password_sel.click()
+        time.sleep(0.3)
         password_sel.fill(KFM_PASS)
         time.sleep(0.5)
         
-        login_btn = page.locator('button[type="submit"], button:has-text("Đăng nhập"), button:has-text("Login"), button:has-text("Sign in")').first
+        # Find and click login button
+        login_btn = page.locator('button[type="submit"]').first
+        if not login_btn.is_visible():
+            login_btn = page.locator('button:has-text("Đăng nhập"), button:has-text("Login"), button:has-text("Sign in"), button:has-text("Đăng Nhập")').first
+        
+        log(f"  Clicking login button...")
         login_btn.click()
         
+        # Wait for navigation after login
+        time.sleep(5)
         page.wait_for_load_state("networkidle", timeout=30000)
         time.sleep(3)
         
-        if "login" in page.url.lower():
-            log("  ❌ Đăng nhập thất bại")
+        new_url = page.url
+        log(f"  URL after login: {new_url}")
+        
+        # Check if still on login page
+        if new_url == current_url or "login" in new_url.lower() or "sign" in new_url.lower():
+            # Try screenshot after failed login
+            try:
+                page.screenshot(path="/tmp/kfm_login_failed.png")
+            except:
+                pass
+            log("  ❌ Đăng nhập thất bại — URL không thay đổi")
             return False
         
         log("  ✅ Đăng nhập thành công")
