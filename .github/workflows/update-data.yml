@@ -2,6 +2,9 @@ name: Update Dashboard Data
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'data/**'
   schedule:
     - cron: '0 */2 * * *'
 
