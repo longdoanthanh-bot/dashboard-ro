@@ -274,20 +274,56 @@ def download_xnt(page):
     # Click "Xuất báo cáo"
     log("  Xuất báo cáo...")
     try:
-        with page.expect_download(timeout=120000) as download_info:
-            export_btn = page.locator('button:has-text("Xuất báo cáo")').first
-            export_btn.click()
+        # Screenshot before click
+        try:
+            page.screenshot(path="/tmp/kfm_before_export.png")
+            log("  📸 Screenshot before export")
+        except:
+            pass
         
-        download = download_info.value
-        filename = f"XNT_{today_str}.xlsx"
+        # Log all buttons on page
+        buttons = page.locator('button').all()
+        log(f"  Buttons on page: {len(buttons)}")
+        for i, btn in enumerate(buttons):
+            try:
+                text = btn.inner_text().strip()[:40]
+                visible = btn.is_visible()
+                if visible and text:
+                    log(f"    [{i}] '{text}'")
+            except:
+                pass
         
-        os.makedirs(XNT_DIR, exist_ok=True)
-        dest_path = os.path.join(XNT_DIR, filename)
-        download.save_as(dest_path)
+        export_btn = page.locator('button:has-text("Xuất báo cáo")').first
+        if not export_btn.is_visible():
+            export_btn = page.locator('button:has-text("Xuất"), button:has-text("Export")').first
         
-        size_kb = os.path.getsize(dest_path) / 1024
-        log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
-        return dest_path
+        # Try with download event first
+        try:
+            with page.expect_download(timeout=180000) as download_info:
+                export_btn.click()
+                log("  Waiting for download event...")
+            
+            download = download_info.value
+            filename = f"XNT_{today_str}.xlsx"
+            
+            os.makedirs(XNT_DIR, exist_ok=True)
+            dest_path = os.path.join(XNT_DIR, filename)
+            download.save_as(dest_path)
+            
+            size_kb = os.path.getsize(dest_path) / 1024
+            log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
+            return dest_path
+            
+        except Exception as e:
+            log(f"  ⚠️ Download event failed: {e}")
+            # Screenshot after failed download
+            try:
+                page.screenshot(path="/tmp/kfm_after_export_fail.png")
+                body_text = page.locator('body').inner_text()[:300]
+                log(f"  Page text after click: {body_text[:200]}")
+            except:
+                pass
+            return None
         
     except Exception as e:
         log(f"  ❌ Lỗi xuất: {e}")
@@ -321,21 +357,46 @@ def download_trip(page):
     # Click "Xuất file"
     log("  Xuất file...")
     try:
-        with page.expect_download(timeout=120000) as download_info:
-            export_btn = page.locator('button:has-text("Xuất file")').first
-            export_btn.click()
+        # Log buttons
+        buttons = page.locator('button').all()
+        for i, btn in enumerate(buttons):
+            try:
+                text = btn.inner_text().strip()[:40]
+                if btn.is_visible() and text:
+                    log(f"    [{i}] '{text}'")
+            except:
+                pass
         
-        download = download_info.value
-        now_str = today.strftime("%d%m%Y-%H%M")
-        filename = download.suggested_filename or f"DS-chi-tiet-chuyen-xe_{now_str}.xlsx"
+        export_btn = page.locator('button:has-text("Xuất file")').first
+        if not export_btn.is_visible():
+            export_btn = page.locator('button:has-text("Xuất"), button:has-text("Export")').first
         
-        os.makedirs(TRIP_DIR, exist_ok=True)
-        dest_path = os.path.join(TRIP_DIR, filename)
-        download.save_as(dest_path)
-        
-        size_kb = os.path.getsize(dest_path) / 1024
-        log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
-        return dest_path
+        try:
+            with page.expect_download(timeout=180000) as download_info:
+                export_btn.click()
+                log("  Waiting for download...")
+            
+            download = download_info.value
+            now_str = today.strftime("%d%m%Y-%H%M")
+            filename = download.suggested_filename or f"DS-chi-tiet-chuyen-xe_{now_str}.xlsx"
+            
+            os.makedirs(TRIP_DIR, exist_ok=True)
+            dest_path = os.path.join(TRIP_DIR, filename)
+            download.save_as(dest_path)
+            
+            size_kb = os.path.getsize(dest_path) / 1024
+            log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
+            return dest_path
+            
+        except Exception as e:
+            log(f"  ⚠️ Download event failed: {e}")
+            try:
+                page.screenshot(path="/tmp/kfm_trip_export_fail.png")
+                body_text = page.locator('body').inner_text()[:300]
+                log(f"  Page text: {body_text[:200]}")
+            except:
+                pass
+            return None
         
     except Exception as e:
         log(f"  ❌ Lỗi xuất: {e}")
