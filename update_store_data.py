@@ -3,7 +3,7 @@ import re
 import os
 import sys
 import shutil
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # Fix Windows console encoding
 os.environ["PYTHONIOENCODING"] = "utf-8"
@@ -57,7 +57,7 @@ def main():
     new_html_content = html_content[:match.start(2)] + stores_js + html_content[match.end(2):]
 
     # Cập nhật timestamp
-    current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
+    current_time = datetime.now(timezone(timedelta(hours=7))).strftime("%d/%m/%Y %H:%M")
     pattern_time = re.compile(r'(id="last-update-time"[^>]*>Cập nhật:\s*).*?(</div>)')
     new_html_content = pattern_time.sub(r'\g<1>' + current_time + r'\2', new_html_content)
 

@@ -2082,7 +2082,12 @@ function showUpdatePopup(type, title, msg, showReload) {
     box.className = 'popup-box popup-' + type;
     icon.textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
     titleEl.textContent = title;
-    msgEl.textContent = msg;
+    msgEl.style.whiteSpace = 'pre-wrap';
+    if (msg.includes('<a ')) {
+        msgEl.innerHTML = msg;
+    } else {
+        msgEl.textContent = msg;
+    }
     reloadBtn.style.display = showReload ? 'inline-block' : 'none';
     overlay.classList.add('active');
 }
@@ -2204,12 +2209,12 @@ async function pollWorkflowStatus() {
                     if (el) el.textContent = 'Cập nhật: ' + ts;
                     
                     showUpdatePopup('success', 'Cập nhật thành công! ✅',
-                        `Pipeline hoàn thành.\n\nTrang sẽ tự tải lại sau 5 giây để hiển thị dữ liệu mới...`, true);
+                        `Pipeline hoàn thành.\n\n<a href="${lastRun.html_url}" target="_blank" style="color:#4fc3f7">📋 Xem chi tiết kết quả</a>\n\nTrang sẽ tự tải lại sau 5 giây...`, true);
                     setTimeout(() => location.reload(), 5000);
                     return;
                 } else if (runAge < maxWait && lastRun.conclusion === 'failure') {
                     showUpdatePopup('error', 'Cập nhật thất bại',
-                        `Pipeline chạy lỗi.\n\nXem chi tiết tại:\n${lastRun.html_url}`, false);
+                        `Pipeline chạy lỗi.\n\n<a href="${lastRun.html_url}" target="_blank" style="color:#ef5350">🔍 Xem log lỗi chi tiết</a>`, false);
                     return;
                 }
             }

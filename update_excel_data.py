@@ -3,7 +3,7 @@ import glob
 import re
 import json
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # Fix Windows console encoding
 os.environ["PYTHONIOENCODING"] = "utf-8"
@@ -298,8 +298,21 @@ def main():
         )
     
     # Update timestamp
-    current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
+    current_time = datetime.now(timezone(timedelta(hours=7))).strftime("%d/%m/%Y %H:%M")
     new_html = re.sub(r'(id="last-update-time"[^>]*>Cập nhật:\s*).*?(</div>)', r'\g<1>' + current_time + r'\2', new_html)
+    
+    # Print summary for verification
+    print(f"\n{'='*50}")
+    print(f"📊 KẾT QUẢ CẬP NHẬT ({current_time})")
+    print(f"{'='*50}")
+    print(f"📁 File XNT: {os.path.basename(xnt_file)}")
+    print(f"📁 File Trip: {os.path.basename(trip_file)}")
+    print(f"🏪 Số cửa hàng tồn kho: {len(xnt_data)}")
+    print(f"📅 Số ngày trip: {len([d for d in trip_data.keys() if d != 'all'])}")
+    total_giao = sum(st['g'] for d, sts in trip_data.items() if d != 'all' for st in sts)
+    total_thu = sum(st['t'] for d, sts in trip_data.items() if d != 'all' for st in sts)
+    print(f"📦 Tổng giao: {total_giao} | Tổng thu: {total_thu}")
+    print(f"{'='*50}")
     
     # Write back
     backup_path = html_path + ".bak"
