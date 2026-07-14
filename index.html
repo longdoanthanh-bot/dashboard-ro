@@ -2229,8 +2229,8 @@ async function pollWorkflowStatus() {
                     } catch(e) { console.log('Summary API error:', e); }
                     
                     showUpdatePopup('success', 'Cập nhật thành công! ✅',
-                        summaryText + '\n\nTrang sẽ tự tải lại sau 5 giây...', true);
-                    setTimeout(() => location.reload(), 5000);
+                        summaryText + '\n\nTrang sẽ tự tải lại sau 10 giây...', true);
+                    setTimeout(() => location.reload(), 10000);
                     return;
                 } else if (runAge < maxWait && lastRun.conclusion === 'failure') {
                     showUpdatePopup('error', 'Cập nhật thất bại',
