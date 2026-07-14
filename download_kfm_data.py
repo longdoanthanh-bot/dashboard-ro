@@ -236,12 +236,17 @@ def download_xnt(page):
     # 1. Open filter drawer: Ctrl+Shift+F
     log("  Mở bộ lọc (Ctrl+Shift+F)...")
     page.keyboard.press("Control+Shift+f")
-    time.sleep(3)
+    time.sleep(5)
     
-    # 2. Click saved filter dropdown (#rc_select_1)
+    # 2. Click saved filter dropdown
     log("  Chọn bộ lọc đã lưu...")
     try:
-        page.locator('#rc_select_1').first.click()
+        # Wait for drawer to appear
+        page.wait_for_selector('.ant-drawer-content', timeout=15000)
+        time.sleep(2)
+        # Try multiple selectors for the saved filter dropdown
+        dropdown = page.locator('.ant-drawer-content .ant-select').first
+        dropdown.click()
         time.sleep(2)
         
         # 3. Select "tồn rổ"
@@ -306,12 +311,17 @@ def download_trip(page):
     # 1. Open filter drawer: Ctrl+Shift+F
     log("  Mở bộ lọc (Ctrl+Shift+F)...")
     page.keyboard.press("Control+Shift+f")
-    time.sleep(3)
+    time.sleep(5)
     
     # 2. Click saved filter dropdown
     log("  Chọn bộ lọc đã lưu...")
     try:
-        page.locator('#rc_select_1').first.click()
+        # Wait for drawer to appear
+        page.wait_for_selector('.ant-drawer-content', timeout=15000)
+        time.sleep(2)
+        # Try multiple selectors for the saved filter dropdown
+        dropdown = page.locator('.ant-drawer-content .ant-select').first
+        dropdown.click()
         time.sleep(2)
         
         # 3. Select "trip"
