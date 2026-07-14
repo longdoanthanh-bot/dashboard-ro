@@ -52,5 +52,7 @@ jobs:
           TIMESTAMP=$(TZ='Asia/Ho_Chi_Minh' date +'%d/%m/%Y %H:%M')
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "Auto update $TIMESTAMP"
-          git push origin master
-          git push origin master:main || true
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          git push origin $BRANCH
+          if [ "$BRANCH" = "master" ]; then git push origin master:main || true; fi
+          if [ "$BRANCH" = "main" ]; then git push origin main:master || true; fi
