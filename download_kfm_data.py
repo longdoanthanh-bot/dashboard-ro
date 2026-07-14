@@ -295,33 +295,51 @@ def download_xnt(page):
 def download_trip(page):
     """Download Trip data."""
     today = datetime.now(VN_TZ)
-    from_date = today - timedelta(days=5)
+    from_date = today - timedelta(days=4)
     
     log(f"\n🚛 TẢI TRIP — {from_date.strftime('%d/%m/%Y')} → {today.strftime('%d/%m/%Y')}")
     
-    log("  Mở trang Trip list...")
+    log("  Mở trang Chuyến xe...")
     page.goto(TRIP_URL, wait_until="networkidle", timeout=60000)
+    time.sleep(5)
+    
+    # 1. Open filter drawer: Ctrl+Shift+F
+    log("  Mở bộ lọc (Ctrl+Shift+F)...")
+    page.keyboard.press("Control+Shift+f")
     time.sleep(3)
     
-    # Switch to "DS chuyến xe" tab
-    log("  Chuyển tab 'DS chuyến xe'...")
+    # 2. Click saved filter dropdown
+    log("  Chọn bộ lọc đã lưu...")
     try:
-        tab = page.locator('text="DS chuyến xe"').first
-        if tab.is_visible():
-            tab.click()
-            time.sleep(2)
+        page.locator('#rc_select_1').first.click()
+        time.sleep(2)
+        
+        # 3. Select "trip"
+        page.locator('.ant-select-item:has-text("trip")').first.click()
+        log("  ✅ Đã chọn 'trip'")
+        time.sleep(3)
     except Exception as e:
-        log(f"  ⚠️ Chuyển tab: {e}")
+        log(f"  ⚠️ Chọn bộ lọc: {e}")
     
-    page.wait_for_load_state("networkidle", timeout=30000)
-    time.sleep(2)
+    # 4. Click "Áp dụng" inside drawer (force=True to bypass drawer mask)
+    log("  Áp dụng bộ lọc...")
+    try:
+        apply_btn = page.locator('.ant-drawer-content button:has-text("Áp dụng")').first
+        if apply_btn.count() == 0:
+            apply_btn = page.locator('button:has-text("Áp dụng")').first
+        apply_btn.click(force=True)
+        time.sleep(5)
+    except Exception as e:
+        log(f"  ⚠️ Áp dụng: {e}")
     
-    # Click "Xuất file"
+    # Wait for data to load after filter
+    page.wait_for_load_state("networkidle", timeout=120000)
+    time.sleep(5)
+    
+    # 5. Click "Xuất file"
     log("  Xuất file...")
     try:
         export_btn = page.locator('button:has-text("Xuất file")').first
-        if not export_btn.is_visible():
-            export_btn = page.locator('button:has-text("Xuất"), button:has-text("Export")').first
         
         with page.expect_download(timeout=120000) as download_info:
             export_btn.click()
