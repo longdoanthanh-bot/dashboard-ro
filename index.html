@@ -2166,7 +2166,7 @@ async function pollWorkflowStatus() {
     while (Date.now() - startTime < maxWait) {
         try {
             const resp = await fetch(
-                `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runs?per_page=1&status=in_progress`,
+                `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}/runs?per_page=1&status=in_progress`,
                 {
                     headers: {
                         'Authorization': `token ${GH_PAT}`,
@@ -2187,7 +2187,7 @@ async function pollWorkflowStatus() {
             
             // Không có run đang chạy → kiểm tra run gần nhất
             const latestResp = await fetch(
-                `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runs?per_page=1`,
+                `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}/runs?per_page=1`,
                 {
                     headers: {
                         'Authorization': `token ${GH_PAT}`,
