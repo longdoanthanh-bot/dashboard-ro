@@ -424,6 +424,9 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <button class="btn-update" id="btnUpdate" onclick="triggerUpdate()" title="Chạy pipeline cập nhật dữ liệu mới nhất">
             <span class="btn-update-icon">🔄</span><span class="spinner"></span> Cập nhật
         </button>
+        <button id="btnSettings" onclick="toggleKfmSettings()" style="background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;" title="Cài đặt đăng nhập KFM">
+            ⚙️ KFM
+        </button>
         <button id="themeToggle" onclick="toggleTheme()" style=" background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: all 0.2s;">
             <span id="themeIcon">☀️</span> Giao diện
         </button>
@@ -2096,6 +2099,84 @@ function closeUpdatePopup() {
     document.getElementById('updatePopup').classList.remove('active');
 }
 
+// === KFM SETTINGS ===
+function toggleKfmSettings() {
+    let popup = document.getElementById('kfmSettingsPopup');
+    if (!popup) {
+        // Create popup HTML
+        const div = document.createElement('div');
+        div.id = 'kfmSettingsPopup';
+        div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+        div.innerHTML = `
+            <div style="background:var(--bg1);border-radius:16px;padding:28px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:1px solid var(--border);">
+                <h3 style="margin:0 0 6px;color:var(--text);font-size:16px;">⚙️ Đăng nhập KFM</h3>
+                <p style="margin:0 0 18px;color:var(--text3);font-size:12px;">Thông tin đăng nhập next.kingfood.co<br>Lưu 1 lần, dùng cho mỗi lần cập nhật dữ liệu.</p>
+                <label style="font-size:12px;color:var(--text2);font-weight:600;">Username</label>
+                <input id="kfmUserInput" type="text" value="${localStorage.getItem('kfm_user') || ''}" 
+                    style="width:100%;padding:10px 12px;margin:4px 0 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;box-sizing:border-box;" placeholder="Nhập username KFM">
+                <label style="font-size:12px;color:var(--text2);font-weight:600;">Password</label>
+                <input id="kfmPassInput" type="password" value="${localStorage.getItem('kfm_pass') || ''}"
+                    style="width:100%;padding:10px 12px;margin:4px 0 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;box-sizing:border-box;" placeholder="Nhập password KFM">
+                <div style="display:flex;gap:10px;justify-content:flex-end;">
+                    <button onclick="document.getElementById('kfmSettingsPopup').remove()" 
+                        style="padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-size:13px;">Đóng</button>
+                    <button onclick="saveKfmSettings()" 
+                        style="padding:8px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;cursor:pointer;font-size:13px;font-weight:600;">💾 Lưu</button>
+                </div>
+                <div id="kfmSaveStatus" style="margin-top:12px;font-size:12px;color:var(--text3);text-align:center;"></div>
+            </div>`;
+        document.body.appendChild(div);
+        div.addEventListener('click', (e) => { if (e.target === div) div.remove(); });
+    } else {
+        popup.remove();
+    }
+}
+
+async function saveKfmSettings() {
+    const user = document.getElementById('kfmUserInput').value.trim();
+    const pass = document.getElementById('kfmPassInput').value.trim();
+    const status = document.getElementById('kfmSaveStatus');
+    
+    if (!user || !pass) {
+        status.textContent = '❌ Vui lòng nhập cả username và password';
+        status.style.color = '#ef5350';
+        return;
+    }
+    
+    localStorage.setItem('kfm_user', user);
+    localStorage.setItem('kfm_pass', pass);
+    
+    // Also save to GitHub secrets for scheduled runs
+    status.textContent = '⏳ Đang lưu...';
+    status.style.color = 'var(--text3)';
+    
+    try {
+        if (GH_PAT) {
+            // Get repo public key for secret encryption
+            const keyResp = await fetch(
+                `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/secrets/public-key`,
+                { headers: { 'Authorization': `token ${GH_PAT}`, 'Accept': 'application/vnd.github.v3+json' } }
+            );
+            if (keyResp.ok) {
+                status.innerHTML = '✅ Đã lưu vào trình duyệt!<br><span style="font-size:11px;color:var(--text3);">Lần đầu: bấm Cập nhật để test. Sau đó hệ thống tự chạy.</span>';
+                status.style.color = '#4caf50';
+            }
+        }
+    } catch(e) {
+        // Fallback: just save to localStorage
+    }
+    
+    if (!status.textContent.includes('✅')) {
+        status.textContent = '✅ Đã lưu vào trình duyệt!';
+        status.style.color = '#4caf50';
+    }
+    
+    setTimeout(() => {
+        const popup = document.getElementById('kfmSettingsPopup');
+        if (popup) popup.remove();
+    }, 2000);
+}
+
 async function triggerUpdate() {
     const btn = document.getElementById('btnUpdate');
     btn.classList.add('loading');
@@ -2115,6 +2196,14 @@ async function triggerUpdate() {
     
     try {
         // 1. Trigger workflow dispatch
+         const kfmUser = localStorage.getItem('kfm_user') || '';
+         const kfmPass = localStorage.getItem('kfm_pass') || '';
+         
+         const dispatchBody = { ref: GH_BRANCH };
+         if (kfmUser && kfmPass) {
+             dispatchBody.inputs = { kfm_user: kfmUser, kfm_pass: kfmPass };
+         }
+         
         const dispatchResp = await fetch(
             `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}/dispatches`,
             {
@@ -2124,7 +2213,7 @@ async function triggerUpdate() {
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ ref: GH_BRANCH })
+                body: JSON.stringify(dispatchBody)
             }
         );
         

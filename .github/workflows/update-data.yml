@@ -2,6 +2,15 @@ name: Update Dashboard Data
 
 on:
   workflow_dispatch:
+    inputs:
+      kfm_user:
+        description: 'KFM Username (optional, uses secret if empty)'
+        required: false
+        default: ''
+      kfm_pass:
+        description: 'KFM Password (optional, uses secret if empty)'
+        required: false
+        default: ''
   push:
     paths:
       - 'data/**'
@@ -28,7 +37,17 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install pandas openpyxl
+        run: pip install pandas openpyxl playwright
+
+      - name: Install Playwright browser
+        run: playwright install chromium --with-deps
+
+      - name: Download KFM data
+        env:
+          KFM_USER: ${{ inputs.kfm_user || secrets.KFM_USER }}
+          KFM_PASS: ${{ inputs.kfm_pass || secrets.KFM_PASS }}
+        run: python download_kfm_data.py
+        continue-on-error: true
 
       - name: Check khu vuc
         run: python check_khuvuc.py
