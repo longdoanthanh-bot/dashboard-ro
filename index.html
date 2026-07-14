@@ -2208,18 +2208,25 @@ async function pollWorkflowStatus() {
                     const el = document.getElementById('last-update-time');
                     if (el) el.textContent = 'Cập nhật: ' + ts;
                     
-                    // Đọc summary từ biến JS được inject bởi Python
+                    // Fetch summary qua GitHub API (hỗ trợ CORS)
                     let summaryText = 'Pipeline hoàn thành.';
-                    if (window.LAST_UPDATE) {
-                        const sum = window.LAST_UPDATE;
-                        summaryText = 
-                            `✅ Cập nhật lúc ${sum.time}\n\n` +
-                            `📁 File XNT: ${sum.xnt_file}\n` +
-                            `📁 File Trip: ${sum.trip_file}\n` +
-                            `🏪 Số cửa hàng: ${sum.stores}\n` +
-                            `📅 Số ngày trip: ${sum.days}\n` +
-                            `📦 Tổng giao: ${sum.total_giao} | Tổng thu: ${sum.total_thu}`;
-                    }
+                    try {
+                        const apiResp = await fetch(
+                            `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/data/last_update.json?ref=master&t=${Date.now()}`,
+                            { headers: { 'Authorization': `token ${GH_PAT}`, 'Accept': 'application/vnd.github.v3+json' } }
+                        );
+                        if (apiResp.ok) {
+                            const fileData = await apiResp.json();
+                            const sum = JSON.parse(atob(fileData.content));
+                            summaryText = 
+                                `✅ Cập nhật lúc ${sum.time}\n\n` +
+                                `📁 File XNT: ${sum.xnt_file}\n` +
+                                `📁 File Trip: ${sum.trip_file}\n` +
+                                `🏪 Số cửa hàng: ${sum.stores}\n` +
+                                `📅 Số ngày trip: ${sum.days}\n` +
+                                `📦 Tổng giao: ${sum.total_giao} | Tổng thu: ${sum.total_thu}`;
+                        }
+                    } catch(e) { console.log('Summary API error:', e); }
                     
                     showUpdatePopup('success', 'Cập nhật thành công! ✅',
                         summaryText + '\n\nTrang sẽ tự tải lại sau 5 giây...', true);

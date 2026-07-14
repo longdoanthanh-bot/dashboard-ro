@@ -342,6 +342,11 @@ def main():
             f'<script>\n{marker}\nwindow.LAST_UPDATE = {summary_js};\n// %%END_SUMMARY%%\n</script>\n</body>')
     print(f"Summary injected into HTML")
     
+    # Also write JSON file for API fetch
+    summary_path = os.path.join(os.path.dirname(html_path), 'data', 'last_update.json')
+    with open(summary_path, 'w', encoding='utf-8') as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+    
     # Write back HTML
     backup_path = html_path + ".bak"
     import shutil
