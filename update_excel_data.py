@@ -302,19 +302,37 @@ def main():
     new_html = re.sub(r'(id="last-update-time"[^>]*>Cập nhật:\s*).*?(</div>)', r'\g<1>' + current_time + r'\2', new_html)
     
     # Print summary for verification
+    total_giao = sum(st['g'] for d, sts in trip_data.items() if d != 'all' for st in sts)
+    total_thu = sum(st['t'] for d, sts in trip_data.items() if d != 'all' for st in sts)
+    num_days = len([d for d in trip_data.keys() if d != 'all'])
+    num_stores = len(xnt_data)
+    
     print(f"\n{'='*50}")
     print(f"📊 KẾT QUẢ CẬP NHẬT ({current_time})")
     print(f"{'='*50}")
     print(f"📁 File XNT: {os.path.basename(xnt_file)}")
     print(f"📁 File Trip: {os.path.basename(trip_file)}")
-    print(f"🏪 Số cửa hàng tồn kho: {len(xnt_data)}")
-    print(f"📅 Số ngày trip: {len([d for d in trip_data.keys() if d != 'all'])}")
-    total_giao = sum(st['g'] for d, sts in trip_data.items() if d != 'all' for st in sts)
-    total_thu = sum(st['t'] for d, sts in trip_data.items() if d != 'all' for st in sts)
+    print(f"🏪 Số cửa hàng tồn kho: {num_stores}")
+    print(f"📅 Số ngày trip: {num_days}")
     print(f"📦 Tổng giao: {total_giao} | Tổng thu: {total_thu}")
     print(f"{'='*50}")
     
-    # Write back
+    # Write summary JSON for dashboard popup
+    summary = {
+        "time": current_time,
+        "xnt_file": os.path.basename(xnt_file),
+        "trip_file": os.path.basename(trip_file),
+        "stores": num_stores,
+        "days": num_days,
+        "total_giao": total_giao,
+        "total_thu": total_thu
+    }
+    summary_path = os.path.join(os.path.dirname(html_path), 'data', 'last_update.json')
+    with open(summary_path, 'w', encoding='utf-8') as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+    print(f"Summary written to {summary_path}")
+    
+    # Write back HTML
     backup_path = html_path + ".bak"
     import shutil
     shutil.copy2(html_path, backup_path)
@@ -322,7 +340,7 @@ def main():
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(new_html)
         
-    print(f"Successfully updated index.html with XNT ({os.path.basename(xnt_file)}) and TRIP ({os.path.basename(trip_file)}) at {current_time}")
+    print(f"Successfully updated index.html at {current_time}")
 
 if __name__ == "__main__":
     main()

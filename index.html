@@ -2208,8 +2208,24 @@ async function pollWorkflowStatus() {
                     const el = document.getElementById('last-update-time');
                     if (el) el.textContent = 'Cập nhật: ' + ts;
                     
+                    // Fetch summary from last_update.json
+                    let summaryText = 'Pipeline hoàn thành.';
+                    try {
+                        const sumResp = await fetch('data/last_update.json?t=' + Date.now());
+                        if (sumResp.ok) {
+                            const sum = await sumResp.json();
+                            summaryText = 
+                                `✅ Cập nhật lúc ${sum.time}\n\n` +
+                                `📁 File XNT: ${sum.xnt_file}\n` +
+                                `📁 File Trip: ${sum.trip_file}\n` +
+                                `🏪 Số cửa hàng: ${sum.stores}\n` +
+                                `📅 Số ngày trip: ${sum.days}\n` +
+                                `📦 Tổng giao: ${sum.total_giao} | Tổng thu: ${sum.total_thu}`;
+                        }
+                    } catch(e) {}
+                    
                     showUpdatePopup('success', 'Cập nhật thành công! ✅',
-                        `Pipeline hoàn thành.\n\n<a href="${lastRun.html_url}" target="_blank" style="color:#4fc3f7">📋 Xem chi tiết kết quả</a>\n\nTrang sẽ tự tải lại sau 5 giây...`, true);
+                        summaryText + '\n\nTrang sẽ tự tải lại sau 5 giây...', true);
                     setTimeout(() => location.reload(), 5000);
                     return;
                 } else if (runAge < maxWait && lastRun.conclusion === 'failure') {
