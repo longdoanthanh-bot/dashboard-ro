@@ -122,13 +122,18 @@ def login(page):
         log(f"  Filling username...")
         username_sel.click()
         time.sleep(0.3)
-        username_sel.fill(KFM_USER)
+        # Clear field then type (React-compatible)
+        page.keyboard.press("Control+a")
+        page.keyboard.press("Backspace")
+        page.keyboard.type(KFM_USER, delay=50)
         time.sleep(0.5)
         
         log(f"  Filling password...")
         password_sel.click()
         time.sleep(0.3)
-        password_sel.fill(KFM_PASS)
+        page.keyboard.press("Control+a")
+        page.keyboard.press("Backspace")
+        page.keyboard.type(KFM_PASS, delay=50)
         time.sleep(0.5)
         
         # Find and click login button
