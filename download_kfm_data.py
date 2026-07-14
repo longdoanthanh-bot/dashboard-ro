@@ -170,29 +170,49 @@ def login(page):
             log(f"  No button found, pressing Enter...")
             page.keyboard.press("Enter")
         
-        # Wait for navigation after login
-        time.sleep(5)
-        page.wait_for_load_state("networkidle", timeout=30000)
+        # Wait for login to complete - React SPA may keep URL while loading
+        log("  Waiting for login to complete...")
         time.sleep(3)
         
-        new_url = page.url
-        log(f"  URL after login: {new_url}")
-        
-        # Debug: get page text for error messages
-        try:
-            body_text = page.locator('body').inner_text()[:300]
-            log(f"  Page text: {body_text[:200]}")
-        except:
-            pass
-        
-        # Check if still on login page
-        if new_url == current_url or "login" in new_url.lower() or "sign" in new_url.lower():
+        # Poll for success: either URL changes or page content indicates logged in
+        login_success = False
+        for attempt in range(15):  # up to 15 seconds
+            time.sleep(1)
+            new_url = page.url
+            
+            # URL changed away from login
+            if "login" not in new_url.lower():
+                log(f"  URL changed to: {new_url}")
+                login_success = True
+                break
+            
+            # Page content indicates loading/success (React SPA may not change URL yet)
             try:
-                page.screenshot(path="/tmp/kfm_login_failed.png")
+                body_text = page.locator('body').inner_text()[:500]
+                if any(indicator in body_text for indicator in [
+                    "Đang tải", "danh mục", "Dashboard", "Tổng quan", 
+                    "Xuất nhập", "Kho", "Đơn hàng"
+                ]):
+                    log(f"  Login success detected via page content")
+                    login_success = True
+                    break
             except:
                 pass
-            log("  ❌ Đăng nhập thất bại — URL không thay đổi")
+        
+        if not login_success:
+            new_url = page.url
+            log(f"  URL after login: {new_url}")
+            try:
+                body_text = page.locator('body').inner_text()[:300]
+                log(f"  Page text: {body_text[:200]}")
+            except:
+                pass
+            log("  ❌ Đăng nhập thất bại")
             return False
+        
+        # Wait for app to fully load after successful login
+        time.sleep(5)
+        page.wait_for_load_state("networkidle", timeout=30000)
         
         log("  ✅ Đăng nhập thành công")
         return True
