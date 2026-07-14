@@ -321,6 +321,33 @@ def download_trip(page):
     except Exception as e:
         log(f"  ⚠️ Chọn bộ lọc: {e}")
     
+    # 3b. Update "Thời gian tạo" date range (inputs[8]=Từ ngày, inputs[9]=Đến ngày)
+    from_str = from_date.strftime("%d/%m/%Y")
+    to_str = today.strftime("%d/%m/%Y")
+    log(f"  Cập nhật thời gian tạo: {from_str} → {to_str}")
+    try:
+        drawer_inputs = page.locator('.ant-drawer-content input').all()
+        
+        # Start date (input[8])
+        drawer_inputs[8].click()
+        time.sleep(0.5)
+        page.keyboard.press("Control+a")
+        page.keyboard.type(from_str, delay=30)
+        page.keyboard.press("Enter")
+        time.sleep(1)
+        
+        # End date (input[9])
+        drawer_inputs[9].click()
+        time.sleep(0.5)
+        page.keyboard.press("Control+a")
+        page.keyboard.type(to_str, delay=30)
+        page.keyboard.press("Enter")
+        time.sleep(1)
+        
+        log(f"  ✅ Dates set: {drawer_inputs[8].get_attribute('value')} → {drawer_inputs[9].get_attribute('value')}")
+    except Exception as e:
+        log(f"  ⚠️ Set dates: {e}")
+    
     # 4. Click "Áp dụng" inside drawer (force=True to bypass drawer mask)
     log("  Áp dụng bộ lọc...")
     try:
