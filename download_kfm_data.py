@@ -137,12 +137,38 @@ def login(page):
         time.sleep(0.5)
         
         # Find and click login button
-        login_btn = page.locator('button[type="submit"]').first
-        if not login_btn.is_visible():
-            login_btn = page.locator('button:has-text("Đăng nhập"), button:has-text("Login"), button:has-text("Sign in"), button:has-text("Đăng Nhập")').first
+        buttons = page.locator('button').all()
+        log(f"  Found {len(buttons)} button(s)")
+        for i, btn in enumerate(buttons):
+            try:
+                btn_text = btn.inner_text().strip()[:50]
+                btn_type = btn.get_attribute('type') or '?'
+                btn_class = (btn.get_attribute('class') or '?')[:50]
+                log(f"    Button[{i}]: type={btn_type}, text='{btn_text}', class={btn_class}")
+            except:
+                pass
         
-        log(f"  Clicking login button...")
-        login_btn.click()
+        login_btn = None
+        # Try submit button first
+        submit_btns = page.locator('button[type="submit"]')
+        if submit_btns.count() > 0:
+            login_btn = submit_btns.first
+            log("  Using button[type=submit]")
+        else:
+            # Try text match
+            for text in ["Đăng nhập", "Đăng Nhập", "Login", "Sign in"]:
+                btn_match = page.locator(f'button:has-text("{text}")')
+                if btn_match.count() > 0:
+                    login_btn = btn_match.first
+                    log(f"  Using button with text '{text}'")
+                    break
+        
+        if login_btn:
+            log(f"  Clicking login button...")
+            login_btn.click()
+        else:
+            log(f"  No button found, pressing Enter...")
+            page.keyboard.press("Enter")
         
         # Wait for navigation after login
         time.sleep(5)
@@ -152,9 +178,15 @@ def login(page):
         new_url = page.url
         log(f"  URL after login: {new_url}")
         
+        # Debug: get page text for error messages
+        try:
+            body_text = page.locator('body').inner_text()[:300]
+            log(f"  Page text: {body_text[:200]}")
+        except:
+            pass
+        
         # Check if still on login page
         if new_url == current_url or "login" in new_url.lower() or "sign" in new_url.lower():
-            # Try screenshot after failed login
             try:
                 page.screenshot(path="/tmp/kfm_login_failed.png")
             except:
