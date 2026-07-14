@@ -231,45 +231,51 @@ def download_xnt(page):
     
     log("  Mở trang Xuất nhập tồn...")
     page.goto(XNT_URL, wait_until="networkidle", timeout=60000)
-    time.sleep(3)
+    time.sleep(5)
     
-    # Open filter panel
+    # Open filter panel ("Bộ lọc")
+    log("  Mở bộ lọc...")
     try:
-        filter_icon = page.locator('[data-icon="filter"], button:has-text("Bộ lọc")').first
-        if filter_icon.is_visible():
-            filter_icon.click()
-            time.sleep(1)
-    except:
-        pass
+        # Try clicking filter icon or button
+        filter_btn = page.locator('[data-icon="filter"], button:has-text("Bộ lọc"), .ant-btn:has-text("Bộ lọc")').first
+        if filter_btn.is_visible():
+            filter_btn.click()
+            time.sleep(2)
+        else:
+            # Try any filter-like element
+            filter_alt = page.locator('text="Bộ lọc"').first
+            if filter_alt.is_visible():
+                filter_alt.click()
+                time.sleep(2)
+    except Exception as e:
+        log(f"  ⚠️ Mở bộ lọc: {e}")
     
-    # Select "tồn rổ" from first dropdown
-    log("  Chọn 'tồn rổ'...")
+    # Select saved filter "tồn rổ" from "Chọn bộ lọc đã lưu" dropdown
+    log("  Chọn bộ lọc 'tồn rổ'...")
     try:
-        first_select = page.locator('.ant-select').first
-        first_select.click()
-        time.sleep(1)
-        page.keyboard.type("tồn rổ")
-        time.sleep(1)
-        option = page.locator('.ant-select-item:has-text("tồn rổ"), .rc-virtual-list div:has-text("tồn rổ")').first
+        # Click the saved filter dropdown
+        saved_filter = page.locator('text="Chọn bộ lọc đã lưu"').first
+        if not saved_filter.is_visible():
+            saved_filter = page.locator('.ant-select:has-text("Chọn bộ lọc"), .ant-select').first
+        saved_filter.click()
+        time.sleep(2)
+        
+        # Select "tồn rổ" from dropdown options
+        option = page.locator('.ant-select-item:has-text("tồn rổ"), [title="tồn rổ"], .ant-select-item-option:has-text("tồn rổ")').first
         if option.is_visible():
             option.click()
+            log("  ✅ Đã chọn 'tồn rổ'")
         else:
-            page.keyboard.press("Enter")
-        time.sleep(2)
+            # Try clicking text directly
+            page.locator('text="tồn rổ"').first.click()
+            log("  ✅ Đã chọn 'tồn rổ' (text)")
+        time.sleep(3)
     except Exception as e:
-        log(f"  ⚠️ Chọn 'tồn rổ': {e}")
+        log(f"  ⚠️ Chọn bộ lọc: {e}")
     
-    # Click "Áp dụng"
-    log("  Áp dụng filter...")
-    try:
-        apply_btn = page.locator('button:has-text("Áp dụng")').first
-        apply_btn.click()
-        time.sleep(5)
-    except Exception as e:
-        log(f"  ⚠️ Áp dụng: {e}")
-    
+    # Wait for data to load after filter applied
     page.wait_for_load_state("networkidle", timeout=60000)
-    time.sleep(2)
+    time.sleep(5)
     
     # Click "Xuất báo cáo"
     log("  Xuất báo cáo...")
