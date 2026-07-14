@@ -233,107 +233,63 @@ def download_xnt(page):
     page.goto(XNT_URL, wait_until="networkidle", timeout=60000)
     time.sleep(5)
     
-    # Open filter panel ("Bộ lọc")
-    log("  Mở bộ lọc...")
-    try:
-        # Try clicking filter icon or button
-        filter_btn = page.locator('[data-icon="filter"], button:has-text("Bộ lọc"), .ant-btn:has-text("Bộ lọc")').first
-        if filter_btn.is_visible():
-            filter_btn.click()
-            time.sleep(2)
-        else:
-            # Try any filter-like element
-            filter_alt = page.locator('text="Bộ lọc"').first
-            if filter_alt.is_visible():
-                filter_alt.click()
-                time.sleep(2)
-    except Exception as e:
-        log(f"  ⚠️ Mở bộ lọc: {e}")
+    # 1. Open filter drawer: Ctrl+Shift+F
+    log("  Mở bộ lọc (Ctrl+Shift+F)...")
+    page.keyboard.press("Control+Shift+f")
+    time.sleep(3)
     
-    # Select saved filter "tồn rổ" from "Chọn bộ lọc đã lưu" dropdown
-    log("  Chọn bộ lọc 'tồn rổ'...")
+    # 2. Click saved filter dropdown (#rc_select_1)
+    log("  Chọn bộ lọc đã lưu...")
     try:
-        # Click the saved filter dropdown
-        saved_filter = page.locator('text="Chọn bộ lọc đã lưu"').first
-        if not saved_filter.is_visible():
-            saved_filter = page.locator('.ant-select:has-text("Chọn bộ lọc"), .ant-select').first
-        saved_filter.click()
+        page.locator('#rc_select_1').first.click()
         time.sleep(2)
         
-        # Select "tồn rổ" from dropdown options
-        option = page.locator('.ant-select-item:has-text("tồn rổ"), [title="tồn rổ"], .ant-select-item-option:has-text("tồn rổ")').first
-        if option.is_visible():
-            option.click()
-            log("  ✅ Đã chọn 'tồn rổ'")
-        else:
-            # Try clicking text directly
-            page.locator('text="tồn rổ"').first.click()
-            log("  ✅ Đã chọn 'tồn rổ' (text)")
+        # 3. Select "tồn rổ"
+        page.locator('.ant-select-item:has-text("tồn rổ")').first.click()
+        log("  ✅ Đã chọn 'tồn rổ'")
         time.sleep(3)
     except Exception as e:
         log(f"  ⚠️ Chọn bộ lọc: {e}")
     
-    # Wait for data to load after filter applied
-    page.wait_for_load_state("networkidle", timeout=60000)
+    # 4. Click "Áp dụng" inside drawer (force=True to bypass drawer mask)
+    log("  Áp dụng bộ lọc...")
+    try:
+        apply_btn = page.locator('.ant-drawer-content button:has-text("Áp dụng")').first
+        if apply_btn.count() == 0:
+            apply_btn = page.locator('button:has-text("Áp dụng")').first
+        apply_btn.click(force=True)
+        time.sleep(5)
+    except Exception as e:
+        log(f"  ⚠️ Áp dụng: {e}")
+    
+    # Wait for data to load after filter
+    page.wait_for_load_state("networkidle", timeout=120000)
     time.sleep(5)
     
-    # Click "Xuất báo cáo"
+    # 5. Click "Xuất báo cáo"
     log("  Xuất báo cáo...")
     try:
-        # Screenshot before click
-        try:
-            page.screenshot(path="/tmp/kfm_before_export.png")
-            log("  📸 Screenshot before export")
-        except:
-            pass
-        
-        # Log all buttons on page
-        buttons = page.locator('button').all()
-        log(f"  Buttons on page: {len(buttons)}")
-        for i, btn in enumerate(buttons):
-            try:
-                text = btn.inner_text().strip()[:40]
-                visible = btn.is_visible()
-                if visible and text:
-                    log(f"    [{i}] '{text}'")
-            except:
-                pass
-        
         export_btn = page.locator('button:has-text("Xuất báo cáo")').first
-        if not export_btn.is_visible():
-            export_btn = page.locator('button:has-text("Xuất"), button:has-text("Export")').first
         
-        # Try with download event first
-        try:
-            with page.expect_download(timeout=180000) as download_info:
-                export_btn.click()
-                log("  Waiting for download event...")
-            
-            download = download_info.value
-            filename = f"XNT_{today_str}.xlsx"
-            
-            os.makedirs(XNT_DIR, exist_ok=True)
-            dest_path = os.path.join(XNT_DIR, filename)
-            download.save_as(dest_path)
-            
-            size_kb = os.path.getsize(dest_path) / 1024
-            log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
-            return dest_path
-            
-        except Exception as e:
-            log(f"  ⚠️ Download event failed: {e}")
-            # Screenshot after failed download
-            try:
-                page.screenshot(path="/tmp/kfm_after_export_fail.png")
-                body_text = page.locator('body').inner_text()[:300]
-                log(f"  Page text after click: {body_text[:200]}")
-            except:
-                pass
-            return None
+        with page.expect_download(timeout=120000) as download_info:
+            export_btn.click()
+        
+        download = download_info.value
+        filename = f"XNT_{today_str}.xlsx"
+        
+        os.makedirs(XNT_DIR, exist_ok=True)
+        dest_path = os.path.join(XNT_DIR, filename)
+        download.save_as(dest_path)
+        
+        size_kb = os.path.getsize(dest_path) / 1024
+        log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
+        return dest_path
         
     except Exception as e:
         log(f"  ❌ Lỗi xuất: {e}")
         return None
+
+
 
 
 def download_trip(page):
@@ -363,46 +319,24 @@ def download_trip(page):
     # Click "Xuất file"
     log("  Xuất file...")
     try:
-        # Log buttons
-        buttons = page.locator('button').all()
-        for i, btn in enumerate(buttons):
-            try:
-                text = btn.inner_text().strip()[:40]
-                if btn.is_visible() and text:
-                    log(f"    [{i}] '{text}'")
-            except:
-                pass
-        
         export_btn = page.locator('button:has-text("Xuất file")').first
         if not export_btn.is_visible():
             export_btn = page.locator('button:has-text("Xuất"), button:has-text("Export")').first
         
-        try:
-            with page.expect_download(timeout=180000) as download_info:
-                export_btn.click()
-                log("  Waiting for download...")
-            
-            download = download_info.value
-            now_str = today.strftime("%d%m%Y-%H%M")
-            filename = download.suggested_filename or f"DS-chi-tiet-chuyen-xe_{now_str}.xlsx"
-            
-            os.makedirs(TRIP_DIR, exist_ok=True)
-            dest_path = os.path.join(TRIP_DIR, filename)
-            download.save_as(dest_path)
-            
-            size_kb = os.path.getsize(dest_path) / 1024
-            log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
-            return dest_path
-            
-        except Exception as e:
-            log(f"  ⚠️ Download event failed: {e}")
-            try:
-                page.screenshot(path="/tmp/kfm_trip_export_fail.png")
-                body_text = page.locator('body').inner_text()[:300]
-                log(f"  Page text: {body_text[:200]}")
-            except:
-                pass
-            return None
+        with page.expect_download(timeout=120000) as download_info:
+            export_btn.click()
+        
+        download = download_info.value
+        now_str = today.strftime("%d%m%Y-%H%M")
+        filename = download.suggested_filename or f"DS-chi-tiet-chuyen-xe_{now_str}.xlsx"
+        
+        os.makedirs(TRIP_DIR, exist_ok=True)
+        dest_path = os.path.join(TRIP_DIR, filename)
+        download.save_as(dest_path)
+        
+        size_kb = os.path.getsize(dest_path) / 1024
+        log(f"  ✅ Đã tải: {filename} ({size_kb:.0f} KB)")
+        return dest_path
         
     except Exception as e:
         log(f"  ❌ Lỗi xuất: {e}")
