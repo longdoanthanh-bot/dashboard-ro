@@ -6,7 +6,8 @@ import os
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-json_path = r'G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master\store_coordinates.json'
+_data_dir = os.environ.get('DATA_DIR', r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source")
+json_path = os.path.join(_data_dir, 'Master', 'store_coordinates.json')
 
 def find_latest_excel(directory, prefix):
     pattern = os.path.join(directory, f"{prefix}*.xlsx")
@@ -15,7 +16,7 @@ def find_latest_excel(directory, prefix):
     files.sort(key=os.path.getmtime, reverse=True)
     return files[0]
 
-excel_path = find_latest_excel(r'G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master', 'DS-khu-vuc')
+excel_path = find_latest_excel(os.path.join(_data_dir, 'Master'), 'DS-khu-vuc')
 if not excel_path:
     print("No DS-khu-vuc file found")
     sys.exit(0)

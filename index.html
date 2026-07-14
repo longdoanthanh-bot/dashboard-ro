@@ -2063,8 +2063,13 @@ async function loadCalendarTab() {
 }
 
 
-// === LOCAL UPDATE TRIGGER ===
-const UPDATE_SERVER = 'http://localhost:5588';
+// === GITHUB ACTIONS UPDATE TRIGGER ===
+// Token lưu trong localStorage, user nhập 1 lần
+const GH_OWNER = 'longdoanthanh-bot';
+const GH_REPO = 'dashboard-ro';
+const GH_WORKFLOW = 'update-data.yml';
+const GH_BRANCH = 'master';
+let GH_PAT = localStorage.getItem('gh_pat') || '';
 
 function showUpdatePopup(type, title, msg, showReload) {
     const overlay = document.getElementById('updatePopup');
@@ -2090,73 +2095,136 @@ async function triggerUpdate() {
     const btn = document.getElementById('btnUpdate');
     btn.classList.add('loading');
     
-    try {
-        // Check if server is running first
-        try {
-            const statusResp = await fetch(UPDATE_SERVER + '/status', { signal: AbortSignal.timeout(3000) });
-            if (!statusResp.ok) throw new Error('Server not ok');
-        } catch (e) {
-            showUpdatePopup('error', 'Không kết nối được server',
-                'Server cập nhật chưa chạy trên máy local.\n\n' +
-                'Hãy mở Terminal/CMD tại thư mục dự án và chạy:\n' +
-                '  python update_server.py\n\n' +
-                'Server sẽ lắng nghe tại http://localhost:5588\n' +
-                'Sau đó bấm "Cập nhật" lại.', false);
+    let pat = GH_PAT;
+    if (!pat) {
+        pat = prompt('Nhập GitHub Token (ghp_...) để kích hoạt cập nhật.\nToken chỉ cần nhập 1 lần, sẽ được lưu trong trình duyệt.');
+        if (!pat || !pat.startsWith('ghp_')) {
+            showUpdatePopup('error', 'Token không hợp lệ',
+                'Token phải bắt đầu bằng "ghp_".\nHãy thử lại.', false);
             btn.classList.remove('loading');
             return;
         }
-        
-        // Trigger update
-        const resp = await fetch(UPDATE_SERVER + '/update', { signal: AbortSignal.timeout(180000) });
-        const result = await resp.json();
-        
-        if (result.success) {
-            let detail = result.message || 'Thành công!';
-            if (result.steps && result.steps.length > 0) {
-                detail += '\n\n📋 Chi tiết các bước:';
-                for (const step of result.steps) {
-                    detail += '\n  ' + (step.ok ? '✅' : '❌') + ' ' + step.step;
-                }
+        localStorage.setItem('gh_pat', pat);
+        GH_PAT = pat;
+    }
+    
+    try {
+        // 1. Trigger workflow dispatch
+        const dispatchResp = await fetch(
+            `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}/dispatches`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${GH_PAT}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ref: GH_BRANCH })
             }
-            showUpdatePopup('success', 'Cập nhật thành công!', detail, true);
-            // Cập nhật timestamp ngay trên trang
-            const now = new Date();
-            const pad = n => String(n).padStart(2, '0');
-            const ts = pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear() + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
-            const el = document.getElementById('last-update-time');
-            if (el) el.textContent = 'Cập nhật: ' + ts;
-            // Tự reload sau 3 giây để lấy HTML mới từ GitHub Pages
-            setTimeout(() => location.reload(), 3000);
+        );
+        
+        if (dispatchResp.status === 204 || dispatchResp.ok) {
+            showUpdatePopup('info', '⏳ Đang cập nhật...',
+                'Pipeline đã được kích hoạt trên GitHub Actions.\n' +
+                'Đang theo dõi tiến trình... (thường mất 1-3 phút)', false);
+            
+            // 2. Poll for workflow run status
+            await pollWorkflowStatus();
         } else {
-            let detail = result.message || 'Có lỗi xảy ra';
-            if (result.errors && result.errors.length > 0) {
-                detail += '\n\n🔴 Lỗi chi tiết:';
-                for (const err of result.errors) {
-                    detail += '\n  • ' + err;
-                }
-            }
-            if (result.steps && result.steps.length > 0) {
-                detail += '\n\n📋 Các bước đã chạy:';
-                for (const step of result.steps) {
-                    detail += '\n  ' + (step.ok ? '✅' : '❌') + ' ' + step.step;
-                }
-            }
-            showUpdatePopup('error', 'Cập nhật thất bại', detail, false);
+            const errText = await dispatchResp.text();
+            let errMsg = `HTTP ${dispatchResp.status}`;
+            try { errMsg = JSON.parse(errText).message || errMsg; } catch(e) {}
+            showUpdatePopup('error', 'Không thể kích hoạt cập nhật',
+                `Lỗi khi gọi GitHub API:\n${errMsg}\n\n` +
+                'Kiểm tra:\n' +
+                '• Token GH_PAT còn hiệu lực\n' +
+                '• Secret GH_PAT đã thêm vào repo settings', false);
         }
     } catch (err) {
-        if (err.name === 'TimeoutError' || err.message?.includes('timeout')) {
-            showUpdatePopup('error', 'Quá thời gian chờ',
-                'Pipeline cập nhật chạy quá 3 phút.\n' +
-                'Kiểm tra terminal đang chạy update_server.py để xem chi tiết.', false);
-        } else {
-            showUpdatePopup('error', 'Lỗi kết nối',
-                'Không thể kết nối đến server cập nhật.\n\n' +
-                'Chi tiết: ' + (err.message || String(err)) + '\n\n' +
-                'Đảm bảo update_server.py đang chạy trên máy local.', false);
-        }
+        showUpdatePopup('error', 'Lỗi kết nối',
+            'Không thể kết nối GitHub API.\n\n' +
+            'Chi tiết: ' + (err.message || String(err)), false);
     } finally {
         btn.classList.remove('loading');
     }
+}
+
+async function pollWorkflowStatus() {
+    const msgEl = document.getElementById('popupMsg');
+    const maxWait = 300000; // 5 phút max
+    const pollInterval = 10000; // 10 giây
+    const startTime = Date.now();
+    
+    // Đợi 5 giây để GitHub tạo workflow run
+    await new Promise(r => setTimeout(r, 5000));
+    
+    while (Date.now() - startTime < maxWait) {
+        try {
+            const resp = await fetch(
+                `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runs?per_page=1&status=in_progress`,
+                {
+                    headers: {
+                        'Authorization': `token ${GH_PAT}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                }
+            );
+            const data = await resp.json();
+            
+            // Kiểm tra nếu có run đang chạy
+            if (data.workflow_runs && data.workflow_runs.length > 0) {
+                const run = data.workflow_runs[0];
+                const elapsed = Math.round((Date.now() - startTime) / 1000);
+                msgEl.textContent = `Pipeline đang chạy... (${elapsed}s)\n\nWorkflow: ${run.name}\nStatus: ${run.status}`;
+                await new Promise(r => setTimeout(r, pollInterval));
+                continue;
+            }
+            
+            // Không có run đang chạy → kiểm tra run gần nhất
+            const latestResp = await fetch(
+                `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runs?per_page=1`,
+                {
+                    headers: {
+                        'Authorization': `token ${GH_PAT}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                }
+            );
+            const latestData = await latestResp.json();
+            
+            if (latestData.workflow_runs && latestData.workflow_runs.length > 0) {
+                const lastRun = latestData.workflow_runs[0];
+                const runAge = Date.now() - new Date(lastRun.created_at).getTime();
+                
+                if (runAge < maxWait && lastRun.conclusion === 'success') {
+                    const now = new Date();
+                    const pad = n => String(n).padStart(2, '0');
+                    const ts = pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear() + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+                    const el = document.getElementById('last-update-time');
+                    if (el) el.textContent = 'Cập nhật: ' + ts;
+                    
+                    showUpdatePopup('success', 'Cập nhật thành công! ✅',
+                        `Pipeline hoàn thành.\n\nTrang sẽ tự tải lại sau 5 giây để hiển thị dữ liệu mới...`, true);
+                    setTimeout(() => location.reload(), 5000);
+                    return;
+                } else if (runAge < maxWait && lastRun.conclusion === 'failure') {
+                    showUpdatePopup('error', 'Cập nhật thất bại',
+                        `Pipeline chạy lỗi.\n\nXem chi tiết tại:\n${lastRun.html_url}`, false);
+                    return;
+                }
+            }
+            
+            await new Promise(r => setTimeout(r, pollInterval));
+        } catch (e) {
+            // Lỗi mạng, tiếp tục thử
+            await new Promise(r => setTimeout(r, pollInterval));
+        }
+    }
+    
+    // Timeout
+    showUpdatePopup('info', 'Đang xử lý...',
+        'Pipeline vẫn đang chạy hoặc chưa bắt đầu.\n\n' +
+        'Hãy tải lại trang sau 2-3 phút để kiểm tra.', true);
 }
 
 </script>

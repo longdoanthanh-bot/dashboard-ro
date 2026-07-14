@@ -15,9 +15,14 @@ if sys.stdout.encoding != 'utf-8':
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 html_path = os.path.join(PROJECT_DIR, "index.html")
 
-# Paths
-xnt_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Tồn kho Rổ"
-trip_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Trip"
+# CI: dùng DATA_DIR env, local: dùng Google Drive
+_data_dir = os.environ.get('DATA_DIR', '')
+if _data_dir:
+    xnt_dir = os.path.join(_data_dir, "TonKhoRo")
+    trip_dir = os.path.join(_data_dir, "Trip")
+else:
+    xnt_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Tồn kho Rổ"
+    trip_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Trip"
 
 def find_latest_excel(directory, prefix):
     pattern = os.path.join(directory, f"{prefix}*.xlsx")

@@ -5,8 +5,9 @@ import os
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-json_path = r'G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master\store_coordinates.json'
-excel_path = r'G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master\Danh sách ST.xlsx'
+_data_dir = os.environ.get('DATA_DIR', r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source")
+json_path = os.path.join(_data_dir, 'Master', 'store_coordinates.json')
+excel_path = os.path.join(_data_dir, 'Master', 'Danh sách ST.xlsx')
 
 with open(json_path, 'r', encoding='utf-8') as f:
     d = json.load(f)

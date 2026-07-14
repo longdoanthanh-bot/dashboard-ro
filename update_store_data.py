@@ -14,7 +14,9 @@ if sys.stdout.encoding != 'utf-8':
 # KI-14: Đường dẫn tương đối từ vị trí script
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-json_path = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Master\store_coordinates.json"
+# CI: dùng DATA_DIR env, local: dùng Google Drive
+_data_dir = os.environ.get('DATA_DIR', r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source")
+json_path = os.path.join(_data_dir, "Master", "store_coordinates.json")
 html_path = os.path.join(PROJECT_DIR, "index.html")
 
 def main():
