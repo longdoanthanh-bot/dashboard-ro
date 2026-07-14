@@ -33,10 +33,10 @@ def run_pipeline():
     steps = []
     errors = []
 
-    def run_step(name, cmd, cwd=PROJECT_DIR):
+    def run_step(name, cmd, cwd=PROJECT_DIR, timeout=120):
         try:
             result = subprocess.run(
-                cmd, cwd=cwd, capture_output=True, text=True, timeout=120,
+                cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout,
                 encoding='utf-8', errors='replace'
             )
             output = (result.stdout or '') + (result.stderr or '')
@@ -54,7 +54,10 @@ def run_pipeline():
             errors.append(f"[{name}] {str(e)}")
             return False
 
-    # Step 0: Check khu vực (optional, skip if fails)
+    # Step 0: Download KFM data (XNT + Trip)
+    run_step("download_kfm", [sys.executable, "download_kfm_data.py"], timeout=300)
+    
+    # Step 1: Check khu vực (optional, skip if fails)
     run_step("check_khuvuc", [sys.executable, "check_khuvuc.py"])
     run_step("check_st", [sys.executable, "check_st.py"])
 
