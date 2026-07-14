@@ -6,42 +6,74 @@
 ## Quy tắc riêng cho repo dashboard-ro
 
 ### Đường dẫn
-- Thư mục dự án: `G:\My Drive\ANTIGRAVITY\Tro_Ly\dashboard-ro\`
-- KHÔNG BAO GIỜ dùng ổ D. Mọi thao tác trên ổ G.
-
-### Tự động hóa (KI-57)
-- Trợ lý tự chạy pipeline: script Python → git add → commit → push.
-- Không yêu cầu người dùng chạy tay bất kỳ thứ gì.
-- Push phải xóa biến giả: `$env:GITHUB_TOKEN=""; git push origin master`
-- Push cả 2 nhánh: `master` và `master:main`.
+- Thư mục dự án: `C:\Users\Thanh Long\.gemini\antigravity\scratch\dashboard-ro\`
+- Repo: `https://github.com/longdoanthanh-bot/dashboard-ro` (private)
+- Dashboard: `https://longdoanthanh-bot.github.io/dashboard-ro/`
 
 ### Kiến trúc file (KI-52, KI-53, KI-54, KI-55)
 - `index.html`: Trang chính. Không nhét form/component lớn vào Header.
 - `tasks.html`: Tab Công việc (iframe). Sửa layout → sửa file này, không kéo ra index.
 - `tele.html`: Tab Thu hồi (iframe). Tương tự tasks.html.
 - HTML Markers (`<!-- TONKHO_TBODY_START -->`, `<!-- CAL_GRID_START -->`...): TUYỆT ĐỐI không xóa.
+- `data/`: Thư mục chứa dữ liệu nguồn (Excel, JSON) — được đọc bởi pipeline.
+  - `data/Master/` — store_coordinates.json, DS-khu-vuc, Danh sách ST
+  - `data/TonKhoRo/` — XNT_*.xlsx (tồn kho rổ)
+  - `data/Trip/` — DS-chi-tiet-chuyen-xe_*.xlsx (trip giao/thu)
 
 ### Encoding (KI-56)
 - Mọi file `.html` phải có `<meta charset="UTF-8">` trong `<head>`.
 - Script Python ghi HTML dùng `encoding='utf-8'`.
 
-### Pipeline chuẩn
+### Pipeline cập nhật — GitHub Actions (KI-69, thay thế KI-57 & KI-66)
+
+**Trước đây:** Chạy `update_server.py` trên máy local (localhost:5588).
+**Hiện tại:** Chạy hoàn toàn trên GitHub Actions — KHÔNG CẦN máy local.
+
+#### Triggers (3 cách kích hoạt):
+| Trigger | Khi nào |
+|---------|---------|
+| `push: data/**` | Upload file dữ liệu mới vào `data/` → chạy **ngay lập tức** |
+| `workflow_dispatch` | Bấm nút "🔄 Cập nhật" trên dashboard |
+| `schedule: cron 0 */2 * * *` | Tự động mỗi 2 tiếng (backup) |
+
+#### Pipeline steps (GitHub Actions):
 ```
-1. python update_store_data.py
-2. python update_excel_data.py
-3. git add index.html tele.html tasks.html
-4. git commit -m "Auto update <timestamp>"
-5. $env:GITHUB_TOKEN=""; git push origin master; git push origin master:main
+1. Checkout repo (dùng GH_PAT secret)
+2. Setup Python 3.11 + pip install pandas openpyxl
+3. python check_khuvuc.py  (continue-on-error)
+4. python check_st.py      (continue-on-error)
+5. python update_store_data.py
+6. python update_excel_data.py
+7. git add → commit → push origin master + master:main
 ```
 
-### Nút "Cập nhật" trên Dashboard (KI-66)
-- Header có nút **🔄 Cập nhật** gọi `http://localhost:5588/update`.
-- Backend: `update_server.py` chạy trên máy local, lắng nghe port 5588.
-- Khi bấm nút: server chạy toàn bộ pipeline → git push → trả kết quả JSON.
-- Có popup thông báo thành công/lỗi chi tiết từng bước.
-- Nếu server chưa chạy → popup hướng dẫn: `python update_server.py`.
-- Sau khi thành công → tự cập nhật timestamp trên trang + auto reload sau 3 giây.
-- File liên quan: `update_server.py`, `inject_update_btn.py`.
+#### Python scripts — Dual-path (KI-70):
+Tất cả script dùng env var `DATA_DIR`:
+- **Trên GitHub Actions:** `DATA_DIR=$GITHUB_WORKSPACE/data` → đọc từ `data/` trong repo
+- **Trên máy local (fallback):** không set `DATA_DIR` → đọc từ Google Drive `G:\My Drive\...`
+
+Scripts đã sửa: `update_store_data.py`, `update_excel_data.py`, `check_khuvuc.py`, `check_st.py`
+
+#### Nút "Cập nhật" trên Dashboard (KI-71, thay thế KI-66):
+- Bấm nút → JS gọi GitHub API `workflow_dispatch` (KHÔNG gọi localhost nữa)
+- Token PAT lưu trong `localStorage` của browser, nhập 1 lần qua prompt
+- Sau khi trigger → `pollWorkflowStatus()` theo dõi real-time mỗi 10 giây
+- Workflow xong → popup thành công + auto reload
+- Code: hàm `triggerUpdate()` và `pollWorkflowStatus()` trong `index.html`
+- Biến: `GH_OWNER`, `GH_REPO`, `GH_WORKFLOW`, `GH_BRANCH`, `GH_PAT`
+
+#### Secrets & Security (KI-72):
+- Repo secret `GH_PAT`: Personal Access Token (scope: `repo` + `workflow`)
+  - Dùng cho: GitHub Actions checkout & push (để trigger Pages deploy)
+- Token client-side: Lưu trong `localStorage` (key: `gh_pat`)
+  - Dùng cho: JS gọi GitHub API dispatch + poll status
+- Push protection: Đã tắt cho repo (để workflow push commit có token)
+- Repo là **private** → chỉ collaborator thấy code
+
+### Khi có dữ liệu mới (KI-73):
+1. Upload file Excel mới vào `data/TonKhoRo/` hoặc `data/Trip/` (qua GitHub UI hoặc git push)
+2. Pipeline **tự chạy ngay** (trigger `push: data/**`)
+3. KHÔNG cần chờ 2 tiếng, KHÔNG cần bấm nút, KHÔNG cần máy local
 
 ### Mã loại rổ Trip — Mapping quan trọng (KI-67)
 Khi thêm/sửa loại rổ, phải đồng bộ **TẤT CẢ** các vị trí sau:
@@ -76,5 +108,12 @@ Khi thêm/sửa loại rổ, phải đồng bộ **TẤT CẢ** các vị trí s
 - Container flex có `flex-wrap: wrap` cho responsive.
 
 # Global Git Sync Rule
-Whenever you modify project files, you MUST ALWAYS run a terminal command to commit and push the changes to GitHub. Since this is an automated process, you MUST clear the GitHub token from the environment variable before pushing to avoid authentication errors. Use this exact command structure: `git add . && git commit -m "Your commit message" && $env:GITHUB_TOKEN=""; git push origin master`. Do NOT forget this step after any modifications.
-
+Whenever you modify project files, you MUST commit and push using the PAT token:
+```powershell
+git remote set-url origin "https://longdoanthanh-bot:<GH_PAT>@github.com/longdoanthanh-bot/dashboard-ro.git"
+git add . && git commit -m "Your commit message"
+git push origin master
+git push origin master:main
+git remote set-url origin "https://github.com/longdoanthanh-bot/dashboard-ro.git"
+```
+Push cả 2 nhánh: `master` và `master:main`. Restore URL sau khi push (xóa token khỏi remote).
