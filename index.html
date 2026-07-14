@@ -2208,10 +2208,14 @@ async function pollWorkflowStatus() {
                     const el = document.getElementById('last-update-time');
                     if (el) el.textContent = 'Cập nhật: ' + ts;
                     
-                    // Fetch summary from last_update.json
+                    // Fetch summary - đợi 10s cho push landing, lấy từ raw GitHub (không đợi Pages deploy)
                     let summaryText = 'Pipeline hoàn thành.';
                     try {
-                        const sumResp = await fetch('data/last_update.json?t=' + Date.now());
+                        await new Promise(r => setTimeout(r, 10000));
+                        const sumResp = await fetch(
+                            `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/master/data/last_update.json?t=${Date.now()}`,
+                            { headers: { 'Authorization': `token ${GH_PAT}` } }
+                        );
                         if (sumResp.ok) {
                             const sum = await sumResp.json();
                             summaryText = 
@@ -2222,7 +2226,7 @@ async function pollWorkflowStatus() {
                                 `📅 Số ngày trip: ${sum.days}\n` +
                                 `📦 Tổng giao: ${sum.total_giao} | Tổng thu: ${sum.total_thu}`;
                         }
-                    } catch(e) {}
+                    } catch(e) { console.log('Summary fetch error:', e); }
                     
                     showUpdatePopup('success', 'Cập nhật thành công! ✅',
                         summaryText + '\n\nTrang sẽ tự tải lại sau 5 giây...', true);
