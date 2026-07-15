@@ -398,6 +398,20 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 .popup-box.popup-success .popup-title-text { color: var(--green); }
 .popup-box.popup-error .popup-title-text { color: var(--red); }
 .popup-box.popup-info .popup-title-text { color: var(--blue); }
+/* Changelog timeline */
+.changelog-timeline { position:relative; padding-left:28px; }
+.changelog-timeline::before { content:''; position:absolute; left:8px; top:4px; bottom:4px; width:2px; background:var(--border); }
+.cl-entry { position:relative; margin-bottom:20px; }
+.cl-dot { position:absolute; left:-24px; top:6px; width:14px; height:14px; border-radius:50%; border:2px solid var(--bg); z-index:1; }
+.cl-dot.new { background:var(--green); box-shadow:0 0 8px rgba(52,211,153,0.4); }
+.cl-dot.improve { background:var(--blue); box-shadow:0 0 8px rgba(108,140,255,0.4); }
+.cl-dot.fix { background:var(--orange); box-shadow:0 0 8px rgba(251,146,60,0.4); }
+.cl-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 20px; transition:all 0.2s; }
+.cl-card:hover { border-color:var(--blue); transform:translateX(4px); }
+.cl-date { font-size:11px; color:var(--text3); font-weight:600; margin-bottom:4px; letter-spacing:.5px; }
+.cl-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.cl-body { font-size:13px; color:var(--text2); line-height:1.6; }
+.cl-body strong { color:var(--text); }
 
 </style>
 </head>
@@ -418,6 +432,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'storemap', 'Trợ lý — KingFoodmart')">🗺️ Sơ Đồ ST</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'tasks', 'Trợ lý — KingFoodmart')">📋 Công Việc</div>
             <div class="nav-menu-item" onclick="selectNavMenu(event, 'sla', 'Trợ lý — KingFoodmart')">📈 SLA Dashboard</div>
+            <div class="nav-menu-item" onclick="selectNavMenu(event, 'changelog', 'Trợ lý — KingFoodmart')">📝 Nhật Ký Cập Nhật</div>
         </div>
     </div>
     <div style="display: flex; align-items: center; gap: 10px; padding-left: 74px; pointer-events: auto; flex-wrap: wrap; position: relative; z-index: 20;">
@@ -992,6 +1007,87 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
 <!-- PANEL 5: SLA DASHBOARD -->
 <div class="main-panel" id="panel-sla" style="height:calc(100vh - 85px); padding-top:0;">
     <iframe id="iframe-sla" style="width:100%; height:100%; border:none; border-radius:var(--radius); background:var(--bg2);"></iframe>
+</div>
+
+<!-- PANEL 6: NHẬT KÝ CẬP NHẬT -->
+<div class="main-panel" id="panel-changelog">
+    <div style="max-width: 800px; margin: 0 auto; padding: 16px 0;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+            <span style="font-size:28px;">📝</span>
+            <div>
+                <h2 style="margin:0; font-size:20px; font-weight:800; color:var(--text);">Nhật Ký Cập Nhật</h2>
+                <p style="margin:2px 0 0; font-size:12px; color:var(--text3);">Lịch sử các thay đổi và cải tiến trên dashboard</p>
+            </div>
+        </div>
+
+        <div class="changelog-timeline">
+            <!-- Entry -->
+            <div class="cl-entry">
+                <div class="cl-dot new"></div>
+                <div class="cl-card">
+                    <div class="cl-date">15/07/2026</div>
+                    <div class="cl-title">🆕 Thêm tab Nhật Ký Cập Nhật</div>
+                    <div class="cl-body">Thêm tab mới để xem lại lịch sử các thay đổi, cập nhật trên dashboard. Trước đây thông tin chỉ hiện popup rồi biến mất.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot new"></div>
+                <div class="cl-card">
+                    <div class="cl-date">15/07/2026</div>
+                    <div class="cl-title">🆕 Bộ lọc Khách hàng (KFM / AIDI / CPG)</div>
+                    <div class="cl-body">Thêm dropdown "Khách hàng" vào cả tab <strong>Tồn Kho</strong> và <strong>Thu Hồi</strong>. Lọc siêu thị theo nhãn hiệu: KFM, AIDI, hoặc CPG dựa trên prefix tên ST.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot improve"></div>
+                <div class="cl-card">
+                    <div class="cl-date">14/07/2026</div>
+                    <div class="cl-title">📊 Cập nhật dữ liệu Tồn Kho & Thu Hồi</div>
+                    <div class="cl-body">Dữ liệu rổ tồn kho và tiến độ thu hồi được cập nhật tự động hàng ngày. Thêm các ST AIDI vào hệ thống theo dõi.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot improve"></div>
+                <div class="cl-card">
+                    <div class="cl-date">13/07/2026</div>
+                    <div class="cl-title">🔄 Nâng cấp bộ lọc Thu Hồi</div>
+                    <div class="cl-body">Cải tiến bộ lọc trạng thái thu hồi (Không thu / Thu 1 phần / Đã thu hết). Thêm lọc theo loại rổ và kho hàng. Hỗ trợ lọc khoảng ngày linh hoạt.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot improve"></div>
+                <div class="cl-card">
+                    <div class="cl-date">12/07/2026</div>
+                    <div class="cl-title">📈 Thêm SLA Dashboard</div>
+                    <div class="cl-body">Tích hợp trang SLA Dashboard để theo dõi chỉ số hiệu suất giao hàng và thu hồi theo các mốc thời gian.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot fix"></div>
+                <div class="cl-card">
+                    <div class="cl-date">11/07/2026</div>
+                    <div class="cl-title">🗺️ Sơ đồ Siêu Thị</div>
+                    <div class="cl-body">Thêm bản đồ hiển thị vị trí các siêu thị với marker cluster. Hỗ trợ xem thông tin chi tiết từng ST khi click.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot fix"></div>
+                <div class="cl-card">
+                    <div class="cl-date">10/07/2026</div>
+                    <div class="cl-title">🎨 Giao diện & Chế độ sáng/tối</div>
+                    <div class="cl-body">Hỗ trợ chuyển đổi giao diện sáng/tối. Cải tiến hiển thị bảng, thêm color coding theo mức tồn kho. Tối ưu trải nghiệm trên mobile.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot new"></div>
+                <div class="cl-card">
+                    <div class="cl-date">09/07/2026</div>
+                    <div class="cl-title">🚀 Ra mắt Dashboard Tồn Rổ</div>
+                    <div class="cl-body">Phiên bản đầu tiên của dashboard theo dõi rổ tồn kho tại các siêu thị KingFoodmart. Bao gồm bảng tồn kho, bộ lọc theo kho, tìm kiếm, và xuất Excel.</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
