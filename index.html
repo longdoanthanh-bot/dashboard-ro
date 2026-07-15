@@ -459,6 +459,14 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                     </select>
                 </div>
                 <div class="filter-group">
+                    <span class="filter-label">Phân loại</span>
+                    <select class="filter-select" id="tonkho-brand-filter" onchange="filterBrand(this.value)">
+                        <option value="">Tất cả</option>
+                        <option value="KFM">KFM</option>
+                        <option value="AIDI">AIDI</option>
+                    </select>
+                </div>
+                <div class="filter-group">
                     <span class="filter-label">Hiển thị</span>
                     <select class="filter-select" id="tonkho-top-filter" onchange="filterTop(+this.value)">
                         <option value="10">Top 10</option><option value="20">Top 20</option>
@@ -766,6 +774,14 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
                         <option value="Rau">Rau</option>
                         <option value="Đông Mát">Đông Mát</option>
                         <option value="Thịt Cá SCF">Thịt Cá SCF</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Phân loại</span>
+                    <select class="filter-select" id="trip-brand-filter" onchange="filterTripBrand(this.value)">
+                        <option value="">Tất cả</option>
+                        <option value="KFM">KFM</option>
+                        <option value="AIDI">AIDI</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -1171,6 +1187,8 @@ function renderTripTable() {
     });
     stores = stores.filter(s => s.fg>0 || s.ft>0);
     if(searchQ) stores = stores.filter(s => s.code.toLowerCase().includes(searchQ) || s.name.toLowerCase().includes(searchQ));
+    const tripBrand = (document.getElementById('trip-brand-filter')?.value || '');
+    if(tripBrand) stores = stores.filter(s => s.name.startsWith(tripBrand + '_'));
     stores.forEach(s => {
         if(s.ft === 0) s.status = 'none';
         else if(s.ft < s.fg) s.status = 'partial';
@@ -1360,6 +1378,7 @@ function toggleStatusCheck(status, cb) {
 }
 function filterTopTrip(n) { tripTopN = n; renderTripTable(); }
 function filterTripStore() { renderTripTable(); }
+function filterTripBrand(brand) { renderTripTable(); }
 function filterWarehouse(wh) {
     const panel = document.getElementById('col-dd');
     const checks = Array.from(panel.querySelectorAll('input[data-col]'));
@@ -1433,14 +1452,19 @@ function updateTonkhoStats() {
 }
 function filterStore() {
     const q = document.getElementById('store-search').value.trim().toLowerCase();
+    const brand = (document.getElementById('tonkho-brand-filter')?.value || '');
     document.querySelectorAll('#tonkho-table tbody tr').forEach(row => {
         const code = (row.cells[1]?.textContent || '').toLowerCase();
-        const name = (row.cells[2]?.textContent || '').toLowerCase();
-        row.dataset.storeHidden = (q && !code.includes(q) && !name.includes(q)) ? '1' : '0';
+        const name = (row.cells[2]?.textContent || '');
+        const nameLower = name.toLowerCase();
+        const searchHidden = (q && !code.includes(q) && !nameLower.includes(q));
+        const brandHidden = brand ? !name.startsWith(brand + '_') : false;
+        row.dataset.storeHidden = (searchHidden || brandHidden) ? '1' : '0';
     });
     const sel = document.getElementById('tonkho-top-filter');
     filterTop(sel ? +sel.value : 9999);
 }
+function filterBrand(brand) { filterStore(); }
 window.addEventListener('DOMContentLoaded', () => { filterTop(9999); renderTripTable(); });
 function toggleDD(id) {
     const panel = document.getElementById(id);
