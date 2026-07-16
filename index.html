@@ -1027,9 +1027,33 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
         <div class="changelog-timeline">
             <!-- Entry -->
             <div class="cl-entry">
+                <div class="cl-dot fix"></div>
+                <div class="cl-card">
+                    <div class="cl-date">16/07/2026 — 15:46</div>
+                    <div class="cl-title">🔧 Sửa mapping Tồn Kho: 102 → 207 ST</div>
+                    <div class="cl-body">Map siêu thị qua <strong>branch_name</strong> thay vì branch_code. Trước đây chỉ match được ~100 ST do mã branch_code trong DB khác với mã abbr trong STORE_COORDS. Giờ match được 207+ ST.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot improve"></div>
+                <div class="cl-card">
+                    <div class="cl-date">16/07/2026 — 12:51</div>
+                    <div class="cl-title">📅 Calendar chỉ hiện 5 ngày gần nhất</div>
+                    <div class="cl-body">Giới hạn calendar strip chỉ hiển thị <strong>5 ngày gần nhất</strong> từ today lùi lại, thay vì tất cả ngày có data (trước đây hiện 10-15 ngày). Tất cả 5 ngày đều active mặc định.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
+                <div class="cl-dot improve"></div>
+                <div class="cl-card">
+                    <div class="cl-date">16/07/2026 — 12:49</div>
+                    <div class="cl-title">📋 Chuyển nút Excel sang hàng calendar</div>
+                    <div class="cl-body">Di chuyển nút <strong>📥 Excel</strong> từ hàng filter xuống cùng hàng với calendar strip để giao diện gọn hơn.</div>
+                </div>
+            </div>
+            <div class="cl-entry">
                 <div class="cl-dot new"></div>
                 <div class="cl-card">
-                    <div class="cl-date">15/07/2026</div>
+                    <div class="cl-date">15/07/2026 — 10:19</div>
                     <div class="cl-title">🆕 Thêm tab Nhật Ký Cập Nhật</div>
                     <div class="cl-body">Thêm tab mới để xem lại lịch sử các thay đổi, cập nhật trên dashboard. Trước đây thông tin chỉ hiện popup rồi biến mất.</div>
                 </div>
@@ -1037,7 +1061,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="cl-entry">
                 <div class="cl-dot new"></div>
                 <div class="cl-card">
-                    <div class="cl-date">15/07/2026</div>
+                    <div class="cl-date">15/07/2026 — 09:30</div>
                     <div class="cl-title">🆕 Bộ lọc Khách hàng (KFM / AIDI / CPG)</div>
                     <div class="cl-body">Thêm dropdown "Khách hàng" vào cả tab <strong>Tồn Kho</strong> và <strong>Thu Hồi</strong>. Lọc siêu thị theo nhãn hiệu: KFM, AIDI, hoặc CPG dựa trên prefix tên ST.</div>
                 </div>
@@ -1045,7 +1069,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="cl-entry">
                 <div class="cl-dot improve"></div>
                 <div class="cl-card">
-                    <div class="cl-date">14/07/2026</div>
+                    <div class="cl-date">14/07/2026 — 22:26</div>
                     <div class="cl-title">📊 Cập nhật dữ liệu Tồn Kho & Thu Hồi</div>
                     <div class="cl-body">Dữ liệu rổ tồn kho và tiến độ thu hồi được cập nhật tự động hàng ngày. Thêm các ST AIDI vào hệ thống theo dõi.</div>
                 </div>
@@ -1053,7 +1077,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="cl-entry">
                 <div class="cl-dot improve"></div>
                 <div class="cl-card">
-                    <div class="cl-date">13/07/2026</div>
+                    <div class="cl-date">13/07/2026 — 16:00</div>
                     <div class="cl-title">🔄 Nâng cấp bộ lọc Thu Hồi</div>
                     <div class="cl-body">Cải tiến bộ lọc trạng thái thu hồi (Không thu / Thu 1 phần / Đã thu hết). Thêm lọc theo loại rổ và kho hàng. Hỗ trợ lọc khoảng ngày linh hoạt.</div>
                 </div>
@@ -1061,7 +1085,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="cl-entry">
                 <div class="cl-dot improve"></div>
                 <div class="cl-card">
-                    <div class="cl-date">12/07/2026</div>
+                    <div class="cl-date">12/07/2026 — 14:30</div>
                     <div class="cl-title">📈 Thêm SLA Dashboard</div>
                     <div class="cl-body">Tích hợp trang SLA Dashboard để theo dõi chỉ số hiệu suất giao hàng và thu hồi theo các mốc thời gian.</div>
                 </div>
@@ -1069,7 +1093,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="cl-entry">
                 <div class="cl-dot fix"></div>
                 <div class="cl-card">
-                    <div class="cl-date">11/07/2026</div>
+                    <div class="cl-date">11/07/2026 — 11:00</div>
                     <div class="cl-title">🗺️ Sơ đồ Siêu Thị</div>
                     <div class="cl-body">Thêm bản đồ hiển thị vị trí các siêu thị với marker cluster. Hỗ trợ xem thông tin chi tiết từng ST khi click.</div>
                 </div>
@@ -1077,7 +1101,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="cl-entry">
                 <div class="cl-dot fix"></div>
                 <div class="cl-card">
-                    <div class="cl-date">10/07/2026</div>
+                    <div class="cl-date">10/07/2026 — 15:00</div>
                     <div class="cl-title">🎨 Giao diện & Chế độ sáng/tối</div>
                     <div class="cl-body">Hỗ trợ chuyển đổi giao diện sáng/tối. Cải tiến hiển thị bảng, thêm color coding theo mức tồn kho. Tối ưu trải nghiệm trên mobile.</div>
                 </div>
@@ -1085,7 +1109,7 @@ select.filter-select, .dropdown-btn, .search-wrap input { height:33px; box-sizin
             <div class="cl-entry">
                 <div class="cl-dot new"></div>
                 <div class="cl-card">
-                    <div class="cl-date">09/07/2026</div>
+                    <div class="cl-date">09/07/2026 — 09:00</div>
                     <div class="cl-title">🚀 Ra mắt Dashboard Tồn Rổ</div>
                     <div class="cl-body">Phiên bản đầu tiên của dashboard theo dõi rổ tồn kho tại các siêu thị KingFoodmart. Bao gồm bảng tồn kho, bộ lọc theo kho, tìm kiếm, và xuất Excel.</div>
                 </div>
