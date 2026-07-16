@@ -102,8 +102,13 @@ def main():
         with conn.cursor() as cursor:
             # 2. Xây dựng Mapping
             print("Đang tải mapping Cửa hàng & Sản phẩm...")
-            cursor.execute("SELECT DISTINCT branch_id, branch_code FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_code IS NOT NULL AND branch_code != ''")
-            branch_id_to_abbr = {row[0]: row[1] for row in cursor.fetchall()}
+            cursor.execute("SELECT DISTINCT branch_id, branch_code, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_code IS NOT NULL AND branch_code != ''")
+            branch_id_to_code = {}
+            branch_id_to_name = {}
+            for row in cursor.fetchall():
+                branch_id_to_code[row[0]] = row[1]
+                if row[2]:
+                    branch_id_to_name[row[0]] = row[2]
             
             cursor.execute("SELECT DISTINCT barcode, product_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE product_name IS NOT NULL")
             barcode_to_product_name = {row[0]: row[1] for row in cursor.fetchall()}
@@ -134,14 +139,21 @@ def main():
                     
                     p_name = barcode_to_product_name.get(barcode, "")
                     if p_name in XNT_MAPPING:
-                        abbr = branch_id_to_abbr.get(b_id)
-                        if abbr and abbr in abbr_to_name:
-                            st_name = abbr_to_name[abbr]
-                            col_idx = XNT_MAPPING[p_name]["col"]
-                            
-                            if st_name not in store_stock_data:
-                                store_stock_data[st_name] = {i: 0 for i in range(0, 10)}
-                            store_stock_data[st_name][col_idx] += closing
+                        # Map qua branch_name (khớp STORE_COORDS name) hoặc fallback qua branch_code (abbr)
+                        st_name = branch_id_to_name.get(b_id)
+                        if st_name and st_name in name_to_abbr:
+                            pass  # Matched by name
+                        else:
+                            abbr = branch_id_to_code.get(b_id)
+                            if abbr and abbr in abbr_to_name:
+                                st_name = abbr_to_name[abbr]
+                            else:
+                                continue  # Không match được
+                        
+                        col_idx = XNT_MAPPING[p_name]["col"]
+                        if st_name not in store_stock_data:
+                            store_stock_data[st_name] = {i: 0 for i in range(0, 10)}
+                        store_stock_data[st_name][col_idx] += closing
             
             tonkho_tbody = generate_tonkho_html(store_stock_data, name_to_abbr)
 
@@ -166,34 +178,42 @@ def main():
                 d_val, b_id, basket_code, giao, thu = row
                 if not d_val: continue
                 date_str = d_val.strftime("%d/%m/%Y")
-                abbr = branch_id_to_abbr.get(b_id)
                 
-                if abbr and abbr in abbr_to_name:
-                    st_name = abbr_to_name[abbr]
-                    giao = int(giao) if giao is not None else 0
-                    thu = int(thu) if thu is not None else 0
+                # Map qua branch_name hoặc fallback qua branch_code
+                st_name = branch_id_to_name.get(b_id)
+                if st_name and st_name in name_to_abbr:
+                    abbr = name_to_abbr[st_name]
+                else:
+                    abbr = branch_id_to_code.get(b_id)
+                    if abbr and abbr in abbr_to_name:
+                        st_name = abbr_to_name[abbr]
+                    else:
+                        continue
+                
+                giao = int(giao) if giao is not None else 0
+                thu = int(thu) if thu is not None else 0
                     
-                    if date_str not in raw_trip_data:
-                        raw_trip_data[date_str] = {}
+                if date_str not in raw_trip_data:
+                    raw_trip_data[date_str] = {}
                         
-                    if abbr not in raw_trip_data[date_str]:
-                        raw_trip_data[date_str][abbr] = {
-                            "c": abbr,
-                            "n": st_name,
-                            "g": 0,
-                            "t": 0,
-                            "items": {}
-                        }
+                if abbr not in raw_trip_data[date_str]:
+                    raw_trip_data[date_str][abbr] = {
+                        "c": abbr,
+                        "n": st_name,
+                        "g": 0,
+                        "t": 0,
+                        "items": {}
+                    }
                         
-                    store_obj = raw_trip_data[date_str][abbr]
-                    if basket_code not in store_obj["items"]:
-                        store_obj["items"][basket_code] = [0, 0]
-                    store_obj["items"][basket_code][0] += giao
-                    store_obj["items"][basket_code][1] += thu
+                store_obj = raw_trip_data[date_str][abbr]
+                if basket_code not in store_obj["items"]:
+                    store_obj["items"][basket_code] = [0, 0]
+                store_obj["items"][basket_code][0] += giao
+                store_obj["items"][basket_code][1] += thu
                     
-                    if basket_code in COUNTABLE_TRIP_CODES:
-                        store_obj["g"] += giao
-                        store_obj["t"] += thu
+                if basket_code in COUNTABLE_TRIP_CODES:
+                    store_obj["g"] += giao
+                    store_obj["t"] += thu
                         
             # Chuyển raw_trip_data thành định dạng mảng (list)
             final_trip_data = {}
@@ -233,10 +253,15 @@ def main():
                 flags=re.DOTALL
             )
             
-            # Generate Calendar Grid
+            # Generate Calendar Grid - chỉ hiển thị 5 ngày gần nhất từ today lùi lại
             valid_dates = [d for d in final_trip_data.keys() if d != "all"]
             if valid_dates:
                 valid_dates.sort(key=lambda x: datetime.strptime(x, "%d/%m/%Y"))
+                # Chỉ lấy 5 ngày gần nhất
+                today = datetime.now().date()
+                valid_dates = [d for d in valid_dates if datetime.strptime(d, "%d/%m/%Y").date() <= today]
+                valid_dates = valid_dates[-5:]  # Lấy 5 ngày cuối (gần nhất)
+                
                 min_date_iso = datetime.strptime(valid_dates[0], "%d/%m/%Y").strftime("%Y-%m-%d")
                 max_date_iso = datetime.strptime(valid_dates[-1], "%d/%m/%Y").strftime("%Y-%m-%d")
                 
@@ -248,7 +273,7 @@ def main():
                     
                     chua_count = sum(1 for st in final_trip_data[d] if st["g"] > st["t"])
                     if chua_count == 0: continue
-                    active_cls = " active" if idx == len(valid_dates) - 1 else ""
+                    active_cls = " active"  # Tất cả ngày đều active mặc định
                     cal_html += f'<div class="cal-day{active_cls}" onclick="toggleDate(\'{d}\',this)" data-date="{d}" data-iso="{iso}"><div class="cal-date">{day_str}</div><div class="cal-badge"><span class="badge-nr">{chua_count}</span> chưa</div></div>\n'
                     
                 new_html = re.sub(
