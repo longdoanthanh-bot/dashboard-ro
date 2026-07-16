@@ -1263,8 +1263,6 @@ function renderTripTable() {
     const tbody = document.getElementById('trip-tbody');
     tbody.innerHTML = '';
     let tG=0, tT=0;
-    const _todayObj = new Date();
-    const _todayKey = String(_todayObj.getDate()).padStart(2,'0') + '/' + String(_todayObj.getMonth()+1).padStart(2,'0') + '/' + _todayObj.getFullYear();
     displayStores.forEach((s,i) => {
         let g=s.fg, t=s.ft;
         if (window.activeMissingFilter) {
@@ -1287,9 +1285,8 @@ function renderTripTable() {
         const thuCls = t===0 ? 'num zero' : 'num';
         let dr = '';
         const detailWh = document.getElementById('trip-wh-filter')?.value || '';
-        // Lịch sử thu/giao chỉ hiển thị today
-        const todayStoreData = (TRIP_DATA[_todayKey]||[]).find(x => x.c === s.code);
-        const detailSource = todayStoreData ? todayStoreData.items : {};
+        // Chi tiết thu/giao theo các ngày đang chọn trên calendar
+        const detailSource = s.items;
         let detailItems = Object.entries(detailSource)
             .filter(([ic,[g,t]]) => COUNTABLE_CODES.has(ic) && !(g===0 && t===0))
             .filter(([ic]) => useAll || !activeCodes || activeCodes.includes(ic))
