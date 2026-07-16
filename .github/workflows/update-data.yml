@@ -11,9 +11,7 @@ on:
         description: 'KFM Password (optional, uses secret if empty)'
         required: false
         default: ''
-  push:
-    paths:
-      - 'data/**'
+
   schedule:
     - cron: '0 */2 * * *'
 
