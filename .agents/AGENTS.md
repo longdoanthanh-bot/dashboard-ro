@@ -32,9 +32,10 @@
 #### Triggers (3 cách kích hoạt):
 | Trigger | Khi nào |
 |---------|---------|
-| `push: data/**` | Upload file dữ liệu mới vào `data/` → chạy **ngay lập tức** |
 | `workflow_dispatch` | Bấm nút "🔄 Cập nhật" trên dashboard |
 | `schedule: cron 0 */2 * * *` | Tự động mỗi 2 tiếng (backup) |
+
+> ⚠️ **KHÔNG có push trigger** (đã xóa KI-69). Push code → Pages deploy 1-2 phút, không chạy pipeline.
 
 #### Pipeline steps (GitHub Actions):
 ```
@@ -102,10 +103,12 @@ Khi thêm/sửa loại rổ, phải đồng bộ **TẤT CẢ** các vị trí s
 > Cả 2 mã vẫn cần tồn tại trong code (backward compatible).
 > Nếu có mã rổ mới xuất hiện trong trip data mà chưa có trong mapping → dashboard sẽ KHÔNG hiển thị rổ đó trong tổng quan thu hồi.
 
-### Header Layout (KI-68)
-- Thứ tự nút trong header: **Cập nhật** → **Giao diện** → **Timestamp**
-- Header row có `z-index: 20` để không bị filter controls bên dưới đè lên.
-- Container flex có `flex-wrap: wrap` cho responsive.
+### Header Layout (KI-68, KI-71, KI-72)
+- Header dùng `position: fixed` inline style (KI-71). Cố định góc trái trên.
+- `.main-panel` scroll trong viewport: `max-height: calc(100vh - 40px); overflow-y: auto` (KI-72).
+- `.container` có `height: calc(100vh - 16px); overflow: hidden`.
+- Spacer div `width: 420px` trong mỗi panel tạo khoảng trống cho header.
+- Token GitHub thiếu scope `workflow` → sửa `.github/workflows/` trực tiếp trên GitHub web (KI-69).
 
 # Global Git Sync Rule
 Whenever you modify project files, you MUST commit and push using the PAT token:
