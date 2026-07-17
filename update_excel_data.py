@@ -264,6 +264,12 @@ def main():
     valid_dates = [d for d in trip_data.keys() if d != "all"]
     if valid_dates:
         valid_dates.sort(key=lambda x: datetime.strptime(x, "%d/%m/%Y"))
+        
+        # Chỉ lấy 5 ngày gần nhất
+        today = datetime.now().date()
+        valid_dates = [d for d in valid_dates if datetime.strptime(d, "%d/%m/%Y").date() <= today]
+        valid_dates = valid_dates[-5:]  # Lấy 5 ngày cuối (gần nhất)
+        
         min_date_iso = datetime.strptime(valid_dates[0], "%d/%m/%Y").strftime("%Y-%m-%d")
         max_date_iso = datetime.strptime(valid_dates[-1], "%d/%m/%Y").strftime("%Y-%m-%d")
         
@@ -277,7 +283,7 @@ def main():
             chua_count = sum(1 for st in trip_data[d] if st["g"] > st["t"])
             if chua_count == 0: continue
             
-            active_cls = " active" if idx == len(valid_dates) - 1 else ""
+            active_cls = " active"  # Tất cả ngày đều active mặc định
             cal_html += f'<div class="cal-day{active_cls}" onclick="toggleDate(\'{d}\',this)" data-date="{d}" data-iso="{iso}"><div class="cal-date">{day_str}</div><div class="cal-badge"><span class="badge-nr">{chua_count}</span> chưa</div></div>\n'
             
         new_html = re.sub(
