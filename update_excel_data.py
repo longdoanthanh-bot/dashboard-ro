@@ -320,6 +320,10 @@ def main():
     # Số lượt chưa thu (store-date chưa thu đủ)
     chua_count_cl = sum(1 for d, sts in trip_data.items() if d != 'all' for st in sts if st['g'] > st['t'])
     
+    # Lấy tên file nguồn (bỏ đuôi .xlsx)
+    xnt_name = os.path.splitext(os.path.basename(xnt_file))[0]
+    trip_name = os.path.splitext(os.path.basename(trip_file))[0]
+    
     cl_entry = (
         f'<div class="cl-entry">'
         f'<div class="cl-dot improve"></div>'
@@ -327,8 +331,9 @@ def main():
         f'<div class="cl-date">{current_time}</div>'
         f'<div class="cl-title">📊 Cập nhật dữ liệu tự động</div>'
         f'<div class="cl-body">'
-        f'<strong>{num_stores_cl}</strong> ST tồn kho · '
-        f'<strong>{num_days_cl}</strong> ngày trip · '
+        f'📁 <strong>{xnt_name}</strong> · <strong>{trip_name}</strong><br>'
+        f'🏪 <strong>{num_stores_cl}</strong> ST tồn kho · '
+        f'📅 <strong>{num_days_cl}</strong> ngày trip · '
         f'Giao: <strong>{total_giao_cl:,}</strong> · '
         f'Thu: <strong>{total_thu_cl:,}</strong> ({pct_thu}%) · '
         f'Chưa thu: <strong>{chua_count_cl}</strong> lượt'
