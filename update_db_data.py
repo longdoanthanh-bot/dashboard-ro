@@ -95,8 +95,17 @@ def main():
         sys.exit(1)
         
     store_coords = json.loads(match.group(1))
-    abbr_to_name = {s["abbr"]: s["name"] for s in store_coords if "name" in s and "abbr" in s}
-    name_to_abbr = {s["name"]: s["abbr"] for s in store_coords if "name" in s and "abbr" in s}
+    valid_coords = []
+    for s in store_coords:
+        if "name" not in s or "abbr" not in s: continue
+        name_lower = s["name"].lower()
+        store_type = s.get("store_type", "").lower()
+        if "kho" in name_lower or "kho" in store_type:
+            continue
+        valid_coords.append(s)
+        
+    abbr_to_name = {s["abbr"]: s["name"] for s in valid_coords}
+    name_to_abbr = {s["name"]: s["abbr"] for s in valid_coords}
 
     conn = pymysql.connect(**DB_CONFIG)
     
@@ -144,7 +153,7 @@ def main():
                     if ten_hang not in XNT_MAPPING:
                         continue
                     ton_cuoi = row.get('Tồn cuối kỳ', 0)
-                    if pd.isna(ton_cuoi) or int(ton_cuoi) <= 0:
+                    if pd.isna(ton_cuoi) or int(ton_cuoi) == 0:
                         continue
                     ton_cuoi = int(ton_cuoi)
                     chi_nhanh = str(row.get('Chi nhánh', '')).strip()
@@ -267,8 +276,23 @@ def main():
                 flags=re.DOTALL
             )
             
+            valid_dates_all = [d for d in final_trip_data.keys() if d != "all"]
+            
+            # Format metadata
+            if valid_dates_all:
+                latest_trip = max(valid_dates_all, key=lambda x: datetime.strptime(x, "%d/%m/%Y"))
+            else:
+                latest_trip = "N/A"
+            meta_str = f"Tồn kho: {os.path.basename(xnt_path)} | Trip: DB (Tới {latest_trip})"
+            new_html = re.sub(
+                r'<!-- METADATA_START -->.*?<!-- METADATA_END -->',
+                f'<!-- METADATA_START -->{meta_str}<!-- METADATA_END -->',
+                new_html,
+                flags=re.DOTALL
+            )
+            
             # Generate Calendar Grid - chỉ hiển thị 5 ngày gần nhất từ today lùi lại
-            valid_dates = [d for d in final_trip_data.keys() if d != "all"]
+            valid_dates = valid_dates_all[:]
             if valid_dates:
                 valid_dates.sort(key=lambda x: datetime.strptime(x, "%d/%m/%Y"))
                 # Chỉ lấy 5 ngày gần nhất
