@@ -307,6 +307,70 @@ def main():
     current_time = datetime.now(timezone(timedelta(hours=7))).strftime("%d/%m/%Y %H:%M")
     new_html = re.sub(r'(id="last-update-time"[^>]*>Cập nhật:\s*).*?(</div>)', r'\g<1>' + current_time + r'\2', new_html)
     
+    # === AUTO CHANGELOG ===
+    total_giao_cl = sum(st['g'] for d, sts in trip_data.items() if d != 'all' for st in sts)
+    total_thu_cl = sum(st['t'] for d, sts in trip_data.items() if d != 'all' for st in sts)
+    num_days_cl = len([d for d in trip_data.keys() if d != 'all'])
+    num_stores_cl = len(xnt_data)
+    today_str = datetime.now(timezone(timedelta(hours=7))).strftime("%d/%m/%Y")
+    
+    # Tính tỉ lệ thu hồi
+    pct_thu = round(total_thu_cl / total_giao_cl * 100, 1) if total_giao_cl > 0 else 0
+    
+    # Số lượt chưa thu (store-date chưa thu đủ)
+    chua_count_cl = sum(1 for d, sts in trip_data.items() if d != 'all' for st in sts if st['g'] > st['t'])
+    
+    cl_entry = (
+        f'<div class="cl-entry">'
+        f'<div class="cl-dot improve"></div>'
+        f'<div class="cl-card">'
+        f'<div class="cl-date">{current_time}</div>'
+        f'<div class="cl-title">📊 Cập nhật dữ liệu tự động</div>'
+        f'<div class="cl-body">'
+        f'<strong>{num_stores_cl}</strong> ST tồn kho · '
+        f'<strong>{num_days_cl}</strong> ngày trip · '
+        f'Giao: <strong>{total_giao_cl:,}</strong> · '
+        f'Thu: <strong>{total_thu_cl:,}</strong> ({pct_thu}%) · '
+        f'Chưa thu: <strong>{chua_count_cl}</strong> lượt'
+        f'</div></div></div>\n'
+    )
+    
+    # Parse existing auto entries
+    auto_match = re.search(
+        r'<!-- CHANGELOG_AUTO_START -->(.*?)<!-- CHANGELOG_AUTO_END -->',
+        new_html, flags=re.DOTALL
+    )
+    if auto_match:
+        existing_auto = auto_match.group(1)
+        # Tách từng entry
+        entries = re.findall(r'<div class="cl-entry">.*?</div>\s*</div>\s*</div>', existing_auto, flags=re.DOTALL)
+        
+        # Kiểm tra xem hôm nay đã có entry chưa
+        today_exists = False
+        new_entries = []
+        for entry in entries:
+            date_m = re.search(r'<div class="cl-date">(\d{2}/\d{2}/\d{4})', entry)
+            if date_m and date_m.group(1) == today_str:
+                today_exists = True
+                # Thay bằng entry mới (cập nhật)
+                new_entries.append(cl_entry)
+            else:
+                new_entries.append(entry + '\n')
+        
+        if not today_exists:
+            # Thêm entry mới lên đầu
+            new_entries.insert(0, cl_entry)
+        
+        # Giữ tối đa 7 entries
+        new_entries = new_entries[:7]
+        
+        auto_block = '\n'.join(new_entries)
+        new_html = re.sub(
+            r'<!-- CHANGELOG_AUTO_START -->.*?<!-- CHANGELOG_AUTO_END -->',
+            f'<!-- CHANGELOG_AUTO_START -->\n{auto_block}<!-- CHANGELOG_AUTO_END -->',
+            new_html, flags=re.DOTALL
+        )
+    
     # Print summary for verification
     total_giao = sum(st['g'] for d, sts in trip_data.items() if d != 'all' for st in sts)
     total_thu = sum(st['t'] for d, sts in trip_data.items() if d != 'all' for st in sts)
