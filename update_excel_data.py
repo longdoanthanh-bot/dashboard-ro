@@ -29,8 +29,14 @@ def find_latest_excel(directory, prefix):
     files = glob.glob(pattern)
     if not files:
         return None
-    # Sort by modification time
-    files.sort(key=os.path.getmtime, reverse=True)
+    # Parse ngày từ tên file (format: prefix_DDMMYYYY... ) để sort chính xác
+    def extract_date(f):
+        name = os.path.basename(f)
+        m = re.search(r'(\d{2})(\d{2})(\d{4})', name)
+        if m:
+            return m.group(3) + m.group(2) + m.group(1)  # YYYYMMDD
+        return name
+    files.sort(key=extract_date, reverse=True)
     return files[0]
 
 # Mapping Tên hàng to Column Index and Warehouse in index.html
