@@ -1,8 +1,10 @@
 import os
 import re
 import json
+import glob
 import shutil
 import pymysql
+import pandas as pd
 from datetime import datetime, timedelta
 
 # Fix Windows console encoding
@@ -113,48 +115,59 @@ def main():
             cursor.execute("SELECT DISTINCT barcode, product_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE product_name IS NOT NULL")
             barcode_to_product_name = {row[0]: row[1] for row in cursor.fetchall()}
 
-            # 3. Lấy dữ liệu Tồn Kho — dùng stockcard (onhand thay vì closing_stock)
-            print("Đang tải dữ liệu Tồn kho...")
+            # 3. Lấy dữ liệu Tồn Kho từ EXCEL (DB không có 'Tồn cuối kỳ' chính xác)
+            print("Đang tải dữ liệu Tồn kho từ Excel...")
             store_stock_data = {}
-            # TRIM product_name để xử lý dấu cách thừa (vd: "TOTE RỔ ĐEN CÓ NẮP  ")
-            target_barcodes = [bc for bc, name in barcode_to_product_name.items() if name.strip() in XNT_MAPPING]
+            xnt_file_name = "(không tìm thấy)"
             
-            if target_barcodes:
-                format_strings = ','.join(['%s'] * len(target_barcodes))
-                q_stock = f"""
-                SELECT branch_id, barcode, onhand
-                FROM (
-                    SELECT branch_id, barcode, onhand,
-                           ROW_NUMBER() OVER(PARTITION BY branch_id, barcode ORDER BY updated_at DESC) as rn
-                    FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard
-                    WHERE barcode IN ({format_strings})
-                ) t
-                WHERE t.rn = 1 AND t.onhand > 0
-                """
-                cursor.execute(q_stock, tuple(target_barcodes))
+            # Tìm file XNT mới nhất
+            _data_dir = os.environ.get('DATA_DIR', '')
+            if _data_dir:
+                xnt_dir = os.path.join(_data_dir, "TonKhoRo")
+            else:
+                xnt_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Tồn kho Rổ"
+            
+            xnt_files = glob.glob(os.path.join(xnt_dir, "XNT_*.xlsx"))
+            if xnt_files:
+                # Sort theo ngày trong tên file (DDMMYYYY → YYYYMMDD)
+                def extract_date(f):
+                    m = re.search(r'(\d{2})(\d{2})(\d{4})', os.path.basename(f))
+                    return m.group(3) + m.group(2) + m.group(1) if m else ''
+                xnt_files.sort(key=extract_date, reverse=True)
+                xnt_path = xnt_files[0]
+                xnt_file_name = os.path.basename(xnt_path)
+                print(f"  File XNT: {xnt_file_name}")
                 
-                for row in cursor.fetchall():
-                    b_id, barcode, onhand = row
-                    if onhand is None: continue
-                    onhand = int(onhand)
+                df_xnt = pd.read_excel(xnt_path)
+                for _, row in df_xnt.iterrows():
+                    ten_hang = str(row.get('Tên hàng', '')).strip()
+                    if ten_hang not in XNT_MAPPING:
+                        continue
+                    ton_cuoi = row.get('Tồn cuối kỳ', 0)
+                    if pd.isna(ton_cuoi) or int(ton_cuoi) <= 0:
+                        continue
+                    ton_cuoi = int(ton_cuoi)
+                    chi_nhanh = str(row.get('Chi nhánh', '')).strip()
                     
-                    p_name = barcode_to_product_name.get(barcode, "").strip()
-                    if p_name in XNT_MAPPING:
-                        # Map qua branch_name hoặc branch_code → chỉ lấy ST
-                        st_name = branch_id_to_name.get(b_id)
-                        if st_name and st_name in name_to_abbr:
-                            pass
-                        else:
-                            abbr = branch_id_to_code.get(b_id)
-                            if abbr and abbr in abbr_to_name:
-                                st_name = abbr_to_name[abbr]
-                            else:
-                                continue  # Kho tổng → bỏ
-                        
-                        col_idx = XNT_MAPPING[p_name]["col"]
-                        if st_name not in store_stock_data:
-                            store_stock_data[st_name] = {i: 0 for i in range(0, 10)}
-                        store_stock_data[st_name][col_idx] += onhand
+                    # Map chi_nhanh → STORE_COORDS name
+                    st_name = None
+                    if chi_nhanh in name_to_abbr:
+                        st_name = chi_nhanh
+                    else:
+                        # Thử match một phần
+                        for sc_name in name_to_abbr:
+                            if chi_nhanh in sc_name or sc_name in chi_nhanh:
+                                st_name = sc_name
+                                break
+                    if not st_name:
+                        continue
+                    
+                    col_idx = XNT_MAPPING[ten_hang]["col"]
+                    if st_name not in store_stock_data:
+                        store_stock_data[st_name] = {i: 0 for i in range(0, 10)}
+                    store_stock_data[st_name][col_idx] += ton_cuoi
+            else:
+                print("  ⚠️ Không tìm thấy file XNT!")
             
             tonkho_tbody = generate_tonkho_html(store_stock_data, name_to_abbr)
 
@@ -313,7 +326,7 @@ def main():
                 f'<div class="cl-date">{current_time}</div>'
                 f'<div class="cl-title">📊 Cập nhật dữ liệu tự động</div>'
                 f'<div class="cl-body">'
-                f'📁 <strong>DB trực tiếp</strong> (real-time)<br>'
+                f'📁 <strong>{xnt_file_name}</strong> + DB trip<br>'
                 f'🏪 <strong>{num_stores_cl}</strong> ST tồn kho · '
                 f'📅 <strong>{num_days_cl}</strong> ngày trip · '
                 f'Giao: <strong>{total_giao_cl:,}</strong> · '
@@ -380,7 +393,7 @@ def main():
             print(f"\n{'='*50}")
             print(f"📊 KẾT QUẢ CẬP NHẬT ({current_time})")
             print(f"{'='*50}")
-            print(f"📁 Nguồn: DB trực tiếp")
+            print(f"📁 Tồn kho: {xnt_file_name} | Trip: DB trực tiếp")
             print(f"🏪 Số cửa hàng tồn kho: {num_stores_cl}")
             print(f"📅 Số ngày trip: {num_days_cl}")
             print(f"📦 Tổng giao: {total_giao_cl:,} | Tổng thu: {total_thu_cl:,} ({pct_thu}%)")
