@@ -113,47 +113,48 @@ def main():
             cursor.execute("SELECT DISTINCT barcode, product_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE product_name IS NOT NULL")
             barcode_to_product_name = {row[0]: row[1] for row in cursor.fetchall()}
 
-            # 3. Lấy dữ liệu Tồn Kho (Stock) tối ưu
+            # 3. Lấy dữ liệu Tồn Kho — dùng stockcard (onhand thay vì closing_stock)
             print("Đang tải dữ liệu Tồn kho...")
             store_stock_data = {}
-            target_barcodes = [bc for bc, name in barcode_to_product_name.items() if name in XNT_MAPPING]
+            # TRIM product_name để xử lý dấu cách thừa (vd: "TOTE RỔ ĐEN CÓ NẮP  ")
+            target_barcodes = [bc for bc, name in barcode_to_product_name.items() if name.strip() in XNT_MAPPING]
             
             if target_barcodes:
                 format_strings = ','.join(['%s'] * len(target_barcodes))
                 q_stock = f"""
-                SELECT branch_id, barcode, closing_stock
+                SELECT branch_id, barcode, onhand
                 FROM (
-                    SELECT branch_id, barcode, closing_stock,
+                    SELECT branch_id, barcode, onhand,
                            ROW_NUMBER() OVER(PARTITION BY branch_id, barcode ORDER BY updated_at DESC) as rn
-                    FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stock_summaries
+                    FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard
                     WHERE barcode IN ({format_strings})
                 ) t
-                WHERE t.rn = 1 AND t.closing_stock > 0
+                WHERE t.rn = 1 AND t.onhand > 0
                 """
                 cursor.execute(q_stock, tuple(target_barcodes))
                 
                 for row in cursor.fetchall():
-                    b_id, barcode, closing = row
-                    if closing is None: continue
-                    closing = int(closing)
+                    b_id, barcode, onhand = row
+                    if onhand is None: continue
+                    onhand = int(onhand)
                     
-                    p_name = barcode_to_product_name.get(barcode, "")
+                    p_name = barcode_to_product_name.get(barcode, "").strip()
                     if p_name in XNT_MAPPING:
-                        # Map qua branch_name (khớp STORE_COORDS name) hoặc fallback qua branch_code (abbr)
+                        # Map qua branch_name hoặc branch_code → chỉ lấy ST
                         st_name = branch_id_to_name.get(b_id)
                         if st_name and st_name in name_to_abbr:
-                            pass  # Matched by name
+                            pass
                         else:
                             abbr = branch_id_to_code.get(b_id)
                             if abbr and abbr in abbr_to_name:
                                 st_name = abbr_to_name[abbr]
                             else:
-                                continue  # Không match được
+                                continue  # Kho tổng → bỏ
                         
                         col_idx = XNT_MAPPING[p_name]["col"]
                         if st_name not in store_stock_data:
                             store_stock_data[st_name] = {i: 0 for i in range(0, 10)}
-                        store_stock_data[st_name][col_idx] += closing
+                        store_stock_data[st_name][col_idx] += onhand
             
             tonkho_tbody = generate_tonkho_html(store_stock_data, name_to_abbr)
 
