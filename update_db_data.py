@@ -296,13 +296,94 @@ def main():
             current_time = datetime.now().strftime("%d/%m/%Y %H:%M")
             new_html = re.sub(r'(id="last-update-time"[^>]*>Cập nhật:\s*).*?(</div>)', r'\g<1>' + current_time + r'\2', new_html)
             
+            # === AUTO CHANGELOG ===
+            total_giao_cl = sum(st['g'] for d, sts in final_trip_data.items() if d != 'all' for st in sts)
+            total_thu_cl = sum(st['t'] for d, sts in final_trip_data.items() if d != 'all' for st in sts)
+            num_days_cl = len([d for d in final_trip_data.keys() if d != 'all'])
+            num_stores_cl = len(store_stock_data)
+            today_str = datetime.now().strftime("%d/%m/%Y")
+            pct_thu = round(total_thu_cl / total_giao_cl * 100, 1) if total_giao_cl > 0 else 0
+            chua_count_cl = sum(1 for d, sts in final_trip_data.items() if d != 'all' for st in sts if st['g'] > st['t'])
+            
+            cl_entry = (
+                f'<div class="cl-entry">'
+                f'<div class="cl-dot improve"></div>'
+                f'<div class="cl-card">'
+                f'<div class="cl-date">{current_time}</div>'
+                f'<div class="cl-title">📊 Cập nhật dữ liệu tự động</div>'
+                f'<div class="cl-body">'
+                f'📁 <strong>DB trực tiếp</strong> (real-time)<br>'
+                f'🏪 <strong>{num_stores_cl}</strong> ST tồn kho · '
+                f'📅 <strong>{num_days_cl}</strong> ngày trip · '
+                f'Giao: <strong>{total_giao_cl:,}</strong> · '
+                f'Thu: <strong>{total_thu_cl:,}</strong> ({pct_thu}%) · '
+                f'Chưa thu: <strong>{chua_count_cl}</strong> lượt'
+                f'</div></div></div>\n'
+            )
+            
+            auto_match = re.search(
+                r'<!-- CHANGELOG_AUTO_START -->(.*?)<!-- CHANGELOG_AUTO_END -->',
+                new_html, flags=re.DOTALL
+            )
+            if auto_match:
+                existing_auto = auto_match.group(1)
+                entries = re.findall(r'<div class="cl-entry">.*?</div>\s*</div>\s*</div>', existing_auto, flags=re.DOTALL)
+                today_exists = False
+                new_entries = []
+                for entry in entries:
+                    date_m = re.search(r'<div class="cl-date">(\d{2}/\d{2}/\d{4})', entry)
+                    if date_m and date_m.group(1) == today_str:
+                        today_exists = True
+                        new_entries.append(cl_entry)
+                    else:
+                        new_entries.append(entry + '\n')
+                if not today_exists:
+                    new_entries.insert(0, cl_entry)
+                new_entries = new_entries[:7]
+                auto_block = '\n'.join(new_entries)
+                new_html = re.sub(
+                    r'<!-- CHANGELOG_AUTO_START -->.*?<!-- CHANGELOG_AUTO_END -->',
+                    f'<!-- CHANGELOG_AUTO_START -->\n{auto_block}<!-- CHANGELOG_AUTO_END -->',
+                    new_html, flags=re.DOTALL
+                )
+            
+            # Summary
+            summary = {
+                "time": current_time,
+                "source": "DB",
+                "stores": num_stores_cl,
+                "days": num_days_cl,
+                "total_giao": total_giao_cl,
+                "total_thu": total_thu_cl
+            }
+            import json as _json
+            summary_js = _json.dumps(summary, ensure_ascii=False)
+            marker = '// %%LAST_UPDATE_SUMMARY%%'
+            if marker in new_html:
+                new_html = re.sub(
+                    r'// %%LAST_UPDATE_SUMMARY%%.*?// %%END_SUMMARY%%',
+                    f'{marker}\nwindow.LAST_UPDATE = {summary_js};\n// %%END_SUMMARY%%',
+                    new_html, flags=re.DOTALL
+                )
+            
+            summary_path = os.path.join(os.path.dirname(html_path), 'data', 'last_update.json')
+            with open(summary_path, 'w', encoding='utf-8') as f:
+                _json.dump(summary, f, ensure_ascii=False, indent=2)
+            
             backup_path = html_path + ".bak"
             shutil.copy2(html_path, backup_path)
             
             with open(html_path, 'w', encoding='utf-8') as f:
                 f.write(new_html)
                 
-            print(f"[OK] Cập nhật hoàn tất lúc {current_time}!")
+            print(f"\n{'='*50}")
+            print(f"📊 KẾT QUẢ CẬP NHẬT ({current_time})")
+            print(f"{'='*50}")
+            print(f"📁 Nguồn: DB trực tiếp")
+            print(f"🏪 Số cửa hàng tồn kho: {num_stores_cl}")
+            print(f"📅 Số ngày trip: {num_days_cl}")
+            print(f"📦 Tổng giao: {total_giao_cl:,} | Tổng thu: {total_thu_cl:,} ({pct_thu}%)")
+            print(f"{'='*50}")
             
     finally:
         conn.close()
