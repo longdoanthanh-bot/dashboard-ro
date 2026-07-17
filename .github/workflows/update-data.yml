@@ -35,18 +35,32 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install pandas openpyxl playwright
+        run: pip install pandas openpyxl playwright pymysql
 
       - name: Install Playwright browser
         run: playwright install chromium --with-deps
 
-      - name: Download KFM data
+      # === ƯU TIÊN 1: DB trực tiếp (real-time, luôn có dữ liệu mới nhất) ===
+      - name: Update from DB (primary)
+        id: db_update
+        run: python update_db_data.py
+        continue-on-error: true
+
+      # === ƯU TIÊN 2: Download từ KFM + Excel (fallback nếu DB lỗi) ===
+      - name: Download KFM data (fallback)
+        if: steps.db_update.outcome == 'failure'
         env:
           KFM_USER: ${{ inputs.kfm_user || secrets.KFM_USER }}
           KFM_PASS: ${{ inputs.kfm_pass || secrets.KFM_PASS }}
         run: python download_kfm_data.py
         continue-on-error: true
 
+      - name: Update Excel data (fallback)
+        if: steps.db_update.outcome == 'failure'
+        run: python update_excel_data.py
+        continue-on-error: true
+
+      # === Các bước phụ (chạy luôn) ===
       - name: Check khu vuc
         run: python check_khuvuc.py
         continue-on-error: true
@@ -57,9 +71,7 @@ jobs:
 
       - name: Update store data
         run: python update_store_data.py
-
-      - name: Update Excel data
-        run: python update_excel_data.py
+        continue-on-error: true
 
       - name: Commit and push
         run: |
