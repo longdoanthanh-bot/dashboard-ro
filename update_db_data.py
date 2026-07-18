@@ -189,7 +189,7 @@ def main():
                     
                     col_idx = XNT_MAPPING[ten_hang]["col"]
                     if st_name not in store_stock_data:
-                        store_stock_data[st_name] = {i: 0 for i in range(0, 10)}
+                        store_stock_data[st_name] = {i: 0 for i in range(0, 11)}
                     store_stock_data[st_name][col_idx] += ton_cuoi
             else:
                 print("  ⚠️ Không tìm thấy file XNT!")
