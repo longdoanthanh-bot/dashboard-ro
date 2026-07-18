@@ -35,7 +35,8 @@ XNT_MAPPING = {
     "Rổ ABA đông mát": {"col": 6, "wh": "Dòng Mát"},
     "Tote ABA đông mát": {"col": 7, "wh": "Dòng Mát"},
     "Tote đỏ bánh tươi": {"col": 8, "wh": "Rau"},
-    "TOTE RỔ ĐEN CÓ NẮP": {"col": 9, "wh": "Thịt Cá SCF"}
+    "TOTE RỔ ĐEN CÓ NẮP": {"col": 9, "wh": "Thịt Cá SCF"},
+    "Tote xanh dương đựng cá": {"col": 10, "wh": "Thịt Cá SCF"}
 }
 
 DB_TRIP_TO_COL = {
@@ -45,9 +46,10 @@ DB_TRIP_TO_COL = {
     "B0012": 5, # Rổ nhựa đỏ kích thước 60x40x24 cm
     "B0016": 7, # ITL Thùng tote xanh dương đục lỗ
     "B0001": 8, # Seedlog Thùng tote xanh lá, xanh dương không đục lỗ
+    "CC00391": 10, # Tote xanh dương đựng cá
 }
 
-COUNTABLE_TRIP_CODES = {"B0001", "B0016", "B0015", "B0012", "B0017", "CC00392"}
+COUNTABLE_TRIP_CODES = {"B0001", "B0016", "B0015", "B0012", "B0017", "CC00392", "CC00391"}
 
 def generate_tonkho_html(store_data, name_to_abbr):
     html_rows = []
@@ -69,7 +71,7 @@ def generate_tonkho_html(store_data, name_to_abbr):
             
         row_html = f'<tr class="{tr_class}"><td>{idx}</td><td class="st-code">{abbr}</td><td class="store-name">{st_name}</td><td class="num total-col">{total_sum}</td>'
         
-        for col_idx in range(0, 10):
+        for col_idx in range(0, 11):
             val = cols.get(col_idx, 0)
             wh = ""
             for v in XNT_MAPPING.values():

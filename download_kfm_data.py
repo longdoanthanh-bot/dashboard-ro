@@ -52,6 +52,7 @@ XNT_SAN_PHAM = [
     "Seedlog - Thùng tote xanh lá, xanh dương không đục lỗ",
     "Rổ nhựa đen/xanh lá kho rau",
     "TOTE RỔ ĐEN CÓ NẮP",
+    "Tote xanh dương đựng cá",
 ]
 
 
