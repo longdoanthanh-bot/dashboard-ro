@@ -23,6 +23,16 @@ if sys.stdout and sys.stdout.encoding != 'utf-8':
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 PORT = 5588
 
+# Load .env file (KFM_USER, KFM_PASS, etc.)
+_env_path = os.path.join(PROJECT_DIR, '.env')
+if os.path.isfile(_env_path):
+    with open(_env_path, encoding='utf-8') as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith('#') and '=' in _line:
+                _k, _v = _line.split('=', 1)
+                os.environ.setdefault(_k.strip(), _v.strip())
+
 # Loại bỏ GITHUB_TOKEN
 if "GITHUB_TOKEN" in os.environ:
     del os.environ["GITHUB_TOKEN"]

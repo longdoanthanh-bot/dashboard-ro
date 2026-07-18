@@ -38,6 +38,15 @@ XNT_MAPPING = {
     "TOTE RỔ ĐEN CÓ NẮP": {"col": 9, "wh": "Thịt Cá SCF"}
 }
 
+DB_TRIP_TO_COL = {
+    "B0015": 1, # Rổ đen xếp chồng quai đỏ
+    "CC00392": 2, # Rổ ABA đông mát
+    "B0017": 4, # Tote đỏ bánh tươi
+    "B0012": 5, # Rổ nhựa đỏ kích thước 60x40x24 cm
+    "B0016": 7, # ITL Thùng tote xanh dương đục lỗ
+    "B0001": 8, # Seedlog Thùng tote xanh lá, xanh dương không đục lỗ
+}
+
 COUNTABLE_TRIP_CODES = {"B0001", "B0016", "B0015", "B0012", "B0017", "CC00392"}
 
 def generate_tonkho_html(store_data, name_to_abbr):
@@ -127,27 +136,32 @@ def main():
             # 3. Lấy dữ liệu Tồn Kho từ EXCEL (DB không có 'Tồn cuối kỳ' chính xác)
             print("Đang tải dữ liệu Tồn kho từ Excel...")
             store_stock_data = {}
-            xnt_file_name = "(không tìm thấy)"
             
-            # Tìm file XNT mới nhất
             _data_dir = os.environ.get('DATA_DIR', '')
+            _local_xnt = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'TonKhoRo')
+            _gdrive_xnt = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Tồn kho Rổ"
             if _data_dir:
                 xnt_dir = os.path.join(_data_dir, "TonKhoRo")
+            elif os.path.isdir(_local_xnt) and glob.glob(os.path.join(_local_xnt, "XNT_*.xlsx")):
+                xnt_dir = _local_xnt
             else:
-                xnt_dir = r"G:\My Drive\ANTIGRAVITY\GIAO_VAN\Rổ\Data_Source\Tồn kho Rổ"
-            
+                xnt_dir = _gdrive_xnt
             xnt_files = glob.glob(os.path.join(xnt_dir, "XNT_*.xlsx"))
-            if xnt_files:
-                # Sort theo ngày trong tên file (DDMMYYYY → YYYYMMDD)
-                def extract_date(f):
-                    m = re.search(r'(\d{2})(\d{2})(\d{4})', os.path.basename(f))
-                    return m.group(3) + m.group(2) + m.group(1) if m else ''
-                xnt_files.sort(key=extract_date, reverse=True)
-                xnt_path = xnt_files[0]
-                xnt_file_name = os.path.basename(xnt_path)
-                print(f"  File XNT: {xnt_file_name}")
-                
-                df_xnt = pd.read_excel(xnt_path)
+
+            def parse_date(f):
+                m = re.search(r'(\d{2})(\d{2})(\d{4})', os.path.basename(f))
+                try:
+                    return datetime(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+                except:
+                    return datetime.min
+        
+            xnt_files.sort(key=parse_date, reverse=True)
+            latest_xnt_file = xnt_files[0] if xnt_files else None
+            excel_date = parse_date(latest_xnt_file).date() if latest_xnt_file else datetime.min.date()
+
+            if latest_xnt_file:
+                print(f"  File XNT: {os.path.basename(latest_xnt_file)}")
+                df_xnt = pd.read_excel(latest_xnt_file)
                 for _, row in df_xnt.iterrows():
                     ten_hang = str(row.get('Tên hàng', '')).strip()
                     if ten_hang not in XNT_MAPPING:
@@ -177,8 +191,6 @@ def main():
                     store_stock_data[st_name][col_idx] += ton_cuoi
             else:
                 print("  ⚠️ Không tìm thấy file XNT!")
-            
-            tonkho_tbody = generate_tonkho_html(store_stock_data, name_to_abbr)
 
             # 4. Lấy dữ liệu Chuyến Xe (Trip)
             print("Đang tải dữ liệu Chuyến xe...")
@@ -215,6 +227,8 @@ def main():
                 
                 giao = int(giao) if giao is not None else 0
                 thu = int(thu) if thu is not None else 0
+                
+                # Trip data aggregation for UI (not for inventory modification)
                     
                 if date_str not in raw_trip_data:
                     raw_trip_data[date_str] = {}
@@ -264,6 +278,8 @@ def main():
                         all_merged[c]["items"][bk][1] += counts[1]
             
             final_trip_data["all"] = list(all_merged.values())
+            
+            tonkho_tbody = generate_tonkho_html(store_stock_data, name_to_abbr)
             trip_json_str = json.dumps(final_trip_data, ensure_ascii=False)
             
             # 5. Cập nhật index.html
@@ -283,7 +299,7 @@ def main():
                 latest_trip = max(valid_dates_all, key=lambda x: datetime.strptime(x, "%d/%m/%Y"))
             else:
                 latest_trip = "N/A"
-            meta_str = f"Tồn kho: {os.path.basename(xnt_path)} | Trip: DB (Tới {latest_trip})"
+            meta_str = f"Tồn kho: {os.path.basename(latest_xnt_file) if latest_xnt_file else 'N/A'} | Trip: DB (Tới {latest_trip})"
             new_html = re.sub(
                 r'<!-- METADATA_START -->.*?<!-- METADATA_END -->',
                 f'<!-- METADATA_START -->{meta_str}<!-- METADATA_END -->',
@@ -350,7 +366,7 @@ def main():
                 f'<div class="cl-date">{current_time}</div>'
                 f'<div class="cl-title">📊 Cập nhật dữ liệu tự động</div>'
                 f'<div class="cl-body">'
-                f'📁 <strong>{xnt_file_name}</strong> + DB trip<br>'
+                f'📁 <strong>{os.path.basename(latest_xnt_file) if latest_xnt_file else "(không tìm thấy)"}</strong> + DB trip<br>'
                 f'🏪 <strong>{num_stores_cl}</strong> ST tồn kho · '
                 f'📅 <strong>{num_days_cl}</strong> ngày trip · '
                 f'Giao: <strong>{total_giao_cl:,}</strong> · '
@@ -416,8 +432,8 @@ def main():
                 
             print(f"\n{'='*50}")
             print(f"📊 KẾT QUẢ CẬP NHẬT ({current_time})")
-            print(f"{'='*50}")
-            print(f"📁 Tồn kho: {xnt_file_name} | Trip: DB trực tiếp")
+            print("==================================================")
+            print(f"📁 Tồn kho: {os.path.basename(latest_xnt_file) if latest_xnt_file else '(không tìm thấy)'} | Trip: DB trực tiếp")
             print(f"🏪 Số cửa hàng tồn kho: {num_stores_cl}")
             print(f"📅 Số ngày trip: {num_days_cl}")
             print(f"📦 Tổng giao: {total_giao_cl:,} | Tổng thu: {total_thu_cl:,} ({pct_thu}%)")
