@@ -32,6 +32,14 @@ if %ERRORLEVEL% NEQ 0 (
     pause
     exit /b 1
 )
+
+python update_sla_data.py
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo [LOI] Buoc 1c that bai! Dung lai.
+    pause
+    exit /b 1
+)
 echo [OK] Buoc 1 hoan tat.
 echo.
 
@@ -39,7 +47,7 @@ echo.
 echo [2/3] Dang commit thay doi len Git...
 for /f "tokens=*" %%i in ('python -c "from datetime import datetime; print(datetime.now().strftime('%%d/%%m/%%Y %%H:%%M'))"') do set TIMESTAMP=%%i
 
-git add index.html tele.html tasks.html
+git add index.html tele.html tasks.html data.js sla_v5.html data/
 if %ERRORLEVEL% NEQ 0 (
     echo [LOI] git add that bai!
     pause
@@ -58,6 +66,7 @@ echo.
 
 :: === BUOC 3: Git push (KI-37: push ca master va main) ===
 echo [3/3] Dang push len GitHub Pages...
+git pull --rebase origin master
 git push origin master
 if %ERRORLEVEL% NEQ 0 (
     echo [LOI] git push origin master that bai!

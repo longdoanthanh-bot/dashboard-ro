@@ -56,9 +56,16 @@ def git_push_auto():
         commit_msg = f"Auto update {current_time}"
         print("  → Đang commit + push lên GitHub...")
 
+        # Git pull first to avoid push rejection
+        subprocess.run(
+            ["git", "pull", "--rebase", "origin", "master"],
+            cwd=PROJECT_DIR,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+
         # Git add
         subprocess.run(
-            ["git", "add", "index.html", "tele.html", "tasks.html"],
+            ["git", "add", "index.html", "tele.html", "tasks.html", "data.js", "sla_v5.html", "data/"],
             cwd=PROJECT_DIR, check=True,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
@@ -121,6 +128,9 @@ def main():
                 
                 print("  → Cập nhật Excel Data...")
                 subprocess.run(["python", "update_excel_data.py"], cwd=PROJECT_DIR)
+                
+                print("  → Cập nhật SLA Data...")
+                subprocess.run(["python", "update_sla_data.py"], cwd=PROJECT_DIR)
                 
                 git_push_auto()
                 last_state = current_state
