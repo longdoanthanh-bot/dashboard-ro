@@ -269,6 +269,20 @@ def main():
         lst.append(item)
         return len(lst) - 1
     
+    # === BƯỚC 3b: Xây dựng mapping tài xế → NVT từ rows cũ ===
+    # Mỗi tài xế thường làm cho 1 NVT, nên dùng rows cũ để xác định
+    driver_to_carrier = {}  # driver_name → carrier_name
+    for row in existing_data.get('rows', []):
+        if len(row) >= 11:
+            d_idx = row[9]   # driver_idx
+            c_idx = row[10]  # carrier_idx
+            if d_idx < len(drivers) and c_idx < len(carriers):
+                d_name = drivers[d_idx]
+                c_name = carriers[c_idx]
+                if d_name and c_name:
+                    driver_to_carrier[d_name] = c_name
+    print(f"    📋 Mapping tài xế→NVT: {len(driver_to_carrier)} tài xế")
+    
     # === BƯỚC 4: Tạo set các date+dest đã có để tránh trùng lặp ===
     existing_keys = set()
     for row in existing_data.get('rows', []):
@@ -314,8 +328,12 @@ def main():
         
         # Driver & Carrier
         driver = trip_info['driver'] or ''
-        plate = trip_info['plate'] or ''
-        carrier = plate[:3].upper().replace('.', '').replace('-', '') if len(plate) >= 3 else 'Khác'
+        # Ưu tiên dùng mapping từ rows cũ (tên NVT thật: ABA, TDL, SLG...)
+        carrier = driver_to_carrier.get(driver, '')
+        if not carrier:
+            # Fallback: dùng biển số xe prefix
+            plate = trip_info['plate'] or ''
+            carrier = plate[:3].upper().replace('.', '').replace('-', '') if len(plate) >= 3 else 'Khác'
         
         # Actual time (HH:MM format)
         actual_hhmm = arr_dt.strftime("%H:%M")
