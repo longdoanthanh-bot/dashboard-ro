@@ -283,6 +283,23 @@ def main():
                     driver_to_carrier[d_name] = c_name
     print(f"    📋 Mapping tài xế→NVT: {len(driver_to_carrier)} tài xế")
     
+    # === BƯỚC 3c: Build ETA mapping from existing rows ===
+    eta_freq = {}
+    for row in existing_data.get('rows', []):
+        if len(row) >= 9:
+            w = row[2]
+            d = row[3]
+            p = row[7]
+            if p:
+                k = (w, d)
+                if k not in eta_freq: eta_freq[k] = {}
+                eta_freq[k][p] = eta_freq[k].get(p, 0) + 1
+    
+    eta_map = {}
+    for k, freq in eta_freq.items():
+        eta_map[k] = max(freq, key=freq.get)
+    print(f"    📋 ETA mapping: {len(eta_map)} routes")
+    
     # === BƯỚC 4: Tạo set các date+dest đã có để tránh trùng lặp ===
     existing_keys = set()
     for row in existing_data.get('rows', []):
@@ -337,12 +354,8 @@ def main():
         
         # Actual time (HH:MM format)
         actual_hhmm = arr_dt.strftime("%H:%M")
-        planned_hhmm = ""  # DB không có ETA, để rỗng
         
-        # SLA: mặc định Đúng (DB không có ETA để tính chính xác)
-        sla = 0
-        
-        # Ensure indices
+        # Ensure indices FIRST so we can use them for ETA lookup
         week_idx = ensure_index(weeks, week_label)
         dest_idx = ensure_index(destinations, dest)
         trip_idx = ensure_index(trips_list, trip_code)
@@ -351,6 +364,28 @@ def main():
         if month not in months:
             months.append(month)
             months.sort()
+            
+        # Planned ETA and SLA logic
+        planned_hhmm = eta_map.get((wh_idx, dest_idx), "")
+        sla = 0  # Default: Đúng giờ
+        
+        if planned_hhmm:
+            try:
+                a_h, a_m = map(int, actual_hhmm.split(':'))
+                p_h, p_m = map(int, planned_hhmm.split(':'))
+                diff = (a_h * 60 + a_m) - (p_h * 60 + p_m)
+                
+                # Handle cross-day boundaries
+                if diff < -720: diff += 1440
+                elif diff > 720: diff -= 1440
+                
+                if diff > 30:
+                    sla = 1  # Trễ
+                elif diff < -30:
+                    sla = 2  # Sớm
+            except Exception:
+                pass
+        
         
         # === Cập nhật daily aggregation ===
         dk = (date_str, wh_idx)
