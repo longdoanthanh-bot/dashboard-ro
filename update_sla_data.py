@@ -261,6 +261,7 @@ def main():
     carriers = list(existing_data.get('carriers', []))
     drivers = list(existing_data.get('drivers', []))
     months = list(existing_data.get('months', []))
+    warehouses = list(existing_data.get('warehouses', []))
     
     def ensure_index(lst, item):
         """Thêm item vào list nếu chưa có, trả về index."""
@@ -442,6 +443,66 @@ def main():
         }
         existing_daily.append(daily_entry)
         new_daily_count += 1
+    
+    # === BƯỚC 6c: Overwrite with Official Excel Daily Report ===
+    import glob
+    import pandas as pd
+    daily_dict = {(d['d'], d['wh']): d for d in existing_daily}
+    try:
+        pattern = r"G:\My Drive\ANTIGRAVITY\WEEKLY_MEETING\Data_Source\Daily_Report*.xlsx"
+        files = glob.glob(pattern)
+        if files:
+            files.sort(key=os.path.getmtime, reverse=True)
+            latest = files[0]
+            print(f"    📅 Đọc Daily Report Excel: {os.path.basename(latest)}")
+            df = pd.read_excel(latest)
+            df = df[df['Ngày'] != 'GRAND TOTAL']
+            df['Ngày'] = pd.to_datetime(df['Ngày'], errors='coerce')
+            df = df.dropna(subset=['Ngày'])
+            
+            kho_map = {
+                'KRC': 'Rau',
+                'THỊT CÁ': 'Thịt',
+                'ĐÔNG': 'Đông',
+                'MÁT': 'Mát',
+                'KSL-SÁNG': 'Khô giao ngày',
+                'KSL-TỐI': 'Khô giao đêm'
+            }
+            
+            def safe_num(val, is_float=False):
+                if isinstance(val, (int, float)): return float(val) if is_float else int(val)
+                s = str(val).strip().replace(',', '')
+                if not s or s in ('-', '—', 'None'): return 0.0 if is_float else 0
+                try: return float(s) if is_float else int(float(s))
+                except: return 0.0 if is_float else 0
+            
+            for _, row in df.iterrows():
+                d_str = row['Ngày'].strftime("%d/%m/%Y")
+                week_str = f"W{row['Ngày'].isocalendar()[1]}"
+                month_val = row['Ngày'].month
+                
+                kho_name = kho_map.get(str(row['Kho']).upper(), str(row['Kho']))
+                w_idx = ensure_index(warehouses, kho_name)
+                wk_idx = ensure_index(weeks, week_str)
+                if month_val not in months:
+                    months.append(month_val)
+                    months.sort()
+                
+                daily_dict[(d_str, w_idx)] = {
+                    'd': d_str,
+                    'w': wk_idx,
+                    'm': months.index(month_val),
+                    'wh': w_idx,
+                    'st': safe_num(row.get('Siêu Thị', 0)),
+                    'it': safe_num(row.get('Items', 0)),
+                    'xe': safe_num(row.get('Xe', 0)),
+                    't': round(safe_num(row.get('Tấn', 0), True), 2)
+                }
+    except Exception as e:
+        print(f"    ⚠️ Lỗi đọc Excel Daily Report: {e}")
+
+    # Build final array
+    existing_daily = list(daily_dict.values())
     
     print(f"    Daily mới: {new_daily_count}")
     
