@@ -73,15 +73,20 @@ jobs:
         run: python update_store_data.py
         continue-on-error: true
 
+      - name: Update SLA data
+        run: python update_sla_data.py
+        continue-on-error: true
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html tele.html tasks.html data/ || true
+          git add index.html tele.html tasks.html data.js sla_v5.html data/ || true
           TIMESTAMP=$(TZ='Asia/Ho_Chi_Minh' date +'%d/%m/%Y %H:%M')
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          git pull --rebase origin $BRANCH || true
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "Auto update $TIMESTAMP"
-          BRANCH=$(git rev-parse --abbrev-ref HEAD)
           git push origin $BRANCH
           if [ "$BRANCH" = "master" ]; then git push origin master:main || true; fi
           if [ "$BRANCH" = "main" ]; then git push origin main:master || true; fi
