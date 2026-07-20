@@ -131,6 +131,18 @@ def load_existing_data():
             return None
         
         d = json.loads(match.group(1))
+        
+        # Nếu thiếu daily, thử load từ daily_backup.json
+        if not d.get('daily'):
+            backup_path = os.path.join(PROJECT_DIR, "daily_backup.json")
+            if os.path.exists(backup_path):
+                try:
+                    with open(backup_path, 'r', encoding='utf-8') as fb:
+                        d['daily'] = json.load(fb)
+                    print(f"    📋 Loaded {len(d['daily'])} daily entries from backup")
+                except:
+                    pass
+        
         return d
     except Exception as e:
         print(f"  ⚠️ Lỗi đọc data.js: {e}")
@@ -229,7 +241,7 @@ def main():
         cursor.execute(f"""
             SELECT 
                 tl.t_id, tl.tl_branch_id, tl.t_code, tl.t_departure,
-                tl.tl_arrival, tl.tl_status
+                tl.tl_arrival, tl.tl_status, tl.tl_total_transfer_qty
             FROM __cdc_kfm_kf_inventories_kf_trip_locations tl
             WHERE tl.t_departure >= '{min_date}'
               AND tl.tl_arrival IS NOT NULL
@@ -263,12 +275,15 @@ def main():
         # Key = (date, dest_idx, trip_idx) 
         existing_keys.add((row[8], row[3], row[4]))
     
-    # === BƯỚC 5: Tạo rows mới ===
+    # === BƯỚC 5: Tạo rows mới + thu thập daily data ===
     print("  → Xử lý dữ liệu mới...")
     new_rows = []
     
+    # Daily aggregation: key = (date_str, wh_idx) → {st: set(), it: count, xe: set(), t: 0}
+    daily_agg = defaultdict(lambda: {'st': set(), 'it': 0, 'xe': set(), 't': 0.0})
+    
     for loc in locations_raw:
-        t_id, branch_id, t_code, t_departure, tl_arrival, tl_status = loc
+        t_id, branch_id, t_code, t_departure, tl_arrival, tl_status, transfer_qty = loc
         
         trip_info = trip_lookup.get(t_id)
         if not trip_info:
@@ -306,9 +321,8 @@ def main():
         actual_hhmm = arr_dt.strftime("%H:%M")
         planned_hhmm = ""  # DB không có ETA, để rỗng
         
-        # SLA: sử dụng so sánh arrival vs departure (đơn giản hóa)
-        # Lưu ý: Bản gốc có ETA chính xác từ KFM, nên SLA ở đây chỉ ước lượng
-        sla = 0  # Mặc định Đúng (để bảo toàn tỉ lệ SLA tổng thể)
+        # SLA: mặc định Đúng (DB không có ETA để tính chính xác)
+        sla = 0
         
         # Ensure indices
         week_idx = ensure_index(weeks, week_label)
@@ -320,7 +334,15 @@ def main():
             months.append(month)
             months.sort()
         
-        # Check trùng lặp
+        # === Cập nhật daily aggregation ===
+        dk = (date_str, wh_idx)
+        daily_agg[dk]['st'].add(dest)              # Distinct destinations = số siêu thị
+        daily_agg[dk]['it'] += int(transfer_qty or 0)  # Tổng items giao
+        daily_agg[dk]['xe'].add(t_id)              # Distinct trips = số xe
+        daily_agg[dk]['week'] = week_idx
+        daily_agg[dk]['month'] = month
+        
+        # Check trùng lặp cho SLA rows
         key = (date_str, dest_idx, trip_idx)
         if key in existing_keys:
             continue
@@ -333,13 +355,42 @@ def main():
         ]
         new_rows.append(row)
     
-    print(f"    Rows mới: {new_rows[:0] if not new_rows else len(new_rows)}")
+    print(f"    Rows mới: {len(new_rows)}")
     
     # === BƯỚC 6: Merge rows ===
     all_rows = list(existing_data.get('rows', [])) + new_rows
     
-    # Cập nhật existing rows nếu index arrays thay đổi
-    # (Không cần nếu existing indices giữ nguyên — chỉ thêm mới ở cuối)
+    # === BƯỚC 6b: Build daily array ===
+    # Giữ daily cũ
+    existing_daily = list(existing_data.get('daily', []))
+    existing_daily_keys = set()
+    for d_item in existing_daily:
+        existing_daily_keys.add((d_item.get('d', ''), d_item.get('wh', -1)))
+    
+    # Thêm daily mới từ DB
+    new_daily_count = 0
+    for (date_str, wh_idx), agg in daily_agg.items():
+        if (date_str, wh_idx) in existing_daily_keys:
+            continue  # Đã có trong data cũ
+        
+        # Tính tấn ước lượng: trung bình ~0.4 kg/item (dựa trên data gốc)
+        # Data gốc: 171207 items = 68.48 tấn → ~0.0004 tấn/item = 0.4 kg/item
+        estimated_tons = round(agg['it'] * 0.0004, 2)
+        
+        daily_entry = {
+            'd': date_str,
+            'w': agg.get('week', 0),
+            'm': agg.get('month', 0),
+            'wh': wh_idx,
+            'st': len(agg['st']),
+            'it': agg['it'],
+            'xe': len(agg['xe']),
+            't': estimated_tons,
+        }
+        existing_daily.append(daily_entry)
+        new_daily_count += 1
+    
+    print(f"    Daily mới: {new_daily_count}")
     
     # === BƯỚC 7: Ghi data.js ===
     generated_time = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -353,6 +404,7 @@ def main():
         "months": months,
         "drivers": drivers,
         "rows": all_rows,
+        "daily": existing_daily,
     }
     
     data_json = json.dumps(data_obj, ensure_ascii=False, separators=(',', ':'))
@@ -374,9 +426,11 @@ def main():
     print(f"🚚 Chuyến xe: {len(trips_list)}")
     print(f"👤 Tài xế: {len(drivers)}")
     print(f"📊 Rows cũ: {existing_rows_count} | Rows mới: {len(new_rows)} | Tổng: {len(all_rows)}")
+    print(f"📊 Daily cũ: {len(existing_daily) - new_daily_count} | Daily mới: {new_daily_count} | Tổng: {len(existing_daily)}")
     print(f"💾 File: {output_path} ({file_size_kb:.0f} KB)")
     print(f"{'='*50}")
 
 
 if __name__ == "__main__":
     main()
+
