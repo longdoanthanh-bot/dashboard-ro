@@ -1,9 +1,9 @@
 {
-  "time": "07/08/2026 07:08",
+  "time": "07/08/2026 11:30",
   "xnt_file": "XNT_14072026.xlsx",
-  "trip_file": "DS-chi-tiet-chuyen-xe_17072026-0715.xlsx",
+  "trip_file": "DS-chi-tiet-chuyen-xe_17072026-0653.xlsx",
   "stores": 206,
   "days": 65,
   "total_giao": 818476,
-  "total_thu": 782674
+  "total_thu": 782642
 }
